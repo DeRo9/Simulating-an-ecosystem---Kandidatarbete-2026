@@ -617,7 +617,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MooseNeeds
   hungerLevel: 0
-  hungerDecreaseRate: 2
+  hungerDecreaseRate: 0.8
 --- !u!1 &5796381926036007094
 GameObject:
   m_ObjectHideFlags: 0
