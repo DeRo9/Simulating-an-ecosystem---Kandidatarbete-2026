@@ -387,6 +387,8 @@ MonoBehaviour:
   zoomSpeed: 10
   minFOV: 20
   maxFOV: 80
+  screenEdgeC: 1
+  edgeRotation: 20
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
