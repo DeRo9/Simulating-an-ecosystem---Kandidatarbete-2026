@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
     public Transform carnivoreFolder;
     public Transform omnivoreFolder;
 
+    public Transform berryBushFolder;
+
     [Header("UI")]
     public GameObject startMenuPanel;
     public Slider deerAmountSlider;
@@ -20,11 +22,14 @@ public class GameManager : MonoBehaviour
     [Header("Prefabs")]
     public GameObject deerPrefab;
 
+    public GameObject berryBushPrefab;
+
 
     public void StartSimulation()
     {
         int deerCount = (int)deerAmountSlider.value;
         SpawnAnimals(deerPrefab, deerCount, herbivoresFolder);
+        SpawnFood(berryBushPrefab, 100, berryBushFolder);
         startMenuPanel.SetActive(false);
     }
 
@@ -36,6 +41,17 @@ public class GameManager : MonoBehaviour
         {
             Vector3 randomPoint = GetRandomNavMeshPoint();
             Instantiate(animalPrefab, randomPoint, Quaternion.identity, parentFolder);
+        }
+    }
+
+    void SpawnFood(GameObject foodPrefab, int count, Transform parentFolder)
+    {
+        //Vector3 Point2 = new Vector3(285.539246f, 55.4835625f, 264.506256f);
+        //Instantiate(berryBushPrefab, Point2, Quaternion.identity, berryBushFolder);
+        for (int i = 0; i < count; i++)
+        {
+            Vector3 randomPoint = GetRandomNavMeshPoint();
+            Instantiate(berryBushPrefab, randomPoint, Quaternion.identity, parentFolder);
         }
     }
 
