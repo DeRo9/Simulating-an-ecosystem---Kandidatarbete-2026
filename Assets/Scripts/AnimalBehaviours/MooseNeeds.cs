@@ -11,7 +11,7 @@ public class MooseNeeds : MonoBehaviour
 
     public float hungerDecreaseRate = 2f;
 
-    public bool isHungry => hungerLevel < maxHunger * 0.8f;
+    public bool isHungry => hungerLevel < maxHunger * 0.4f;
 
     void Start()
     {

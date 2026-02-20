@@ -64,6 +64,7 @@ public class MooseBehaviour : AnimalBehaviour
         return false;
     }
 
+    // Should be overrided by a specific animal for the eat state
     protected override void EatStateForSpecificAnimal()
     {
         if (foodTarget != null)
