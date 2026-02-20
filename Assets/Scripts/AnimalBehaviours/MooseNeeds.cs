@@ -8,7 +8,6 @@ public class MooseNeeds : MonoBehaviour
     [SerializeField]
     private float hungerLevel;
 
-
     public float hungerDecreaseRate = 2f;
 
     public bool isHungry => hungerLevel < maxHunger * 0.4f;
