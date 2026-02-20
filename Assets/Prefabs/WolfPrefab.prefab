@@ -426,6 +426,7 @@ GameObject:
   - component: {fileID: 4889623514468296426}
   - component: {fileID: 8289850700191238173}
   - component: {fileID: 5285733446047382951}
+  - component: {fileID: -7422939320100508559}
   m_Layer: 0
   m_Name: WolfPrefab
   m_TagString: Untagged
@@ -521,6 +522,23 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &-7422939320100508559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2881584652000419497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c56e70a3dd7a64d499b5635a3fa68dd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WolfBehaviour
+  HomeArea: {fileID: 1992547051420774551, guid: 5c919d4b2ea7e434a9032def6e43804d, type: 3}
+  CurrentState: 0
+  minTimeWaiting: 2
+  maxTimeWaiting: 5
+  waitTime: 0
 --- !u!1 &3110289965009675461
 GameObject:
   m_ObjectHideFlags: 0
