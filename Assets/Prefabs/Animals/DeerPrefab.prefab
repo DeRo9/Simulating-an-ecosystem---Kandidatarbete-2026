@@ -617,6 +617,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bfb10feed37a4a498b7caeeaf9857bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MooseNeeds
+  maxHunger: 100
   hungerLevel: 0
   hungerDecreaseRate: 0.8
 --- !u!114 &1770014076673769863
@@ -1225,6 +1226,7 @@ GameObject:
   - component: {fileID: 8315387934023000481}
   - component: {fileID: 7140083381844987188}
   - component: {fileID: 5450658817070534188}
+  - component: {fileID: 1828812757189320843}
   m_Layer: 0
   m_Name: Deer_001
   m_TagString: Moose
@@ -1273,6 +1275,7 @@ SkinnedMeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: f6730b960ba6c914e9141395fc93249f, type: 2}
+  - {fileID: 2100000, guid: f6cb39b3cccb907449daf97af5c4d112, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1361,6 +1364,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.0621029, y: 2.2940853, z: 1.5180453}
   m_Center: {x: -0.000012466971, y: 1.1041903, z: 0.17470473}
+--- !u!114 &1828812757189320843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9038440841175694284}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0711c67ba87bfc4082814050ad72f23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Highlighter
 --- !u!1 &9162194073387003786
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,10 +3,10 @@ using UnityEngine;
 public class MooseNeeds : MonoBehaviour
 {
 
-    private float maxHunger = 100f;
+    public float maxHunger = 100f;
 
     [SerializeField]
-    private float hungerLevel;
+    public float hungerLevel;
 
     public float hungerDecreaseRate = 2f;
 

@@ -741,6 +741,7 @@ GameObject:
   - component: {fileID: 7554805999113599934}
   - component: {fileID: 899364982205146950}
   - component: {fileID: 518761205154902978}
+  - component: {fileID: 3457042043159273193}
   m_Layer: 0
   m_Name: Tiger_001
   m_TagString: Untagged
@@ -789,6 +790,7 @@ SkinnedMeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: f6730b960ba6c914e9141395fc93249f, type: 2}
+  - {fileID: 2100000, guid: f6cb39b3cccb907449daf97af5c4d112, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -877,6 +879,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.8637981, y: 1.498137, z: 3.030683}
   m_Center: {x: 0.023001155, y: 0.665735, z: 0.026591994}
+--- !u!114 &3457042043159273193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4978630895675830836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0711c67ba87bfc4082814050ad72f23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Highlighter
 --- !u!1 &5135625776664671755
 GameObject:
   m_ObjectHideFlags: 0
