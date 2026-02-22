@@ -492,6 +492,7 @@ GameObject:
   - component: {fileID: 6516953583130501828}
   - component: {fileID: 2861242641456141539}
   - component: {fileID: 30363507316570233}
+  - component: {fileID: 1770014076673769863}
   m_Layer: 0
   m_Name: DeerPrefab
   m_TagString: Moose
@@ -618,6 +619,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MooseNeeds
   hungerLevel: 0
   hungerDecreaseRate: 0.8
+--- !u!114 &1770014076673769863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5492703286971452537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: beb6439965c573b4e8ab1624b4079bfc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Aging
+  age: 7
+  maxGrowthAge: 10
+  oldAgeStart: 20
+  agingSpeed: 0.2
+  childScale: 0.5
+  adultScale: 1
 --- !u!1 &5796381926036007094
 GameObject:
   m_ObjectHideFlags: 0
