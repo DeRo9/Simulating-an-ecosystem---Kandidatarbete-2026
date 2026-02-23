@@ -2309,6 +2309,7 @@ MonoBehaviour:
   deerAmountSliderText: {fileID: 1889973157}
   deerPrefab: {fileID: 5492703286971452537, guid: 3e6797c997d98fb499bd45e0f6e439a7, type: 3}
   berryBushPrefab: {fileID: 8586240158754271358, guid: c3040d7ed5a212f45a05efa69587ba80, type: 3}
+  informationUI: {fileID: 4360304223378449460}
   spawnRadius: 1000
 --- !u!1001 &1742587267
 PrefabInstance:
