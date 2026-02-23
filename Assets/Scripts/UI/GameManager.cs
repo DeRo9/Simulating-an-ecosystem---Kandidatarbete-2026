@@ -24,6 +24,8 @@ public class GameManager : MonoBehaviour
 
     public GameObject berryBushPrefab;
 
+    [Header("information UI")]
+    public InformationUI informationUI;
 
     public void StartSimulation()
     {
@@ -41,6 +43,7 @@ public class GameManager : MonoBehaviour
         {
             Vector3 randomPoint = GetRandomNavMeshPoint();
             Instantiate(animalPrefab, randomPoint, Quaternion.identity, parentFolder);
+            informationUI.SetType("Moose");
         }
     }
 
