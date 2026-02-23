@@ -1420,6 +1420,11 @@ GameObject:
   m_Component:
   - component: {fileID: 4775378381136268}
   - component: {fileID: 111873174206540306}
+  - component: {fileID: 7578866241545292414}
+  - component: {fileID: 2154997179696072395}
+  - component: {fileID: -4010267597172197887}
+  - component: {fileID: 7704306641708534719}
+  - component: {fileID: -2952385847291169839}
   m_Layer: 0
   m_Name: Low_Moose_bull_v01
   m_TagString: Untagged
@@ -1451,7 +1456,7 @@ Animation:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1711258489387164}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   m_Animation: {fileID: 7400040, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
   m_Animations:
@@ -1481,6 +1486,100 @@ Animation:
   m_AnimatePhysics: 0
   m_UpdateMode: 0
   m_CullingType: 1
+--- !u!114 &7578866241545292414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1711258489387164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43822846721fc00429de0d4e4ddf67a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MooseBehaviour
+  HomeArea: {fileID: 0}
+  CurrentState: 0
+  minTimeWaiting: 2
+  maxTimeWaiting: 5
+  waitTime: 0
+--- !u!114 &2154997179696072395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1711258489387164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bfb10feed37a4a498b7caeeaf9857bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MooseNeeds
+  maxHunger: 100
+  hungerLevel: 0
+  hungerDecreaseRate: 2
+--- !u!114 &-4010267597172197887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1711258489387164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: beb6439965c573b4e8ab1624b4079bfc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Aging
+  age: 0
+  maxGrowthAge: 10
+  oldAgeStart: 20
+  agingSpeed: 1
+  childScale: 0.5
+  adultScale: 1
+--- !u!195 &7704306641708534719
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1711258489387164}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!95 &-2952385847291169839
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1711258489387164}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 83e111bf1d728eb44ab0567dfb94efae, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1770396305792392
 GameObject:
   m_ObjectHideFlags: 0

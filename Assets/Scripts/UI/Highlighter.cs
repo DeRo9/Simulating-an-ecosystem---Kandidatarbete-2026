@@ -20,7 +20,17 @@ public class Highlighter : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-       outlineMaterial.SetFloat("_outline_scale", 0.02f); // Show outline when mouse enters
+        if (eventData.pointerEnter.CompareTag("Bear"))
+        {
+            outlineMaterial.SetFloat("_outline_scale", 1.5f); // Show outline when mouse enters
+        } else
+        {
+            outlineMaterial.SetFloat("_outline_scale", 0.02f); // Show outline when mouse enters
+        }
+
+        
+
+
     }
 
     public void OnPointerExit(PointerEventData eventData)
