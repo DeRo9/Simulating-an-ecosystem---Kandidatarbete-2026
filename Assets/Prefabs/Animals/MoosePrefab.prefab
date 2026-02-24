@@ -492,9 +492,11 @@ GameObject:
   m_Component:
   - component: {fileID: 6538256312678152227}
   - component: {fileID: 7919972281377852384}
+  - component: {fileID: 4130331568563197886}
   - component: {fileID: 4656165741010984386}
   - component: {fileID: 6207263090024520011}
   - component: {fileID: 2652676559356234131}
+  - component: {fileID: 7690077303167740514}
   - component: {fileID: 5458290157786460551}
   - component: {fileID: 770165260363730541}
   m_Layer: 0
@@ -558,6 +560,21 @@ Animation:
   m_AnimatePhysics: 0
   m_UpdateMode: 0
   m_CullingType: 1
+--- !u!114 &4130331568563197886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2670038152025143281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f5aa61d156a9034a83b2f0a240c1c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Moose
+  age: 0
+  agingSpeed: 0.2
+  IsMale: 0
 --- !u!114 &4656165741010984386
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -602,12 +619,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: beb6439965c573b4e8ab1624b4079bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Aging
-  age: 7
   maxGrowthAge: 10
   oldAgeStart: 20
   agingSpeed: 0.8
   childScale: 0.5
   adultScale: 1
+--- !u!114 &7690077303167740514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2670038152025143281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed64acd4efc948a41b746a45e1b35b2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Mating
+  matingRange: 5
+  matingCooldown: 30
+  currentAge: 0
+  moosePrefab: {fileID: 2670038152025143281}
 --- !u!195 &5458290157786460551
 NavMeshAgent:
   m_ObjectHideFlags: 0

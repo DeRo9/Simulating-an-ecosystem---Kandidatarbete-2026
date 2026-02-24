@@ -2,8 +2,9 @@ using UnityEngine;
 
 public class Aging : MonoBehaviour
 {
+    private Moose moose; 
+
     [Header("Age Settings")]
-    public float age = 0f;
     public float maxGrowthAge = 10f;
     public float oldAgeStart = 20f;
     public float agingSpeed = 1f;
@@ -13,24 +14,21 @@ public class Aging : MonoBehaviour
     public float adultScale = 1f;
 
     private Vector3 originalScale;
+    private float age;
 
 
     void Start()
     {
+        moose = GetComponent<Moose>();
         originalScale = Vector3.one * childScale;
         transform.localScale = originalScale;
     }
 
     void Update()
     {
-        AgeOverTime();
+        age = moose.age;
         UpdateGrowth();
         //UpdateOldAgeVisual();
-    }
-
-    void AgeOverTime()
-    {
-        age += Time.deltaTime * agingSpeed;
     }
 
     void UpdateGrowth()
