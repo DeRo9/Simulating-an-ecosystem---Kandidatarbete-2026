@@ -45,7 +45,6 @@ public class AnimalNeeds : MonoBehaviour
     }
 
 
-
     public void Eat(float nutritionValue)
     {
         hungerLevel += nutritionValue; // Increase hunger level by the nutrition value of the food
