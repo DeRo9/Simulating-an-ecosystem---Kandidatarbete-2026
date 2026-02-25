@@ -15,12 +15,18 @@ public class GameManager : MonoBehaviour
 
     [Header("UI")]
     public GameObject startMenuPanel;
-    public Slider deerAmountSlider;
-    public TextMeshProUGUI deerAmountSliderText;
+    public Slider mooseAmountSlider;
+    public TextMeshProUGUI mooseAmountSliderText;
+    public Slider wolfAmountSlider;
+    public TextMeshProUGUI wolfAmountSliderText;
+    public Slider bearAmountSlider;
+    public TextMeshProUGUI bearAmountSliderText;
 
 
     [Header("Prefabs")]
-    public GameObject deerPrefab;
+    public GameObject moosePrefab;
+    public GameObject wolfPrefab;
+    public GameObject bearPrefab;
 
     public GameObject berryBushPrefab;
 
@@ -29,8 +35,12 @@ public class GameManager : MonoBehaviour
 
     public void StartSimulation()
     {
-        int deerCount = (int)deerAmountSlider.value;
-        SpawnAnimals(deerPrefab, deerCount, herbivoresFolder);
+        int mooseCount = (int)mooseAmountSlider.value;
+        int wolfCount = (int)wolfAmountSlider.value;
+        int bearCount = (int)bearAmountSlider.value;
+        SpawnAnimals(moosePrefab, mooseCount, herbivoresFolder);
+        SpawnAnimals(wolfPrefab, wolfCount, carnivoreFolder);
+        SpawnAnimals(bearPrefab, bearCount, omnivoreFolder);
         SpawnFood(berryBushPrefab, 100, berryBushFolder);
         startMenuPanel.SetActive(false);
     }
@@ -79,8 +89,18 @@ public class GameManager : MonoBehaviour
         return transform.position;
     }
 
-    public void UpdateDeerAmountSliderText()
+    public void UpdateMooseAmountSliderText()
     {
-        deerAmountSliderText.text = "Amount of Deer: " + deerAmountSlider.value;
+        mooseAmountSliderText.text = "Amount of Moose: " + mooseAmountSlider.value;
+    }
+
+    public void UpdateWolfAmountSliderText()
+    {
+        wolfAmountSliderText.text = "Amount of Wolves: " + wolfAmountSlider.value;
+    }
+
+    public void UpdateBearAmountSliderText()
+    {
+        bearAmountSliderText.text = "Amount of Bears: " + bearAmountSlider.value;
     }
 }
