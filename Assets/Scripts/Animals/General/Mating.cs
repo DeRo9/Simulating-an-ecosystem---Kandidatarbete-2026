@@ -2,14 +2,13 @@ using UnityEngine;
 
 public class Mating : MonoBehaviour
 {
-    public float matingRange = 5f;
-    public float matingCooldown = 30f;
-    public float currentAge = 0f;
-
+    public Animal animal;
     public GameObject animalPrefab;
 
-    private Animal animal;
+    public float matingRange = 5f;
+    public float matingCooldown = 30f;
     private float cooldownTimer = 0f;
+    private float currentAge;
 
     private void Start()
     {
@@ -25,7 +24,7 @@ public class Mating : MonoBehaviour
         if (cooldownTimer > 0f)
             return;
 
-        if (animal.age < 10f)
+        if (animal.age < animal.grownUpAge)
             return;
 
         TryFindMate();
@@ -45,11 +44,14 @@ public class Mating : MonoBehaviour
             if (other == null)
                 continue;
 
-            if (other.age < 10f)
+            if (other.age < animal.grownUpAge)
                 continue;
 
             if (other.IsMale == animal.IsMale)
                 continue;
+
+            if (gameObject.GetInstanceID() > col.gameObject.GetInstanceID())
+            continue;
 
             MateWith(col.gameObject);
             break;

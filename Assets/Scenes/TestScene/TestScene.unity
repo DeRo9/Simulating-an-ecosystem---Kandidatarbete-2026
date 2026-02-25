@@ -209,9 +209,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f5aa61d156a9034a83b2f0a240c1c2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Moose
-  age: 8
+  age: 0
   agingSpeed: 0.2
   IsMale: 0
+  grownUpAge: 10
+  oldAge: 20
 --- !u!65 &259460004
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -608,9 +610,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f5aa61d156a9034a83b2f0a240c1c2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Moose
-  age: 8
+  age: 0
   agingSpeed: 0.2
   IsMale: 0
+  grownUpAge: 10
+  oldAge: 20
 --- !u!1001 &666005896
 PrefabInstance:
   m_ObjectHideFlags: 0
