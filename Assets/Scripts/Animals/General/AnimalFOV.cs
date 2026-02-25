@@ -12,7 +12,6 @@ public class AnimalFOV : MonoBehaviour
     private float viewAngle;
 
     public LayerMask viewLayer;
-    public Transform animalprefab;
 
 
 
@@ -32,8 +31,8 @@ public class AnimalFOV : MonoBehaviour
         Vector3 rightBoundary = Quaternion.Euler(0, viewAngle / 2, 0) * forward;
 
         Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(animalprefab.position, animalprefab.position + leftBoundary * viewRange);
-        Gizmos.DrawLine(animalprefab.position, animalprefab.position + rightBoundary * viewRange);
+        Gizmos.DrawLine(transform.position, transform.position + leftBoundary * viewRange);
+        Gizmos.DrawLine(transform.position, transform.position + rightBoundary * viewRange);
     }
 
     public bool IsInFOV(Transform target)
