@@ -16,7 +16,7 @@ public class WolfBehaviour : AnimalBehaviour
         needs = GetComponent<AnimalNeeds>();
     }
 
-    bool FindFood()
+    bool FindPrey()
     {
 
         Collider[] hits = Physics.OverlapSphere(transform.position, foodDetectionRadius);
@@ -87,17 +87,17 @@ public class WolfBehaviour : AnimalBehaviour
 
     protected override bool IsHungry()
     {
-        // Moose is hungry, find food
+        // Wolf is hungry, find food
         if (needs.isHungry)
         {
-            return FindFood();
+            return FindPrey();
         }
         return false;
     }
 
     protected override bool IsThirsty()
     {
-        // Moose is thristy, find water source
+        // Wolf is thristy, find water source
         if (needs.isThirsty)
         {
             return FindWater();
@@ -126,7 +126,7 @@ public class WolfBehaviour : AnimalBehaviour
 
     protected override void UpdateWander()
     {
-        if (hasArrived()) // If the moose has reached its destination, switch to idle state
+        if (hasArrived()) // If the wolf has reached its destination, switch to idle state
         {
             ChangeState(State.Idle);
         }
@@ -153,18 +153,19 @@ public class WolfBehaviour : AnimalBehaviour
 
 
 
-        // If the moose has reached the food, stop moving
+        // If the wolf has reached the food, stop moving
+        // Probably needs to be changed so that the wolf can continue to follow the moose as it runs away.
         if (hasArrived())
         {
-            agent.isStopped = true;
-            Debug.Log("Moose ate.");
+            agent.isStopped = true; 
+            Debug.Log("Wolf ate.");
         }
         else
         {
             agent.isStopped = false;
         }
 
-        // If the moose is no longer hungry, stop eating and switch back to wandering
+        // If the wolf is no longer hungry, stop eating and switch back to wandering
         if (!needs.isHungry)
         {
             foodTarget = null;
@@ -183,7 +184,7 @@ public class WolfBehaviour : AnimalBehaviour
             return;
         }
 
-        // If the moose has reached the water, stop moving
+        // If the wolf has reached the water, stop moving
         if (hasArrived())
         {
             agent.isStopped = true;
@@ -201,7 +202,7 @@ public class WolfBehaviour : AnimalBehaviour
             agent.isStopped = false;
         }
         
-        // If the moose is no longer thirsty, stop drinking and switch back to wandering
+        
  
         
     }
