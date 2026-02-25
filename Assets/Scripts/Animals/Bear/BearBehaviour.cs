@@ -26,6 +26,11 @@ public class BearBehaviour : AnimalBehaviour
         ChangeState(State.Wander); // Just for now
     }
 
+    protected override void UpdateDrink()
+    {
+        ChangeState(State.Wander); // Just for now
+    }
+
 }
 
 

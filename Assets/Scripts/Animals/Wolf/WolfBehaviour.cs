@@ -26,4 +26,9 @@ public class WolfBehaviour : AnimalBehaviour
         ChangeState(State.Wander); // Just for now
     }
 
+    protected override void UpdateDrink()
+    {
+        ChangeState(State.Wander); // Just for now
+    }
+
 }

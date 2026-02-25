@@ -19,10 +19,10 @@ public class AnimalInteractor : MonoBehaviour
                 if (hit.collider.CompareTag("Moose")) // Check if the clicked object has the "Moose" tag
                 {
                     Debug.Log("Moose clicked!");
-                    MooseNeeds moose = hit.collider.GetComponentInParent<MooseNeeds>();
-                    if (moose != null)
+                    AnimalNeeds needs = hit.collider.GetComponentInParent<AnimalNeeds>();
+                    if (needs != null)
                     {
-                        informationUI.ShowInfo(moose); // Show UI Panel with Moose information
+                        informationUI.ShowInfo(needs); // Show UI Panel with Moose information
                     }
                 }
                 else

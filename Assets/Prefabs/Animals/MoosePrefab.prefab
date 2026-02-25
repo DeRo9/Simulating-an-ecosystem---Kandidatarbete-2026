@@ -494,12 +494,12 @@ GameObject:
   - component: {fileID: 7919972281377852384}
   - component: {fileID: 4130331568563197886}
   - component: {fileID: 4656165741010984386}
-  - component: {fileID: 6207263090024520011}
   - component: {fileID: 2652676559356234131}
   - component: {fileID: 7690077303167740514}
   - component: {fileID: 5458290157786460551}
   - component: {fileID: 770165260363730541}
   - component: {fileID: 4377887995782312641}
+  - component: {fileID: -2986275176863535938}
   m_Layer: 0
   m_Name: MoosePrefab
   m_TagString: Moose
@@ -593,21 +593,6 @@ MonoBehaviour:
   minTimeWaiting: 2
   maxTimeWaiting: 5
   waitTime: 0
---- !u!114 &6207263090024520011
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2670038152025143281}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bfb10feed37a4a498b7caeeaf9857bd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MooseNeeds
-  maxHunger: 100
-  hungerLevel: 100
-  hungerDecreaseRate: 0.8
 --- !u!114 &2652676559356234131
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -712,6 +697,21 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
+--- !u!114 &-2986275176863535938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2670038152025143281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bfb10feed37a4a498b7caeeaf9857bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MooseNeeds
+  maxHunger: 100
+  hungerLevel: 0
+  hungerDecreaseRate: 2
 --- !u!1 &2992573502856677246
 GameObject:
   m_ObjectHideFlags: 0

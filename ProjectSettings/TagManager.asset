@@ -8,6 +8,7 @@ TagManager:
   - Plant
   - Wolf
   - Bear
+  - Water
   layers:
   - Default
   - TransparentFX
