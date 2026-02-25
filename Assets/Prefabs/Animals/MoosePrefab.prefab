@@ -496,10 +496,11 @@ GameObject:
   - component: {fileID: 4656165741010984386}
   - component: {fileID: 2652676559356234131}
   - component: {fileID: 7690077303167740514}
+  - component: {fileID: -2986275176863535938}
   - component: {fileID: 5458290157786460551}
   - component: {fileID: 770165260363730541}
   - component: {fileID: 4377887995782312641}
-  - component: {fileID: -2986275176863535938}
+  - component: {fileID: -7914532255645837834}
   m_Layer: 0
   m_Name: MoosePrefab
   m_TagString: Moose
@@ -625,7 +626,24 @@ MonoBehaviour:
   matingRange: 5
   matingCooldown: 30
   currentAge: 0
-  moosePrefab: {fileID: 2670038152025143281}
+  animalPrefab: {fileID: 2670038152025143281}
+--- !u!114 &-2986275176863535938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2670038152025143281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bfb10feed37a4a498b7caeeaf9857bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MooseNeeds
+  maxHunger: 100
+  maxThirst: 100
+  hungerLevel: 0
+  hungerDecreaseRate: 2
+  thirstDecreaseRate: 1
 --- !u!195 &5458290157786460551
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -697,21 +715,27 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
---- !u!114 &-2986275176863535938
-MonoBehaviour:
+--- !u!65 &-7914532255645837834
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2670038152025143281}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bfb10feed37a4a498b7caeeaf9857bd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MooseNeeds
-  maxHunger: 100
-  hungerLevel: 0
-  hungerDecreaseRate: 2
+  serializedVersion: 3
+  m_Size: {x: 0.612854, y: 0.8337898, z: 1.1049194}
+  m_Center: {x: -0.040618896, y: 1.0382099, z: 0.052459717}
 --- !u!1 &2992573502856677246
 GameObject:
   m_ObjectHideFlags: 0

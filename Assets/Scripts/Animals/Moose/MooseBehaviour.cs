@@ -8,9 +8,7 @@ using UnityEngine.InputSystem.Android;
 public class MooseBehaviour : AnimalBehaviour
 {
 
-
     AnimalNeeds needs;
-
     GameObject foodTarget;
     GameObject waterTarget;
     float foodDetectionRadius = 20f;
