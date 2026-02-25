@@ -37,6 +37,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected NavMeshAgent agent;
     protected AnimalNeeds needs;
 
+
     protected virtual void Start()
     {
 
@@ -44,6 +45,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         anim = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         needs = GetComponent<AnimalNeeds>();
+
     }
 
     // Checks if the moose has reached its destination

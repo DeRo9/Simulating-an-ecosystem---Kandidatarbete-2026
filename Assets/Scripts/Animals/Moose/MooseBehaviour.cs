@@ -7,18 +7,19 @@ using UnityEngine.InputSystem.Android;
 
 public class MooseBehaviour : AnimalBehaviour
 {
-
-    AnimalNeeds needs;
+    new AnimalNeeds needs;
     GameObject foodTarget;
     GameObject waterTarget;
     float foodDetectionRadius = 20f;
     float waterDetectionRadius = 150f;
-    
+
+    MooseFOV fov;
 
     protected override void Start()
     {
         base.Start();
         needs = GetComponent<AnimalNeeds>();
+        fov = GetComponent<MooseFOV>();
     }
 
 
@@ -34,6 +35,12 @@ public class MooseBehaviour : AnimalBehaviour
 
         foreach (Collider hit in hits)
         {
+
+
+            if (!fov.IsInFOV(hit.transform))
+            {
+                continue; // Skip if not in FOV
+            }
 
             Debug.Log("Moose found plant.");
             if (hit.CompareTag("Plant"))

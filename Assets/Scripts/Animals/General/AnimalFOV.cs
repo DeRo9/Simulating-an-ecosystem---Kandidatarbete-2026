@@ -14,6 +14,9 @@ public class AnimalFOV : MonoBehaviour
     public LayerMask viewLayer;
     public Transform animalprefab;
 
+
+
+    // Visualize the FOV
     void OnDrawGizmosSelected()
     {
         // Draw the view range (Sphere)
@@ -32,4 +35,13 @@ public class AnimalFOV : MonoBehaviour
         Gizmos.DrawLine(animalprefab.position, animalprefab.position + leftBoundary * viewRange);
         Gizmos.DrawLine(animalprefab.position, animalprefab.position + rightBoundary * viewRange);
     }
+
+    public bool IsInFOV(Transform target)
+    {
+        Vector3 directonToTarget = (target.position - transform.position).normalized;
+
+        float angle = Vector3.Angle(transform.forward, directonToTarget);
+        return angle < viewAngle / 2;
+    }
+
 }
