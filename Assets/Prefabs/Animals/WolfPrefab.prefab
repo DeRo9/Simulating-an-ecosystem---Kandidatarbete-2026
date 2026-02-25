@@ -940,11 +940,15 @@ GameObject:
   m_Component:
   - component: {fileID: 4167753896645195812}
   - component: {fileID: 6118773398222413875}
+  - component: {fileID: -8542277066833054746}
   - component: {fileID: 2432284124251840962}
+  - component: {fileID: 1081293250822596563}
   - component: {fileID: 3984187836223728344}
+  - component: {fileID: 8337827225156515145}
   - component: {fileID: 8127107587192447712}
   - component: {fileID: 8302854409345995853}
   - component: {fileID: -7482082836630389072}
+  - component: {fileID: 4421475189465629228}
   m_Layer: 0
   m_Name: WolfPrefab
   m_TagString: Wolf
@@ -1005,6 +1009,21 @@ Animation:
   m_AnimatePhysics: 0
   m_UpdateMode: 0
   m_CullingType: 1
+--- !u!114 &-8542277066833054746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4266865027632842223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb163c4466fe36a44a3bd561efeac1b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Wolf
+  age: 0
+  agingSpeed: 0.2
+  IsMale: 0
 --- !u!114 &2432284124251840962
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1022,6 +1041,23 @@ MonoBehaviour:
   minTimeWaiting: 2
   maxTimeWaiting: 5
   waitTime: 0
+--- !u!114 &1081293250822596563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4266865027632842223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bfb10feed37a4a498b7caeeaf9857bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalNeeds
+  maxHunger: 100
+  maxThirst: 100
+  hungerLevel: 0
+  hungerDecreaseRate: 2
+  thirstDecreaseRate: 1
 --- !u!114 &3984187836223728344
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1039,6 +1075,22 @@ MonoBehaviour:
   agingSpeed: 0.8
   childScale: 0.5
   adultScale: 1
+--- !u!114 &8337827225156515145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4266865027632842223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed64acd4efc948a41b746a45e1b35b2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Mating
+  matingRange: 5
+  matingCooldown: 30
+  currentAge: 0
+  animalPrefab: {fileID: 4266865027632842223}
 --- !u!195 &8127107587192447712
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1110,6 +1162,27 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
+--- !u!65 &4421475189465629228
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4266865027632842223}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.5194397, y: 0.41418076, z: 1}
+  m_Center: {x: 0.030715942, y: 0.539999, z: 0}
 --- !u!1 &4293556539160456709
 GameObject:
   m_ObjectHideFlags: 0

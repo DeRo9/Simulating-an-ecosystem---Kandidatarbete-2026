@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Aging : MonoBehaviour
 {
-    private Moose moose; 
+    private Animal animal; 
 
     [Header("Age Settings")]
     public float maxGrowthAge = 10f;
@@ -19,14 +19,14 @@ public class Aging : MonoBehaviour
 
     void Start()
     {
-        moose = GetComponent<Moose>();
+        animal = GetComponent<Animal>();
         originalScale = Vector3.one * childScale;
         transform.localScale = originalScale;
     }
 
     void Update()
     {
-        age = moose.age;
+        age = animal.age;
         UpdateGrowth();
         //UpdateOldAgeVisual();
     }
