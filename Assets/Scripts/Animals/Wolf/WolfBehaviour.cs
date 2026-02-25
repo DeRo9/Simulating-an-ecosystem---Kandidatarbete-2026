@@ -4,7 +4,9 @@ public class WolfBehaviour : AnimalBehaviour
 {
 
     new AnimalNeeds needs;
-    GameObject foodTarget;
+    AnimalFOV fov;
+
+    GameObject  foodTarget;
     GameObject waterTarget;
     float foodDetectionRadius = 40f;
     float waterDetectionRadius = 200f;
@@ -14,6 +16,7 @@ public class WolfBehaviour : AnimalBehaviour
     {
         base.Start();
         needs = GetComponent<AnimalNeeds>();
+        fov = GetComponent<AnimalFOV>();
     }
 
     bool FindPrey()
@@ -27,8 +30,12 @@ public class WolfBehaviour : AnimalBehaviour
         foreach (Collider hit in hits)
         {
 
-            Debug.Log("Wolf found plant.");
-            if (hit.CompareTag("Plant"))
+            //if (!fov.IsInFOV(hit.transform))
+                //continue; // Skip if the collider is not in the wolf's field of view
+            
+
+            Debug.Log("Wolf found prey.");
+            if (hit.CompareTag("Moose"))
             {
                 float distance = Vector3.Distance(transform.position, hit.transform.position);
                 if (distance < closestDistance)
@@ -149,20 +156,6 @@ public class WolfBehaviour : AnimalBehaviour
         {
             ChangeState(State.Wander);
             return;
-        }
-
-
-
-        // If the wolf has reached the food, stop moving
-        // Probably needs to be changed so that the wolf can continue to follow the moose as it runs away.
-        if (hasArrived())
-        {
-            agent.isStopped = true; 
-            Debug.Log("Wolf ate.");
-        }
-        else
-        {
-            agent.isStopped = false;
         }
 
         // If the wolf is no longer hungry, stop eating and switch back to wandering

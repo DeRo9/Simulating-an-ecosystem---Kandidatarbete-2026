@@ -37,9 +37,13 @@ public class AnimalFOV : MonoBehaviour
 
     public bool IsInFOV(Transform target)
     {
-        Vector3 directonToTarget = (target.position - transform.position).normalized;
+        Vector3 directionToTarget = target.position - transform.position;
+        directionToTarget.y = 0f; 
 
-        float angle = Vector3.Angle(transform.forward, directonToTarget);
+        Vector3 forward  = transform.forward;
+        forward.y = 0f;
+
+        float angle = Vector3.Angle(forward, directionToTarget.normalized);
         return angle < viewAngle / 2;
     }
 
