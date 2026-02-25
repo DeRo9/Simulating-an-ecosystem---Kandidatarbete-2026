@@ -641,8 +641,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MooseNeeds
   maxHunger: 100
   maxThirst: 100
-  hungerLevel: 0
-  hungerDecreaseRate: 2
+  hungerLevel: 100
+  hungerDecreaseRate: 0.8
   thirstDecreaseRate: 1
 --- !u!195 &5458290157786460551
 NavMeshAgent:
