@@ -1679,6 +1679,7 @@ MonoBehaviour:
   maxHunger: 100
   maxThirst: 100
   hungerLevel: 100
+  thirstLevel: 100
   hungerDecreaseRate: 0.8
   thirstDecreaseRate: 1
 --- !u!114 &1391028911167729743
