@@ -1516,6 +1516,7 @@ GameObject:
   - component: {fileID: 3228180883506121390}
   - component: {fileID: 1391028911167729743}
   - component: {fileID: 8115009223279749859}
+  - component: {fileID: 1070128744223743822}
   m_Layer: 0
   m_Name: BearPrefab
   m_TagString: Bear
@@ -1637,7 +1638,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: beb6439965c573b4e8ab1624b4079bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Aging
-  age: 7
   maxGrowthAge: 10
   oldAgeStart: 20
   agingSpeed: 0.8
@@ -1660,6 +1660,33 @@ MonoBehaviour:
   minTimeWaiting: 2
   maxTimeWaiting: 5
   waitTime: 0
+--- !u!54 &1070128744223743822
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8565310438801436797}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 80
+  m_CollisionDetection: 0
 --- !u!1 &8881512897072243634
 GameObject:
   m_ObjectHideFlags: 0
