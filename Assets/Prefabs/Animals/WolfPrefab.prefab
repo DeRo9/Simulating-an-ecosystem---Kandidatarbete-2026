@@ -1022,8 +1022,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Wolf
   age: 0
-  agingSpeed: 0.2
+  agingSpeed: 0.1
   IsMale: 0
+  grownUpAge: 10
+  oldAge: 20
 --- !u!114 &2432284124251840962
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1070,9 +1072,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: beb6439965c573b4e8ab1624b4079bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Aging
-  maxGrowthAge: 10
-  oldAgeStart: 20
-  agingSpeed: 0.8
+  animal: {fileID: -8542277066833054746}
   childScale: 0.5
   adultScale: 1
 --- !u!114 &8337827225156515145
@@ -1087,10 +1087,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed64acd4efc948a41b746a45e1b35b2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Mating
+  animal: {fileID: -8542277066833054746}
+  animalPrefab: {fileID: 4266865027632842223}
   matingRange: 5
   matingCooldown: 30
-  currentAge: 0
-  animalPrefab: {fileID: 4266865027632842223}
 --- !u!195 &8127107587192447712
 NavMeshAgent:
   m_ObjectHideFlags: 0

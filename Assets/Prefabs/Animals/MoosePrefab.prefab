@@ -575,8 +575,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Moose
   age: 0
-  agingSpeed: 0.2
+  agingSpeed: 0.1
   IsMale: 0
+  grownUpAge: 10
+  oldAge: 20
 --- !u!114 &4656165741010984386
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -606,9 +608,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: beb6439965c573b4e8ab1624b4079bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Aging
-  maxGrowthAge: 10
-  oldAgeStart: 20
-  agingSpeed: 0.8
+  animal: {fileID: 4130331568563197886}
   childScale: 0.5
   adultScale: 1
 --- !u!114 &7690077303167740514
@@ -623,10 +623,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed64acd4efc948a41b746a45e1b35b2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Mating
+  animal: {fileID: 4130331568563197886}
+  animalPrefab: {fileID: 2670038152025143281}
   matingRange: 5
   matingCooldown: 30
-  currentAge: 0
-  animalPrefab: {fileID: 2670038152025143281}
 --- !u!114 &-2986275176863535938
 MonoBehaviour:
   m_ObjectHideFlags: 0
