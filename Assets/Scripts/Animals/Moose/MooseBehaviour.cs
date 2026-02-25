@@ -9,14 +9,18 @@ public class MooseBehaviour : AnimalBehaviour
 {
 
 
-    MooseNeeds needs;
+    AnimalNeeds needs;
+
     GameObject foodTarget;
+    GameObject waterTarget;
     float foodDetectionRadius = 20f;
+    float waterDetectionRadius = 150f;
+    
 
     protected override void Start()
     {
         base.Start();
-        needs = GetComponent<MooseNeeds>();
+        needs = GetComponent<AnimalNeeds>();
     }
 
 
@@ -32,6 +36,8 @@ public class MooseBehaviour : AnimalBehaviour
 
         foreach (Collider hit in hits)
         {
+
+            Debug.Log("Moose found plant.");
             if (hit.CompareTag("Plant"))
             {
                 float distance = Vector3.Distance(transform.position, hit.transform.position);
@@ -54,6 +60,41 @@ public class MooseBehaviour : AnimalBehaviour
         return false;
     }
 
+bool FindWater()
+    {
+        Collider[] hits = Physics.OverlapSphere(transform.position, waterDetectionRadius);
+
+        float closestDistance = Mathf.Infinity;
+        GameObject closestWater = null;
+
+        foreach (Collider hit in hits)
+        {
+
+            Debug.Log("Detected water collider");
+
+            if (hit.CompareTag("Water"))
+            {
+                float distance = Vector3.Distance(transform.position, hit.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestWater = hit.gameObject;
+                }
+
+            }
+
+        }
+
+        if(closestWater != null)
+        {
+            waterTarget = closestWater;
+            return true;
+        }
+        return false;
+
+    }
+
+
     protected override bool IsHungry()
     {
         // Moose is hungry, find food
@@ -64,7 +105,16 @@ public class MooseBehaviour : AnimalBehaviour
         return false;
     }
 
-    // Should be overrided by a specific animal for the eat state
+    protected override bool IsThirsty()
+    {
+        // Moose is thristy, find water source
+        if (needs.isThirsty)
+        {
+            return FindWater();
+        }
+        return false;
+    }
+
     protected override void EatStateForSpecificAnimal()
     {
         if (foodTarget != null)
@@ -73,6 +123,15 @@ public class MooseBehaviour : AnimalBehaviour
             agent.SetDestination(foodTarget.transform.position);
         }
     }  
+
+    protected override void DrinkStateForSpecificAnimal()
+    {
+        if (waterTarget != null)
+        {
+            agent.isStopped = false;
+            agent.SetDestination(waterTarget.transform.position);
+        }
+    } 
 
 
     protected override void UpdateWander()
@@ -102,10 +161,13 @@ public class MooseBehaviour : AnimalBehaviour
             return;
         }
 
+
+
         // If the moose has reached the food, stop moving
         if (hasArrived())
         {
             agent.isStopped = true;
+            Debug.Log("Moose ate.");
         }
         else
         {
@@ -119,5 +181,41 @@ public class MooseBehaviour : AnimalBehaviour
             ChangeState(State.Wander);
         }
     }
+
+
+
+    protected override void UpdateDrink()
+    {
+        // If the water target is null, switch back to wandering
+        if (waterTarget == null)
+        {
+            ChangeState(State.Wander);
+            return;
+        }
+
+        // If the moose has reached the water, stop moving
+        if (hasArrived())
+        {
+            agent.isStopped = true;
+            Debug.Log("Moose drank water.");
+
+            if (!needs.isThirsty)
+            {
+            waterTarget = null;
+            ChangeState(State.Wander);
+            }
+        }
+
+        else
+        {
+            agent.isStopped = false;
+        }
+        
+        // If the moose is no longer thirsty, stop drinking and switch back to wandering
+ 
+        
+    }
+    
+    
 
 }

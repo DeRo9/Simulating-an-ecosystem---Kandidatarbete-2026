@@ -15,7 +15,7 @@ public class InformationUI : MonoBehaviour
     public GameObject panel;
 
     [Header("Animal Info")]
-    public MooseNeeds currentMoose;
+    public AnimalNeeds current;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -26,17 +26,17 @@ public class InformationUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (currentMoose != null)
+        if (current != null)
         {
-            hungerSlider.maxValue = currentMoose.maxHunger;
-            hungerSlider.value = currentMoose.hungerLevel;
+            hungerSlider.maxValue = current.maxHunger;
+            hungerSlider.value = current.hungerLevel;
         }
     }
 
 
-    public void SetMoose(MooseNeeds newMoose)
+    public void SetMoose(AnimalNeeds newMoose)
     {
-        currentMoose = newMoose;
+        current = newMoose;
     }
 
     public void SetType(string type)
@@ -46,14 +46,14 @@ public class InformationUI : MonoBehaviour
 
     public void ClearInfo()
     {
-        currentMoose = null;
+        current = null;
         panel.SetActive(false);
     }
 
-    public void ShowInfo(MooseNeeds moose)
+    public void ShowInfo(AnimalNeeds moose)
     {
         Debug.Log("SHOW INFO");
-        currentMoose = moose;
+        current = moose;
         panel.SetActive(true);
     }
 

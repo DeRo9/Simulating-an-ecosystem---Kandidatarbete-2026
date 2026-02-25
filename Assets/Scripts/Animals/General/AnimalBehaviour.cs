@@ -14,6 +14,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         Idle,
         Wander,
         Eat,
+        Drink,
     }
 
     // Current state of the animal
@@ -34,6 +35,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected Rigidbody rb;
     protected Animator anim;
     protected NavMeshAgent agent;
+    protected AnimalNeeds needs;
 
     protected virtual void Start()
     {
@@ -41,6 +43,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         anim = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
+        needs = GetComponent<AnimalNeeds>();
     }
 
     // Checks if the moose has reached its destination
@@ -66,6 +69,9 @@ public abstract class AnimalBehaviour : MonoBehaviour
             case State.Eat:
                 EatStateForSpecificAnimal();
                 break;
+            case State.Drink:
+                DrinkStateForSpecificAnimal();
+                break;
         }
 
     }
@@ -73,12 +79,22 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected virtual void Update()
     {
         // Update animation based on movement
-        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f); // "isWalking" är en bool i animator
-
-        if (IsHungry())
-        {
-            ChangeState(State.Eat);
+        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f); // "isWalking" Ã¤r en bool i animator
+        
+        if(CurrentState != State.Eat && CurrentState != State.Drink){
+     
+            if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
+            {
+                ChangeState(State.Drink);
+            }
+            else if (needs.howThirstyInPercent > needs.howHungryInPercent && IsHungry())
+            {
+                ChangeState(State.Eat);
+            }
         }
+        
+    
+
 
         // State machine logic
         switch (CurrentState)
@@ -92,14 +108,22 @@ public abstract class AnimalBehaviour : MonoBehaviour
             case State.Eat:
                 UpdateEat();
                 break;
+            case State.Drink:
+                UpdateDrink();
+                break;
         }
     }
 
     protected virtual bool IsHungry() { return false; }
+    protected virtual bool IsThirsty() { return false; }
 
     protected virtual void EatStateForSpecificAnimal() { }
 
+    protected virtual void DrinkStateForSpecificAnimal() { }
     protected abstract void UpdateIdle();
     protected abstract void UpdateWander();
     protected abstract void UpdateEat();
+    protected abstract void UpdateDrink();
+
+
 }
