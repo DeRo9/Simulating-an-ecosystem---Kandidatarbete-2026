@@ -3,8 +3,6 @@ using UnityEngine;
 public class WolfBehaviour : AnimalBehaviour
 {
 
-
-
     protected override void UpdateWander()
     {
         if (hasArrived()) // If the moose has reached its destination, switch to idle state
