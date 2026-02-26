@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Aging : MonoBehaviour
 {
-    public Animal animal; 
+    private Animal animal; 
 
     private float grownUp;
     private float old;
@@ -14,15 +14,13 @@ public class Aging : MonoBehaviour
     private Vector3 originalScale;
     private float age;
 
-    void Awake() {
-        animal = GetComponent<Animal>();
-    }
-
     void Start()
     {
+        animal = GetComponent<Animal>();
         grownUp = animal.grownUpAge;
-        old = animal.oldAge;
-        originalScale = Vector3.one * childScale;
+
+        float baseScale = childScale * animal.size;
+        originalScale = Vector3.one * baseScale;
         transform.localScale = originalScale;
     }
 
@@ -38,7 +36,7 @@ public class Aging : MonoBehaviour
         {
             float growthPercent = age / grownUp;
             float currentScale = Mathf.Lerp(childScale, adultScale, growthPercent);
-            transform.localScale = Vector3.one * currentScale;
+            transform.localScale = Vector3.one * currentScale * animal.size;
         }
     }
 }

@@ -2,25 +2,26 @@ using UnityEngine;
 
 public class BearBehaviour : AnimalBehaviour
 {
+    //Animaltype
+    private Animal animal;
 
     new AnimalNeeds needs;
     GameObject foodTarget;
     GameObject waterTarget;
-    float foodDetectionRadius = 30f;
-    float waterDetectionRadius = 500f;
-    
 
     protected override void Start()
     {
         base.Start();
+        animal = GetComponent<Animal>();
         needs = GetComponent<AnimalNeeds>();
+
     }
 
     // Finds the closest food item within the detection radius and sets it as the target
     bool FindFood()
     {
 
-        Collider[] hits = Physics.OverlapSphere(transform.position, foodDetectionRadius);
+        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange);
 
         float closestDistance = Mathf.Infinity;
         GameObject closestFood = null;
@@ -53,7 +54,7 @@ public class BearBehaviour : AnimalBehaviour
 
     bool FindWater()
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, waterDetectionRadius);
+        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange);
 
         float closestDistance = Mathf.Infinity;
         GameObject closestWater = null;

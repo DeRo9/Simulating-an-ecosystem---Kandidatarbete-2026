@@ -1,16 +1,37 @@
 using UnityEngine;
 
+public enum Species
+{
+    wolf,
+    bear,
+    moose
+}
+    
+
 public class Animal : MonoBehaviour
 {
-    [Header("Biology")]
+    [Header("Species")]
+    public Species species;
+
+    [Header("Aging")]
     public float age = 0f;
     public float agingSpeed = 0.1f;
-    public bool IsMale;
-
 
     [Header("Life Stages")]
     public float grownUpAge = 10f;
     public float oldAge = 20f;
+
+    [Header("Sex")]
+    public bool IsMale;
+
+    [Header("Senses")]
+    public float sightRange = 40f;
+    public float hearingRange = 10f;
+
+    [Header("Forces")]
+    public float speed = 2f;
+    public float size = 1; //I guess this well be equivalent to hp in the future... right now scale
+    public float strength;
 
     protected virtual void Awake()
     {
