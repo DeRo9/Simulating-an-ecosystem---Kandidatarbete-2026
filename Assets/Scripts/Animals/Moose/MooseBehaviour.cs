@@ -7,6 +7,7 @@ using UnityEngine.InputSystem.Android;
 
 public class MooseBehaviour : AnimalBehaviour
 {
+<<<<<<< Updated upstream
     new AnimalNeeds needs;
     GameObject foodTarget;
     GameObject waterTarget;
@@ -14,21 +15,28 @@ public class MooseBehaviour : AnimalBehaviour
     float waterDetectionRadius = 150f;
 
     MooseFOV fov;
+=======
+    //Animaltype
+    private Animal animal;
+
+    AnimalNeeds needs;
+    GameObject foodTarget;
+    GameObject waterTarget;
+>>>>>>> Stashed changes
 
     protected override void Start()
     {
         base.Start();
+        animal = GetComponent<Animal>();
         needs = GetComponent<AnimalNeeds>();
         fov = GetComponent<MooseFOV>();
     }
-
-
 
     // Finds the closest food item within the detection radius and sets it as the target
     bool FindFood()
     {
 
-        Collider[] hits = Physics.OverlapSphere(transform.position, foodDetectionRadius);
+        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange);
 
         float closestDistance = Mathf.Infinity;
         GameObject closestFood = null;
@@ -67,7 +75,7 @@ public class MooseBehaviour : AnimalBehaviour
 
 bool FindWater()
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, waterDetectionRadius);
+        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange);
 
         float closestDistance = Mathf.Infinity;
         GameObject closestWater = null;

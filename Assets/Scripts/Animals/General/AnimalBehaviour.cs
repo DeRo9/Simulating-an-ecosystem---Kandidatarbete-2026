@@ -32,6 +32,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected float waitTime = 0f;
 
 
+    protected Animal animal;
     protected Rigidbody rb;
     protected Animator anim;
     protected NavMeshAgent agent;
@@ -40,12 +41,19 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
     protected virtual void Start()
     {
-
+        animal = GetComponent<Animal>();
         rb = GetComponent<Rigidbody>();
         anim = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         needs = GetComponent<AnimalNeeds>();
 
+<<<<<<< Updated upstream
+=======
+        if (agent != null && animal != null)
+        {
+            agent.speed = animal.speed;
+        }
+>>>>>>> Stashed changes
     }
 
     // Checks if the moose has reached its destination

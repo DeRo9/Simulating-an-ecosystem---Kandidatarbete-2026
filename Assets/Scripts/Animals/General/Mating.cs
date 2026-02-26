@@ -44,6 +44,9 @@ public class Mating : MonoBehaviour
             if (other == null)
                 continue;
 
+            if (other.species != animal.species)
+                continue;
+
             if (other.age < animal.grownUpAge)
                 continue;
 
