@@ -948,6 +948,7 @@ GameObject:
   - component: {fileID: 8302854409345995853}
   - component: {fileID: -7482082836630389072}
   - component: {fileID: 4421475189465629228}
+  - component: {fileID: -5019463054831179927}
   m_Layer: 0
   m_Name: WolfPrefab
   m_TagString: Wolf
@@ -1030,7 +1031,7 @@ MonoBehaviour:
   hungerLevel: 100
   thirstLevel: 100
   hungerDecreaseRate: 0.8
-  thirstDecreaseRate: 1
+  thirstDecreaseRate: 0
 --- !u!114 &3984187836223728344
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1153,6 +1154,23 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.5194397, y: 0.41418076, z: 1}
   m_Center: {x: 0.030715942, y: 0.539999, z: 0}
+--- !u!114 &-5019463054831179927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4266865027632842223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 889abecf89f513a4ba21fb94f92fbbb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::wolfFOV
+  viewRange: 15
+  viewAngle: 100
+  viewLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &4293556539160456709
 GameObject:
   m_ObjectHideFlags: 0

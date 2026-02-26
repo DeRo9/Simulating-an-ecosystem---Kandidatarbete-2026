@@ -3,7 +3,7 @@ using UnityEngine;
 public class BearBehaviour : AnimalBehaviour
 {
     //Animaltype
-    private Animal animal;
+    private new Animal animal;
 
     new AnimalNeeds needs;
     GameObject foodTarget;
@@ -15,6 +15,24 @@ public class BearBehaviour : AnimalBehaviour
         animal = GetComponent<Animal>();
         needs = GetComponent<AnimalNeeds>();
 
+    }
+
+    protected override void Update()
+    {
+        if (CurrentState != State.Eat && CurrentState != State.Drink)
+        {
+
+            if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
+            {
+                ChangeState(State.Drink);
+            }
+            else if (needs.howThirstyInPercent > needs.howHungryInPercent && IsHungry())
+            {
+                ChangeState(State.Eat);
+            }
+        }
+
+        base.Update();
     }
 
     // Finds the closest food item within the detection radius and sets it as the target

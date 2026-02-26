@@ -457,7 +457,7 @@ GameObject:
   - component: {fileID: 4513155347532626333}
   m_Layer: 0
   m_Name: Bone
-  m_TagString: Untagged
+  m_TagString: Moose
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -612,7 +612,7 @@ MonoBehaviour:
   hungerLevel: 100
   thirstLevel: 100
   hungerDecreaseRate: 0.8
-  thirstDecreaseRate: 1
+  thirstDecreaseRate: 0
 --- !u!195 &5458290157786460551
 NavMeshAgent:
   m_ObjectHideFlags: 0
