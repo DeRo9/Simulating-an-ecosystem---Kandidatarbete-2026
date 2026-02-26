@@ -37,6 +37,10 @@ public class AnimalFOV : MonoBehaviour
 
     public bool IsInFOV(Transform target)
     {
+        float distanceToTarget = Vector3.Distance(transform.position, target.position);
+        if (distanceToTarget > animal.sightRange)
+            return false; // Target is out of sight range
+
         Vector3 directionToTarget = target.position - transform.position;
         directionToTarget.y = 0f; 
 
