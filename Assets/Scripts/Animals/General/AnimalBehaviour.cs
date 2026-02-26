@@ -47,13 +47,11 @@ public abstract class AnimalBehaviour : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         needs = GetComponent<AnimalNeeds>();
 
-<<<<<<< Updated upstream
-=======
         if (agent != null && animal != null)
         {
             agent.speed = animal.speed;
         }
->>>>>>> Stashed changes
+
     }
 
     // Checks if the moose has reached its destination

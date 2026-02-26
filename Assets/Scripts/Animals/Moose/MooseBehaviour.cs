@@ -7,22 +7,13 @@ using UnityEngine.InputSystem.Android;
 
 public class MooseBehaviour : AnimalBehaviour
 {
-<<<<<<< Updated upstream
-    new AnimalNeeds needs;
-    GameObject foodTarget;
-    GameObject waterTarget;
-    float foodDetectionRadius = 20f;
-    float waterDetectionRadius = 150f;
 
-    MooseFOV fov;
-=======
-    //Animaltype
     private Animal animal;
 
     AnimalNeeds needs;
     GameObject foodTarget;
     GameObject waterTarget;
->>>>>>> Stashed changes
+    MooseFOV fov;
 
     protected override void Start()
     {
