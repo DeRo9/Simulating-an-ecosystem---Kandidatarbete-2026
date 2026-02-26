@@ -939,7 +939,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4167753896645195812}
-  - component: {fileID: 6118773398222413875}
   - component: {fileID: -8542277066833054746}
   - component: {fileID: 2432284124251840962}
   - component: {fileID: 1081293250822596563}
@@ -974,41 +973,6 @@ Transform:
   - {fileID: 3238408889741871737}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!111 &6118773398222413875
-Animation:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4266865027632842223}
-  m_Enabled: 0
-  serializedVersion: 4
-  m_Animation: {fileID: 7400036, guid: 0faec1d65d1a862429fd6c3fdef4bfcb, type: 3}
-  m_Animations:
-  - {fileID: 7400000, guid: 0faec1d65d1a862429fd6c3fdef4bfcb, type: 3}
-  - {fileID: 7400002, guid: 0faec1d65d1a862429fd6c3fdef4bfcb, type: 3}
-  - {fileID: 7400004, guid: 0faec1d65d1a862429fd6c3fdef4bfcb, type: 3}
-  - {fileID: 7400006, guid: 0faec1d65d1a862429fd6c3fdef4bfcb, type: 3}
-  - {fileID: 7400008, guid: 0faec1d65d1a862429fd6c3fdef4bfcb, type: 3}
-  - {fileID: 7400010, guid: 0faec1d65d1a862429fd6c3fdef4bfcb, type: 3}
-  - {fileID: 7400012, guid: 0faec1d65d1a862429fd6c3fdef4bfcb, type: 3}
-  - {fileID: 7400014, guid: 0faec1d65d1a862429fd6c3fdef4bfcb, type: 3}
-  - {fileID: 7400016, guid: 0faec1d65d1a862429fd6c3fdef4bfcb, type: 3}
-  - {fileID: 7400018, guid: 0faec1d65d1a862429fd6c3fdef4bfcb, type: 3}
-  - {fileID: 7400020, guid: 0faec1d65d1a862429fd6c3fdef4bfcb, type: 3}
-  - {fileID: 7400022, guid: 0faec1d65d1a862429fd6c3fdef4bfcb, type: 3}
-  - {fileID: 7400024, guid: 0faec1d65d1a862429fd6c3fdef4bfcb, type: 3}
-  - {fileID: 7400026, guid: 0faec1d65d1a862429fd6c3fdef4bfcb, type: 3}
-  - {fileID: 7400028, guid: 0faec1d65d1a862429fd6c3fdef4bfcb, type: 3}
-  - {fileID: 7400030, guid: 0faec1d65d1a862429fd6c3fdef4bfcb, type: 3}
-  - {fileID: 7400032, guid: 0faec1d65d1a862429fd6c3fdef4bfcb, type: 3}
-  - {fileID: 7400034, guid: 0faec1d65d1a862429fd6c3fdef4bfcb, type: 3}
-  - {fileID: 7400036, guid: 0faec1d65d1a862429fd6c3fdef4bfcb, type: 3}
-  m_WrapMode: 0
-  m_PlayAutomatically: 1
-  m_AnimatePhysics: 0
-  m_UpdateMode: 0
-  m_CullingType: 1
 --- !u!114 &-8542277066833054746
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1021,13 +985,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb163c4466fe36a44a3bd561efeac1b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Wolf
+  species: 0
   age: 0
   agingSpeed: 0.1
+  grownUpAge: 10
+  oldAge: 20
   IsMale: 0
   sightRange: 40
   hearingRange: 10
-  grownUpAge: 10
-  oldAge: 20
+  speed: 2
+  size: 1
+  strength: 0
 --- !u!114 &2432284124251840962
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1045,7 +1013,6 @@ MonoBehaviour:
   minTimeWaiting: 2
   maxTimeWaiting: 5
   waitTime: 0
-  animal: {fileID: -8542277066833054746}
 --- !u!114 &1081293250822596563
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1076,7 +1043,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: beb6439965c573b4e8ab1624b4079bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Aging
-  animal: {fileID: -8542277066833054746}
   childScale: 0.5
   adultScale: 1
 --- !u!114 &8337827225156515145
