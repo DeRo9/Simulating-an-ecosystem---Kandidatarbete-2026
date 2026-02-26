@@ -23,6 +23,16 @@ public class WolfBehaviour : AnimalBehaviour
     }
 
 
+    protected override void Update()
+    {
+        if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt)
+        {
+            if(IsHungry()) { /* Impemented inside isHungry(), so it will automatically change to hunt there*/ }
+        }
+
+        base.Update();
+    }
+
     bool FindPrey()
     {
 
@@ -37,8 +47,8 @@ public class WolfBehaviour : AnimalBehaviour
         foreach (Collider hit in hits)
         {
 
-            //if (!fov.IsInFOV(hit.transform))
-                //continue; // Skip if the collider is not in the wolf's field of view
+            if (!fov.IsInFOV(hit.transform))
+                continue; // Skip if the collider is not in the wolf's field of view
             
             Debug.Log("Wolf found prey.");
             if (hit.CompareTag("Moose"))
