@@ -12,7 +12,17 @@ public class WolfBehaviour : AnimalBehaviour
     GameObject preyTarget;
     float attackRange = 2f; // Range within which the wolf can attack prey
 
+    float maxHuntTime = 20f; // Maximum time the wolf will spend hunting before giving up
+    [SerializeField]
+    float huntTime = 0;
+
+    float huntCooldown = 5f; // Time the wolf must wait after giving up on a hunt before it can hunt again
+    [SerializeField]
+    float huntCooldownTimer = 0;
+
     GameObject waterTarget;
+
+
 
     protected override void Start()
     {
@@ -128,6 +138,17 @@ public class WolfBehaviour : AnimalBehaviour
             return; // If the wolf has no prey, switch to wandering
         }
 
+        huntTime += Time.deltaTime; // Increase hunting time
+
+        if (huntTime >= maxHuntTime)
+        {
+            preyTarget = null; // Give up on the prey after hunting for too long
+            huntTime = 0; // Reset hunting time
+            huntCooldownTimer = huntCooldown; // Start cooldown timer
+            ChangeState(State.Wander);
+            return;
+        }
+
         // Keep moving towards the prey
         float distance = Vector3.Distance(transform.position, preyTarget.transform.position); 
         agent.isStopped = false;
@@ -141,6 +162,12 @@ public class WolfBehaviour : AnimalBehaviour
 
     protected override bool IsHungry()
     {
+        if(huntCooldownTimer > 0)
+        {
+            huntCooldownTimer -= Time.deltaTime; // Decrease cooldown timer
+            return false; // Can't hunt while on cooldown
+        }
+
         // Wolf is hungry, find food
         if (needs.isHungry && FindPrey())
         {
