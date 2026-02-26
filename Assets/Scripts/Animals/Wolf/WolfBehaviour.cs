@@ -1,14 +1,17 @@
 using UnityEngine;
+using UnityEngine.InputSystem.Android;
 
 public class WolfBehaviour : AnimalBehaviour
 {
     //Animaltype
-    private Animal animal;
+    private new Animal animal;
 
     new AnimalNeeds needs;
     AnimalFOV fov;
 
-    GameObject  foodTarget;
+    GameObject preyTarget;
+    float attackRange = 2f; // Range within which the wolf can attack prey
+
     GameObject waterTarget;
 
     protected override void Start()
@@ -19,13 +22,17 @@ public class WolfBehaviour : AnimalBehaviour
         fov = GetComponent<AnimalFOV>();
     }
 
+
     bool FindPrey()
     {
+
+        if (preyTarget != null)
+            return true; // If the wolf already has a target, don't change prey
 
         Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange);
 
         float closestDistance = Mathf.Infinity;
-        GameObject closestFood = null;
+        GameObject closestPrey = null;
 
         foreach (Collider hit in hits)
         {
@@ -33,7 +40,6 @@ public class WolfBehaviour : AnimalBehaviour
             //if (!fov.IsInFOV(hit.transform))
                 //continue; // Skip if the collider is not in the wolf's field of view
             
-
             Debug.Log("Wolf found prey.");
             if (hit.CompareTag("Moose"))
             {
@@ -41,16 +47,16 @@ public class WolfBehaviour : AnimalBehaviour
                 if (distance < closestDistance)
                 {
                     closestDistance = distance;
-                    closestFood = hit.gameObject;
+                    closestPrey = hit.gameObject;
                 }
 
             }
 
         }
 
-        if(closestFood != null)
+        if(closestPrey != null)
         {
-            foodTarget = closestFood;
+            preyTarget = closestPrey;
             return true;
         }
 
@@ -91,13 +97,45 @@ public class WolfBehaviour : AnimalBehaviour
 
     }
 
+    protected override void HuntState()
+    {
+        if(preyTarget != null)
+        {
+            agent.isStopped = false;
+            agent.SetDestination(preyTarget.transform.position);
+        }
+         else
+        {
+            ChangeState(State.Wander); // If the prey is lost, switch to wandering
+        }
+    }
+
+    protected override void UpdateHunt()
+    {
+        if(preyTarget == null)
+        {
+            ChangeState(State.Wander);
+            return; // If the wolf has no prey, switch to wandering
+        }
+
+        // Keep moving towards the prey
+        float distance = Vector3.Distance(transform.position, preyTarget.transform.position); 
+        agent.isStopped = false;
+        agent.SetDestination(preyTarget.transform.position);
+
+        if(distance <= attackRange)
+        {
+            // Implement attacking here
+        }
+    }
 
     protected override bool IsHungry()
     {
         // Wolf is hungry, find food
-        if (needs.isHungry)
+        if (needs.isHungry && FindPrey())
         {
-            return FindPrey();
+            ChangeState(State.Hunt);
+            return true;
         }
         return false;
     }
@@ -114,12 +152,8 @@ public class WolfBehaviour : AnimalBehaviour
 
     protected override void EatStateForSpecificAnimal()
     {
-        if (foodTarget != null)
-        {
-            agent.isStopped = false;
-            agent.SetDestination(foodTarget.transform.position);
-        }
-    }  
+        // When the wolf has killed its prey, it will eat it
+    }
 
     protected override void DrinkStateForSpecificAnimal()
     {
@@ -145,23 +179,6 @@ public class WolfBehaviour : AnimalBehaviour
         waitTime -= Time.deltaTime; // Decrease waiting time
         if (waitTime < 0f) // To occasionally switch to wandering
         {
-            ChangeState(State.Wander);
-        }
-    }
-
-    protected override void UpdateEat()
-    {
-        // If the food target is null, switch back to wandering
-        if (foodTarget == null)
-        {
-            ChangeState(State.Wander);
-            return;
-        }
-
-        // If the wolf is no longer hungry, stop eating and switch back to wandering
-        if (!needs.isHungry)
-        {
-            foodTarget = null;
             ChangeState(State.Wander);
         }
     }

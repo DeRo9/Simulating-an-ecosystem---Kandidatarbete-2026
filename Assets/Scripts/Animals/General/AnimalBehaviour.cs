@@ -11,10 +11,11 @@ public abstract class AnimalBehaviour : MonoBehaviour
     // Internal states of the animal
     protected enum State
     {
-        Idle,
-        Wander,
-        Eat,
-        Drink,
+        Idle, // General
+        Wander, // General
+        Eat, // General, different implementations for each animal
+        Drink, // General
+        Hunt, // For animals that hunt, wolves and bears
     }
 
     // Current state of the animal
@@ -80,6 +81,9 @@ public abstract class AnimalBehaviour : MonoBehaviour
             case State.Drink:
                 DrinkStateForSpecificAnimal();
                 break;
+            case State.Hunt:
+                HuntState();
+                break;
         }
 
     }
@@ -89,20 +93,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
         // Update animation based on movement
         anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f); // "isWalking" Ã¤r en bool i animator
         
-        if(CurrentState != State.Eat && CurrentState != State.Drink){
-     
-            if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
-            {
-                ChangeState(State.Drink);
-            }
-            else if (needs.howThirstyInPercent > needs.howHungryInPercent && IsHungry())
-            {
-                ChangeState(State.Eat);
-            }
-        }
-        
-    
-
 
         // State machine logic
         switch (CurrentState)
@@ -119,6 +109,9 @@ public abstract class AnimalBehaviour : MonoBehaviour
             case State.Drink:
                 UpdateDrink();
                 break;
+            case State.Hunt:
+                UpdateHunt();
+                break;
         }
     }
 
@@ -128,10 +121,11 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected virtual void EatStateForSpecificAnimal() { }
 
     protected virtual void DrinkStateForSpecificAnimal() { }
-    protected abstract void UpdateIdle();
-    protected abstract void UpdateWander();
-    protected abstract void UpdateEat();
-    protected abstract void UpdateDrink();
-
+    protected virtual void UpdateIdle() { return; }
+    protected virtual void UpdateWander() { return; }
+    protected virtual void UpdateEat() { return; }
+    protected virtual void UpdateDrink() { return;  }
+    protected virtual void UpdateHunt() { return; }
+    protected virtual void HuntState() { return; }
 
 }

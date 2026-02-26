@@ -10,7 +10,7 @@ public class MooseBehaviour : AnimalBehaviour
 
     private Animal animal;
 
-    AnimalNeeds needs;
+    new AnimalNeeds needs;
     GameObject foodTarget;
     GameObject waterTarget;
     MooseFOV fov;
@@ -21,6 +21,26 @@ public class MooseBehaviour : AnimalBehaviour
         animal = GetComponent<Animal>();
         needs = GetComponent<AnimalNeeds>();
         fov = GetComponent<MooseFOV>();
+    }
+
+
+    protected override void Update()
+    {
+        if (CurrentState != State.Eat && CurrentState != State.Drink)
+        {
+
+            if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
+            {
+                ChangeState(State.Drink);
+            }
+            else if (needs.howThirstyInPercent > needs.howHungryInPercent && IsHungry())
+            {
+                ChangeState(State.Eat);
+            }
+        }
+
+        base.Update();
+
     }
 
     // Finds the closest food item within the detection radius and sets it as the target
