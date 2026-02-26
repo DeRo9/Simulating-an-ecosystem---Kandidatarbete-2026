@@ -3,7 +3,7 @@ using UnityEngine;
 public class WolfBehaviour : AnimalBehaviour
 {
 
-    AnimalNeeds needs;
+    new AnimalNeeds needs;
     GameObject foodTarget;
     GameObject waterTarget;
     float foodDetectionRadius = 40f;

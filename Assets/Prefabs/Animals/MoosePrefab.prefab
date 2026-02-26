@@ -501,6 +501,7 @@ GameObject:
   - component: {fileID: 770165260363730541}
   - component: {fileID: 4377887995782312641}
   - component: {fileID: -7914532255645837834}
+  - component: {fileID: 7253260387713355870}
   m_Layer: 0
   m_Name: MoosePrefab
   m_TagString: Moose
@@ -641,8 +642,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MooseNeeds
   maxHunger: 100
   maxThirst: 100
-  hungerLevel: 0
-  hungerDecreaseRate: 2
+  hungerLevel: 100
+  thirstLevel: 100
+  hungerDecreaseRate: 0.8
   thirstDecreaseRate: 1
 --- !u!195 &5458290157786460551
 NavMeshAgent:
@@ -736,6 +738,24 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.612854, y: 0.8337898, z: 1.1049194}
   m_Center: {x: -0.040618896, y: 1.0382099, z: 0.052459717}
+--- !u!114 &7253260387713355870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2670038152025143281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ffadf3d2ef29a947904e874f049bf4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MooseFOV
+  viewRange: 15
+  viewAngle: 100
+  viewLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  animalprefab: {fileID: 6538256312678152227}
 --- !u!1 &2992573502856677246
 GameObject:
   m_ObjectHideFlags: 0

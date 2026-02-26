@@ -10,7 +10,7 @@ public class AnimalNeeds : MonoBehaviour
     [SerializeField] private float maxThirst = 100f;
 
     public float hungerLevel; //so InformationUI works...?
-    private float thirstLevel;
+    public float thirstLevel;
     
     [SerializeField] private float hungerDecreaseRate = 2f;
     [SerializeField] private float thirstDecreaseRate = 1f;
@@ -43,7 +43,6 @@ public class AnimalNeeds : MonoBehaviour
         thirstLevel = Mathf.Clamp(thirstLevel, 0f, maxThirst);
         
     }
-
 
 
     public void Eat(float nutritionValue)

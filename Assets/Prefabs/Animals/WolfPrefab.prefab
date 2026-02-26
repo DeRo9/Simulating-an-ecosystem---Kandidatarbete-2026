@@ -1057,8 +1057,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AnimalNeeds
   maxHunger: 100
   maxThirst: 100
-  hungerLevel: 0
-  hungerDecreaseRate: 2
+  hungerLevel: 100
+  thirstLevel: 100
+  hungerDecreaseRate: 0.8
   thirstDecreaseRate: 1
 --- !u!114 &3984187836223728344
 MonoBehaviour:
