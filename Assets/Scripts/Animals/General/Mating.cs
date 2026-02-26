@@ -2,30 +2,29 @@ using UnityEngine;
 
 public class Mating : MonoBehaviour
 {
+    public Animal animal;
+    public GameObject animalPrefab;
+
     public float matingRange = 5f;
     public float matingCooldown = 30f;
-    public float currentAge = 0f;
-
-    public GameObject moosePrefab;
-
-    private Moose moose;
     private float cooldownTimer = 0f;
+    private float currentAge;
 
     private void Start()
     {
-        moose = GetComponent<Moose>();
+        animal = GetComponent<Animal>();
     }
 
     private void Update()
     {
-        currentAge = moose.age;
+        currentAge = animal.age;
         
         cooldownTimer -= Time.deltaTime;
 
         if (cooldownTimer > 0f)
             return;
 
-        if (moose.age < 10f)
+        if (animal.age < animal.grownUpAge)
             return;
 
         TryFindMate();
@@ -41,15 +40,21 @@ public class Mating : MonoBehaviour
             if (col.gameObject == gameObject)
                 continue;
 
-            Moose other = col.GetComponent<Moose>();
+            Animal other = col.GetComponent<Animal>();
             if (other == null)
                 continue;
 
-            if (other.age < 10f)
+            if (other.species != animal.species)
                 continue;
 
-            if (other.IsMale == moose.IsMale)
+            if (other.age < animal.grownUpAge)
                 continue;
+
+            if (other.IsMale == animal.IsMale)
+                continue;
+
+            if (gameObject.GetInstanceID() > col.gameObject.GetInstanceID())
+            continue;
 
             MateWith(col.gameObject);
             break;
@@ -60,9 +65,9 @@ public class Mating : MonoBehaviour
     {
         Vector3 spawnPosition = (transform.position + partner.transform.position) / 2f;
 
-        GameObject baby = Instantiate(moosePrefab, spawnPosition, Quaternion.identity);
+        GameObject baby = Instantiate(animalPrefab, spawnPosition, Quaternion.identity);
 
-        Moose babyAge = baby.GetComponent<Moose>();
+        Animal babyAge = baby.GetComponent<Animal>();
         if (babyAge != null)
         {
             babyAge.age = 0f;

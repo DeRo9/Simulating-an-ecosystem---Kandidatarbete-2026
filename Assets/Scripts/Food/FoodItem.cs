@@ -9,7 +9,7 @@ public class FoodItem : MonoBehaviour
     {
         if (other.CompareTag("Moose"))
         {
-            MooseNeeds mooseNeeds = other.GetComponentInParent<MooseNeeds>();
+            AnimalNeeds mooseNeeds = other.GetComponentInParent<AnimalNeeds>();
 
             if (mooseNeeds != null && mooseNeeds.isHungry) // Only eat if the moose is hungry
             {

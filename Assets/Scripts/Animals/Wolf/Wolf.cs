@@ -1,18 +1,15 @@
 using UnityEngine;
 
-public class Wolf : MonoBehaviour
+public class Wolf : Animal
 {
-    public float age = 0f;
-    public float agingSpeed = 0.2f;
-    public bool IsMale;
-
-    private void Start()
+    protected override void Awake()
     {
-        IsMale = Random.value > 0.5f;
-    }
+        species = Species.wolf;
+        speed = 4f;
+        grownUpAge = 2f;
+        oldAge = 4f;
+        size = 2f;
 
-    private void Update()
-    {
-        age += Time.deltaTime * agingSpeed;
+        base.Awake();
     }
 }

@@ -1,18 +1,15 @@
 using UnityEngine;
 
-public class Bear : MonoBehaviour
+public class Bear : Animal
 {
-    public float age = 0f;
-    public float agingSpeed = 0.2f;
-    public bool IsMale;
-
-    private void Start()
+    protected override void Awake()
     {
-        IsMale = Random.value > 0.5f;
-    }
+        species = Species.bear;
+        speed = 3f;
+        grownUpAge = 8f;
+        oldAge = 16f;
+        size = 1.5f;
 
-    private void Update()
-    {
-        age += Time.deltaTime * agingSpeed;
+        base.Awake();
     }
 }

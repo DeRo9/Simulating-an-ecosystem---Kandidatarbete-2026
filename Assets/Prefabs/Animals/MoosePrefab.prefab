@@ -494,11 +494,14 @@ GameObject:
   - component: {fileID: 7919972281377852384}
   - component: {fileID: 4130331568563197886}
   - component: {fileID: 4656165741010984386}
-  - component: {fileID: 6207263090024520011}
   - component: {fileID: 2652676559356234131}
   - component: {fileID: 7690077303167740514}
+  - component: {fileID: -2986275176863535938}
   - component: {fileID: 5458290157786460551}
   - component: {fileID: 770165260363730541}
+  - component: {fileID: 4377887995782312641}
+  - component: {fileID: -7914532255645837834}
+  - component: {fileID: 7253260387713355870}
   m_Layer: 0
   m_Name: MoosePrefab
   m_TagString: Moose
@@ -573,8 +576,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Moose
   age: 0
-  agingSpeed: 0.2
+  agingSpeed: 0.1
   IsMale: 0
+  sightRange: 40
+  hearingRange: 10
+  grownUpAge: 10
+  oldAge: 20
 --- !u!114 &4656165741010984386
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -592,21 +599,7 @@ MonoBehaviour:
   minTimeWaiting: 2
   maxTimeWaiting: 5
   waitTime: 0
---- !u!114 &6207263090024520011
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2670038152025143281}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bfb10feed37a4a498b7caeeaf9857bd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MooseNeeds
-  maxHunger: 100
-  hungerLevel: 100
-  hungerDecreaseRate: 0.8
+  animal: {fileID: 4130331568563197886}
 --- !u!114 &2652676559356234131
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -619,9 +612,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: beb6439965c573b4e8ab1624b4079bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Aging
-  maxGrowthAge: 10
-  oldAgeStart: 20
-  agingSpeed: 0.8
+  animal: {fileID: 4130331568563197886}
   childScale: 0.5
   adultScale: 1
 --- !u!114 &7690077303167740514
@@ -636,10 +627,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed64acd4efc948a41b746a45e1b35b2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Mating
+  animal: {fileID: 4130331568563197886}
+  animalPrefab: {fileID: 2670038152025143281}
   matingRange: 5
   matingCooldown: 30
-  currentAge: 0
-  moosePrefab: {fileID: 2670038152025143281}
+--- !u!114 &-2986275176863535938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2670038152025143281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bfb10feed37a4a498b7caeeaf9857bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MooseNeeds
+  maxHunger: 100
+  maxThirst: 100
+  hungerLevel: 100
+  thirstLevel: 100
+  hungerDecreaseRate: 0.8
+  thirstDecreaseRate: 1
 --- !u!195 &5458290157786460551
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -684,6 +693,72 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!54 &4377887995782312641
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2670038152025143281}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 80
+  m_CollisionDetection: 0
+--- !u!65 &-7914532255645837834
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2670038152025143281}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.612854, y: 0.8337898, z: 1.1049194}
+  m_Center: {x: -0.040618896, y: 1.0382099, z: 0.052459717}
+--- !u!114 &7253260387713355870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2670038152025143281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ffadf3d2ef29a947904e874f049bf4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MooseFOV
+  viewRange: 15
+  viewAngle: 100
+  viewLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  animalprefab: {fileID: 6538256312678152227}
 --- !u!1 &2992573502856677246
 GameObject:
   m_ObjectHideFlags: 0

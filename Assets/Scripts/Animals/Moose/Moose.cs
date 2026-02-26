@@ -1,18 +1,15 @@
 using UnityEngine;
 
-public class Moose : MonoBehaviour
+public class Moose : Animal
 {
-    public float age = 0f;
-    public float agingSpeed = 0.2f;
-    public bool IsMale;
-
-    private void Start()
+    protected override void Awake()
     {
-        IsMale = Random.value > 0.5f;
-    }
+        species = Species.moose;
+        speed = 2f;
+        grownUpAge = 4f;
+        oldAge = 8f;
+        size = 1f;
 
-    private void Update()
-    {
-        age += Time.deltaTime * agingSpeed;
+        base.Awake();
     }
 }

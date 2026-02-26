@@ -1514,8 +1514,13 @@ GameObject:
   - component: {fileID: 6268845075865066587}
   - component: {fileID: 8643121547165636674}
   - component: {fileID: 3228180883506121390}
-  - component: {fileID: 1391028911167729743}
+  - component: {fileID: 354103798133286141}
   - component: {fileID: 8115009223279749859}
+  - component: {fileID: 5642719112376538877}
+  - component: {fileID: 1391028911167729743}
+  - component: {fileID: 6418187023096637690}
+  - component: {fileID: 1070128744223743822}
+  - component: {fileID: 5138632922600550119}
   m_Layer: 0
   m_Name: BearPrefab
   m_TagString: Bear
@@ -1625,7 +1630,7 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &1391028911167729743
+--- !u!114 &354103798133286141
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1634,15 +1639,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 8565310438801436797}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: beb6439965c573b4e8ab1624b4079bfc, type: 3}
+  m_Script: {fileID: 11500000, guid: 3ece1127730996f47b707f04af63aa47, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Aging
-  age: 7
-  maxGrowthAge: 10
-  oldAgeStart: 20
-  agingSpeed: 0.8
-  childScale: 0.5
-  adultScale: 1
+  m_EditorClassIdentifier: Assembly-CSharp::Bear
+  age: 0
+  agingSpeed: 0.1
+  IsMale: 0
+  sightRange: 40
+  hearingRange: 10
+  grownUpAge: 10
+  oldAge: 20
 --- !u!114 &8115009223279749859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1660,6 +1666,104 @@ MonoBehaviour:
   minTimeWaiting: 2
   maxTimeWaiting: 5
   waitTime: 0
+  animal: {fileID: 354103798133286141}
+--- !u!114 &5642719112376538877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8565310438801436797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bfb10feed37a4a498b7caeeaf9857bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalNeeds
+  maxHunger: 100
+  maxThirst: 100
+  hungerLevel: 100
+  thirstLevel: 100
+  hungerDecreaseRate: 0.8
+  thirstDecreaseRate: 1
+--- !u!114 &1391028911167729743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8565310438801436797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: beb6439965c573b4e8ab1624b4079bfc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Aging
+  animal: {fileID: 354103798133286141}
+  childScale: 0.5
+  adultScale: 1
+--- !u!114 &6418187023096637690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8565310438801436797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed64acd4efc948a41b746a45e1b35b2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Mating
+  animal: {fileID: 354103798133286141}
+  animalPrefab: {fileID: 8565310438801436797}
+  matingRange: 5
+  matingCooldown: 30
+--- !u!54 &1070128744223743822
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8565310438801436797}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 80
+  m_CollisionDetection: 0
+--- !u!65 &5138632922600550119
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8565310438801436797}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.77996826, y: 0.87387466, z: 1.245697}
+  m_Center: {x: -0.11001587, y: 0.8952465, z: -0.034225464}
 --- !u!1 &8881512897072243634
 GameObject:
   m_ObjectHideFlags: 0
