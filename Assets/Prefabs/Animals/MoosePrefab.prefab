@@ -578,6 +578,8 @@ MonoBehaviour:
   age: 0
   agingSpeed: 0.1
   IsMale: 0
+  sightRange: 40
+  hearingRange: 10
   grownUpAge: 10
   oldAge: 20
 --- !u!114 &4656165741010984386
@@ -597,6 +599,7 @@ MonoBehaviour:
   minTimeWaiting: 2
   maxTimeWaiting: 5
   waitTime: 0
+  animal: {fileID: 4130331568563197886}
 --- !u!114 &2652676559356234131
 MonoBehaviour:
   m_ObjectHideFlags: 0
