@@ -63,7 +63,6 @@ public class GameManager : MonoBehaviour
             GameObject animalObj = Instantiate(animalPrefab, randomPoint, Quaternion.identity, parentFolder);
             Animal animal = animalObj.GetComponent<Animal>();
 
-            informationUI.SetType("Moose");
 
             /*if (animal != null)
             {

@@ -7,7 +7,7 @@ public class AnimalNeeds : MonoBehaviour
 {
 
     [SerializeField] public float maxHunger = 100f; //so InformationUI works...?
-    [SerializeField] private float maxThirst = 100f;
+    [SerializeField] public float maxThirst = 100f;
 
     public float hungerLevel; //so InformationUI works...?
     public float thirstLevel;

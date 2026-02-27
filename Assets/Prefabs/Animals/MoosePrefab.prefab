@@ -537,7 +537,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f5aa61d156a9034a83b2f0a240c1c2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Moose
-  species: 0
+  species: 2
   age: 0
   agingSpeed: 0.1
   grownUpAge: 10
@@ -546,8 +546,10 @@ MonoBehaviour:
   sightRange: 40
   hearingRange: 10
   speed: 2
+  runningSpeed: 4
   size: 1
   strength: 0
+  needs: {fileID: 0}
 --- !u!114 &4656165741010984386
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -612,7 +614,7 @@ MonoBehaviour:
   hungerLevel: 100
   thirstLevel: 100
   hungerDecreaseRate: 0.8
-  thirstDecreaseRate: 0
+  thirstDecreaseRate: 1
 --- !u!195 &5458290157786460551
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -717,7 +719,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ffadf3d2ef29a947904e874f049bf4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MooseFOV
-  viewRange: 15
   viewAngle: 100
   viewLayer:
     serializedVersion: 2

@@ -34,9 +34,12 @@ public class Animal : MonoBehaviour
     public float size = 1f; //I guess this well be equivalent to hp in the future... right now scale
     public float strength = 1f;
 
+    public AnimalNeeds needs;
+
     protected virtual void Awake()
     {
         IsMale = Random.value > 0.5f;
+        needs = GetComponent<AnimalNeeds>();
     }
 
     protected virtual void Update()
