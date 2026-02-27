@@ -1520,6 +1520,7 @@ GameObject:
   - component: {fileID: 6418187023096637690}
   - component: {fileID: 1070128744223743822}
   - component: {fileID: 5138632922600550119}
+  - component: {fileID: -6116638918593094840}
   m_Layer: 0
   m_Name: BearPrefab
   m_TagString: Bear
@@ -1725,6 +1726,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.77996826, y: 0.87387466, z: 1.245697}
   m_Center: {x: -0.11001587, y: 0.8952465, z: -0.034225464}
+--- !u!114 &-6116638918593094840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8565310438801436797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4afa63622caa2ec46bae015df0700687, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BearFOV
+  viewAngle: 120
+  viewLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &8881512897072243634
 GameObject:
   m_ObjectHideFlags: 0
