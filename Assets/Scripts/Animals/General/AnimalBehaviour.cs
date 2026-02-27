@@ -16,6 +16,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         Eat, // General, different implementations for each animal
         Drink, // General
         Hunt, // For animals that hunt, wolves and bears
+        Fleeing, // For animals that flee (moose)
     }
 
     // Current state of the animal
@@ -84,6 +85,9 @@ public abstract class AnimalBehaviour : MonoBehaviour
             case State.Hunt:
                 HuntState();
                 break;
+            case State.Fleeing:
+                FleeState();
+                break;
         }
 
     }
@@ -112,6 +116,9 @@ public abstract class AnimalBehaviour : MonoBehaviour
             case State.Hunt:
                 UpdateHunt();
                 break;
+            case State.Fleeing:
+                UpdateFlee();
+                break;
         }
     }
 
@@ -126,6 +133,8 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected virtual void UpdateEat() { return; }
     protected virtual void UpdateDrink() { return;  }
     protected virtual void UpdateHunt() { return; }
+    protected virtual void UpdateFlee() { return; }
     protected virtual void HuntState() { return; }
+    protected virtual void FleeState() { return; }
 
 }

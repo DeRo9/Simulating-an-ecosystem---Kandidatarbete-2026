@@ -10,6 +10,7 @@ public class WolfBehaviour : AnimalBehaviour
     AnimalFOV fov;
 
     GameObject preyTarget;
+    public GameObject CurrentTarget => preyTarget;
     float attackRange = 2f; // Range within which the wolf can attack prey
 
     float maxHuntTime = 20f; // Maximum time the wolf will spend hunting before giving up
@@ -77,6 +78,13 @@ public class WolfBehaviour : AnimalBehaviour
         if(closestPrey != null)
         {
             preyTarget = closestPrey;
+
+            MooseBehaviour moose = preyTarget.GetComponent<MooseBehaviour>();
+            if (moose != null)
+            {
+                moose.OnBeingHunted(gameObject); // Notify the moose that it is being hunted
+            }
+
             return true;
         }
 
@@ -142,6 +150,16 @@ public class WolfBehaviour : AnimalBehaviour
 
         if (huntTime >= maxHuntTime)
         {
+
+            if(preyTarget != null)
+            {
+                MooseBehaviour moose = preyTarget.GetComponent<MooseBehaviour>();
+                if (moose != null)
+                {
+                    moose.OnNoLongerHunted(gameObject); // Notify the moose that it is no longer being hunted
+                }
+            }
+
             preyTarget = null; // Give up on the prey after hunting for too long
             huntTime = 0; // Reset hunting time
             huntCooldownTimer = huntCooldown; // Start cooldown timer
