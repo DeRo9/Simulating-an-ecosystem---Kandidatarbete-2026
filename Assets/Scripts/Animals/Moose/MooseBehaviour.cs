@@ -273,7 +273,7 @@ bool FindWater()
         waterTarget = null;
 
         agent.isStopped = false;
-        agent.speed = animal.speed * 2f; // Increase speed while fleeing
+        agent.speed = animal.runningSpeed; // Increase speed while fleeing
     }
 
     public void OnBeingHunted(GameObject predator)
@@ -287,6 +287,7 @@ bool FindWater()
         if(enemy == predator)
         {
             enemy = null;
+            agent.speed = animal.speed; // Reset speed to normal
             ChangeState(State.Wander);
         }
     }

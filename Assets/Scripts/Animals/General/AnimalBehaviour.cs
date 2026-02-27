@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.InputSystem.Android;
 
 
 // This is an abstract class that defines the general behaviour of an animal. More specific implementations will inherit this class and build upon it.
@@ -95,7 +96,8 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected virtual void Update()
     {
         // Update animation based on movement
-        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f); // "isWalking" Ã¤r en bool i animator
+        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f ); // "isWalking" Ã¤r en bool i animator
+        anim.SetBool("isRunning", agent.velocity.magnitude > 3f); // "isRunning" Ã¤r en bool i animator
         
 
         // State machine logic
