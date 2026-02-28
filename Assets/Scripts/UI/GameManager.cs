@@ -44,32 +44,31 @@ public class GameManager : MonoBehaviour
     {
         cameraMovement.enabled = true;
 
-        SpawnAnimals(moosePrefab, mooseSetup.amount, herbivoresFolder);
-        SpawnAnimals(wolfPrefab, wolfSetup.amount, carnivoreFolder);
-        SpawnAnimals(bearPrefab, bearSetup.amount, omnivoreFolder);
+        SpawnAnimals(moosePrefab, mooseSetup, herbivoresFolder);
+        SpawnAnimals(wolfPrefab, wolfSetup, carnivoreFolder);
+        SpawnAnimals(bearPrefab, bearSetup, omnivoreFolder);
         SpawnFood(berryBushPrefab, 100, berryBushFolder);
 
         startMenuPanel.SetActive(false);
     }
 
-    void SpawnAnimals(GameObject animalPrefab, int count, Transform parentFolder)
+    void SpawnAnimals(GameObject animalPrefab, AnimalSetupPanel setup, Transform parentFolder)
     {
-        Vector3 Point = new Vector3(285.539246f, 55.4835625f, 264.506256f);
-        Instantiate(animalPrefab, Point, Quaternion.identity, parentFolder);
-
-        for (int i = 0; i < count; i++)
+        
+        for (int i = 0; i < setup.amount; i++)
         {
             Vector3 randomPoint = GetRandomNavMeshPoint();
             GameObject animalObj = Instantiate(animalPrefab, randomPoint, Quaternion.identity, parentFolder);
             Animal animal = animalObj.GetComponent<Animal>();
 
 
-            /*if (animal != null)
+            if (animal != null)
             {
-                animal.speed = setup.Speed;
-                animal.size = setup.Size;
-                animal.strength = setup.Strength;
-            }*/
+                animal.speed = setup.updatedSpeed;
+                animal.size = setup.updatedSize;
+                animal.sightRange = setup.updatedSight;
+                animal.hearingRange = setup.updatedHearing;
+            }
         }
     }
 

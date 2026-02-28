@@ -20,7 +20,11 @@ public class AnimalSetupPanel : MonoBehaviour
     public TextMeshProUGUI sightText;
     public TextMeshProUGUI hearingText;
 
-
+    [Header("Attribute Sliders")]
+    public Slider speedSlider;
+    public Slider sizeSlider;
+    public Slider sightSlider;
+    public Slider hearingSlider;
 
     [Header("Base Attributes")]
     public float baseSpeed;
@@ -29,29 +33,33 @@ public class AnimalSetupPanel : MonoBehaviour
     public float baseHearing;
 
     public int amount => (int)amountSlider.value;
-    public float updatedSpeed => baseSpeed;
-    public float updatedSize => baseSize;
-    public float updatedSight => baseSight;
-    public float updatedHearing => baseHearing;
+    public float updatedSpeed => (int)speedSlider.value;
+    public float updatedSize => (int)sizeSlider.value;
+    public float updatedSight => (int)sightSlider.value;
+    public float updatedHearing => (int)hearingSlider.value;
 
     private void Start()
     {
-        float speed, size, sight, hearing;
-        animal.GetStats(out speed, out size, out sight, out hearing);
-
-
-        baseSpeed = speed;
-        baseSize = size;
-        baseSight = sight;
-        baseHearing = hearing;
-
+        baseSpeed = animal.speed;
+        baseSize = animal.size;
+        baseSight = animal.sightRange;
+        baseHearing = animal.hearingRange;
         attributePanel.SetActive(false);
+
+        SetSlidersToBaseValues();
 
         UpdateAmountText();
         UpdateSpeedText();
         UpdateSizeText();
         UpdateSightText();
         UpdateHearingText();
+    }
+
+    public void SetSlidersToBaseValues() {
+        speedSlider.value = baseSpeed;
+        sizeSlider.value = baseSize;
+        sightSlider.value = baseSight;
+        hearingSlider.value = baseHearing;
     }
 
     public void ToggleAttributePanel()
@@ -66,21 +74,22 @@ public class AnimalSetupPanel : MonoBehaviour
 
     public void UpdateSpeedText()
     {
-        speedText.text = $"Speed: {baseSpeed}";
+        speedText.text = $"Speed: {speedSlider.value}";
+        animal.speed = speedSlider.value;
     }
 
     public void UpdateSizeText()
     {
-        sizeText.text = $"Size: {baseSize}";
+        sizeText.text = $"Size: {sizeSlider.value}";
     }
 
     public void UpdateSightText()
     {
-        sightText.text = $"Sight: {baseSight}";
+        sightText.text = $"Sight: {sightSlider.value}";
     }
 
     public void UpdateHearingText()
     {
-        hearingText.text = $"Hearing: {baseHearing}";
+        hearingText.text = $"Hearing: {hearingSlider.value}";
     }
 }
