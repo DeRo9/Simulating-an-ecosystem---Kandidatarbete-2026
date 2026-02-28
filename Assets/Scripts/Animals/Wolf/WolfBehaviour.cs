@@ -61,7 +61,7 @@ public class WolfBehaviour : AnimalBehaviour
             if (!fov.IsInFOV(hit.transform))
                 continue; // Skip if the collider is not in the wolf's field of view
             
-            Debug.Log("Wolf found prey.");
+            
             if (hit.CompareTag("Moose"))
             {
                 float distance = Vector3.Distance(transform.position, hit.transform.position);
@@ -130,52 +130,75 @@ public class WolfBehaviour : AnimalBehaviour
         if(preyTarget != null)
         {
             agent.isStopped = false;
+            agent.speed = animal.runningSpeed; // Set speed to hunt speed
             agent.SetDestination(preyTarget.transform.position);
         }
          else
         {
+            agent.speed = animal.speed; // Reset speed to normal
             ChangeState(State.Wander); // If the prey is lost, switch to wandering
         }
     }
 
     protected override void UpdateHunt()
     {
+
         if(preyTarget == null)
         {
             ChangeState(State.Wander);
             return; // If the wolf has no prey, switch to wandering
         }
 
-        huntTime += Time.deltaTime; // Increase hunting time
-
-        if (huntTime >= maxHuntTime)
+        // Check if the prey is still within sight range
+        float distance = Vector3.Distance(transform.position, preyTarget.transform.position);
+        if(distance > animal.sightRange)
         {
+            LostPrey(); // If the prey is too far away, give up
+            return;
+        }
 
-            if(preyTarget != null)
-            {
-                MooseBehaviour moose = preyTarget.GetComponent<MooseBehaviour>();
-                if (moose != null)
-                {
-                    moose.OnNoLongerHunted(gameObject); // Notify the moose that it is no longer being hunted
-                }
-            }
+        if(!fov.IsInFOV(preyTarget.transform))
+        {
+            LostPrey(); // If the prey is no longer in the wolf's field of view, give up
+            return;
+        }
 
-            preyTarget = null; // Give up on the prey after hunting for too long
-            huntTime = 0; // Reset hunting time
-            huntCooldownTimer = huntCooldown; // Start cooldown timer
-            ChangeState(State.Wander);
+        // Hunting timer
+        huntTime += Time.deltaTime; 
+        if (huntTime >= maxHuntTime)
+        {   
+            LostPrey(); // If the wolf has been hunting for too long, give up
             return;
         }
 
         // Keep moving towards the prey
-        float distance = Vector3.Distance(transform.position, preyTarget.transform.position); 
         agent.isStopped = false;
         agent.SetDestination(preyTarget.transform.position);
 
-        if(distance <= attackRange)
+        // Attack if within range
+        if (distance <= attackRange)
         {
             // Implement attacking here
         }
+    }
+
+
+    void LostPrey()
+    {
+        if (preyTarget != null)
+        {
+            MooseBehaviour moose = preyTarget.GetComponent<MooseBehaviour>();
+            if (moose != null)
+            {
+                moose.OnNoLongerHunted(gameObject); // Notify the moose that it is no longer being hunted
+            }
+        }
+
+        preyTarget = null; // Give up on the prey after hunting for too long
+        huntTime = 0; // Reset hunting time
+        huntCooldownTimer = huntCooldown; // Start cooldown timer
+        agent.speed = animal.speed; // Reset speed to normal
+        ChangeState(State.Wander);
     }
 
     protected override bool IsHungry()

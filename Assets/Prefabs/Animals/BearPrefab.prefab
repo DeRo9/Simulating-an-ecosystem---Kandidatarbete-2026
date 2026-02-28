@@ -1609,7 +1609,7 @@ MonoBehaviour:
   IsMale: 0
   sightRange: 30
   hearingRange: 30
-  speed: 3
+  speed: 2
   runningSpeed: 4
   size: 1.5
   strength: 0
@@ -1626,7 +1626,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 181f1ed6efdce1949bfc732169fb1f4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BearBehaviour
-  HomeArea: {fileID: 1992547051420774551, guid: 5c919d4b2ea7e434a9032def6e43804d, type: 3}
   CurrentState: 0
   minTimeWaiting: 2
   maxTimeWaiting: 5

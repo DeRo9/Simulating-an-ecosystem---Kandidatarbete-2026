@@ -994,7 +994,7 @@ MonoBehaviour:
   IsMale: 0
   sightRange: 80
   hearingRange: 50
-  speed: 4
+  speed: 2
   runningSpeed: 4
   size: 2
   strength: 0
@@ -1011,7 +1011,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c56e70a3dd7a64d499b5635a3fa68dd5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WolfBehaviour
-  HomeArea: {fileID: 1992547051420774551, guid: 5c919d4b2ea7e434a9032def6e43804d, type: 3}
   CurrentState: 0
   minTimeWaiting: 2
   maxTimeWaiting: 5

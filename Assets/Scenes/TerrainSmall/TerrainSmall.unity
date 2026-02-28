@@ -294,6 +294,10 @@ MonoBehaviour:
   sizeText: {fileID: 515949738}
   sightText: {fileID: 1375846943}
   hearingText: {fileID: 885249827}
+  speedSlider: {fileID: 1426083433}
+  sizeSlider: {fileID: 564284123}
+  sightSlider: {fileID: 34181465}
+  hearingSlider: {fileID: 1147817253}
   baseSpeed: 5
   baseSize: 1
   baseSight: 0
@@ -4666,6 +4670,10 @@ MonoBehaviour:
   sizeText: {fileID: 745048815}
   sightText: {fileID: 1071337874}
   hearingText: {fileID: 1434431285}
+  speedSlider: {fileID: 1642834293}
+  sizeSlider: {fileID: 1525176368}
+  sightSlider: {fileID: 842782152}
+  hearingSlider: {fileID: 635293669}
   baseSpeed: 5
   baseSize: 1
   baseSight: 0
@@ -7474,7 +7482,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 18864594}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
         m_MethodName: StartSimulation
         m_Mode: 1
@@ -9049,6 +9057,10 @@ MonoBehaviour:
   sizeText: {fileID: 361105794}
   sightText: {fileID: 1802351990}
   hearingText: {fileID: 100410771}
+  speedSlider: {fileID: 1899563142}
+  sizeSlider: {fileID: 1184127865}
+  sightSlider: {fileID: 1288982747}
+  hearingSlider: {fileID: 410177370}
   baseSpeed: 5
   baseSize: 1
   baseSight: 0

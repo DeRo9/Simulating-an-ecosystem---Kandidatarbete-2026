@@ -7,7 +7,7 @@ using UnityEngine.InputSystem.Android;
 public abstract class AnimalBehaviour : MonoBehaviour
 {
     // The home area of the animal
-    public Area HomeArea;
+    //public Area HomeArea;
 
     // Internal states of the animal
     protected enum State
@@ -75,7 +75,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
                 break;
             case State.Wander:
                 agent.isStopped = false;
-                agent.SetDestination(HomeArea.GetRandomPoints());
+                agent.SetDestination(GetRandomPoints());
                 break;
             case State.Eat:
                 EatStateForSpecificAnimal();
@@ -91,6 +91,23 @@ public abstract class AnimalBehaviour : MonoBehaviour
                 break;
         }
 
+    }
+
+    public Vector3 GetRandomPoints()
+    {
+        Vector3 randomDirection = Random.insideUnitSphere * 20f;
+        randomDirection.y = 0f;
+        Vector3 randomPoint = transform.position + randomDirection;
+
+        NavMeshHit navMeshHit;
+        Vector3 finalPosition = transform.position;
+
+        if (NavMesh.SamplePosition(randomPoint, out navMeshHit, 20f, NavMesh.AllAreas))
+        {
+            finalPosition = navMeshHit.position;
+        }
+
+        return finalPosition;
     }
 
     protected virtual void Update()
