@@ -1604,14 +1604,14 @@ MonoBehaviour:
   species: 1
   age: 0
   agingSpeed: 0.1
-  grownUpAge: 10
-  oldAge: 20
+  grownUpAge: 8
+  oldAge: 16
   IsMale: 0
-  sightRange: 40
-  hearingRange: 10
-  speed: 2
+  sightRange: 30
+  hearingRange: 30
+  speed: 3
   runningSpeed: 4
-  size: 1
+  size: 1.5
   strength: 0
   needs: {fileID: 0}
 --- !u!114 &8115009223279749859

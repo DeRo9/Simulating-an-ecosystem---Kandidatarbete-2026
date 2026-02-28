@@ -350,12 +350,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1852080541}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 5
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1994082263}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateSizeText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &89138193
 GameObject:
   m_ObjectHideFlags: 0
@@ -1038,12 +1050,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1228376212}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 100
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1501698070}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateHearingText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &131810223
 GameObject:
   m_ObjectHideFlags: 0
@@ -1172,7 +1196,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 578f66b386e65d843a23cc01a6b14d31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalAttributeSetup
-  animal: {fileID: -8542277066833054746, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
+  animal: {fileID: 555460109}
   animalName: Wolves
   attributePanel: {fileID: 364187769}
   amountSlider: {fileID: 2138233736}
@@ -1181,6 +1205,10 @@ MonoBehaviour:
   sizeText: {fileID: 1747825774}
   sightText: {fileID: 1740466499}
   hearingText: {fileID: 2074170690}
+  speedSlider: {fileID: 1039271941}
+  sizeSlider: {fileID: 945393193}
+  sightSlider: {fileID: 178325062}
+  hearingSlider: {fileID: 1515453384}
   baseSpeed: 5
   baseSize: 1
   baseSight: 0
@@ -1223,6 +1251,67 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 156197417}
   m_CullTransparentMesh: 1
+--- !u!1001 &159064239
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 584321184}
+    m_Modifications:
+    - target: {fileID: 3951743296650663603, guid: 78b0c3200397bff4c991a44661ad17cb, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 129.3302
+      objectReference: {fileID: 0}
+    - target: {fileID: 3951743296650663603, guid: 78b0c3200397bff4c991a44661ad17cb, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.00002
+      objectReference: {fileID: 0}
+    - target: {fileID: 3951743296650663603, guid: 78b0c3200397bff4c991a44661ad17cb, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -800.41833
+      objectReference: {fileID: 0}
+    - target: {fileID: 3951743296650663603, guid: 78b0c3200397bff4c991a44661ad17cb, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3951743296650663603, guid: 78b0c3200397bff4c991a44661ad17cb, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3951743296650663603, guid: 78b0c3200397bff4c991a44661ad17cb, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3951743296650663603, guid: 78b0c3200397bff4c991a44661ad17cb, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3951743296650663603, guid: 78b0c3200397bff4c991a44661ad17cb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3951743296650663603, guid: 78b0c3200397bff4c991a44661ad17cb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3951743296650663603, guid: 78b0c3200397bff4c991a44661ad17cb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8565310438801436797, guid: 78b0c3200397bff4c991a44661ad17cb, type: 3}
+      propertyPath: m_Name
+      value: BearPrefab
+      objectReference: {fileID: 0}
+    - target: {fileID: 8565310438801436797, guid: 78b0c3200397bff4c991a44661ad17cb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 78b0c3200397bff4c991a44661ad17cb, type: 3}
 --- !u!1 &164135005
 GameObject:
   m_ObjectHideFlags: 0
@@ -1419,12 +1508,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2038220305}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 100
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 156197419}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateSightText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &227484991
 GameObject:
   m_ObjectHideFlags: 0
@@ -2518,6 +2619,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!4 &555460099 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4167753896645195812, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
+  m_PrefabInstance: {fileID: 1471642089}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &555460109 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: -8542277066833054746, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
+  m_PrefabInstance: {fileID: 1471642089}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb163c4466fe36a44a3bd561efeac1b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Wolf
 --- !u!1001 &558584303
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2695,6 +2812,40 @@ Transform:
   m_Children:
   - {fileID: 1166893207}
   - {fileID: 486360477}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &584321183
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 584321184}
+  m_Layer: 0
+  m_Name: ProtoypeAnimals
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &584321184
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 584321183}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 321.9754, y: -0.00002, z: 2127.0422}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 983301283}
+  - {fileID: 555460099}
+  - {fileID: 1377259749}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &585578993
@@ -3869,6 +4020,67 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 763815536}
   m_CullTransparentMesh: 1
+--- !u!1001 &801840854
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 584321184}
+    m_Modifications:
+    - target: {fileID: 2670038152025143281, guid: 673d635672c542b44af2717b4c832882, type: 3}
+      propertyPath: m_Name
+      value: MoosePrefab
+      objectReference: {fileID: 0}
+    - target: {fileID: 2670038152025143281, guid: 673d635672c542b44af2717b4c832882, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6538256312678152227, guid: 673d635672c542b44af2717b4c832882, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 129.48141
+      objectReference: {fileID: 0}
+    - target: {fileID: 6538256312678152227, guid: 673d635672c542b44af2717b4c832882, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.25065
+      objectReference: {fileID: 0}
+    - target: {fileID: 6538256312678152227, guid: 673d635672c542b44af2717b4c832882, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -801.3544
+      objectReference: {fileID: 0}
+    - target: {fileID: 6538256312678152227, guid: 673d635672c542b44af2717b4c832882, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6538256312678152227, guid: 673d635672c542b44af2717b4c832882, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6538256312678152227, guid: 673d635672c542b44af2717b4c832882, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6538256312678152227, guid: 673d635672c542b44af2717b4c832882, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6538256312678152227, guid: 673d635672c542b44af2717b4c832882, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6538256312678152227, guid: 673d635672c542b44af2717b4c832882, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6538256312678152227, guid: 673d635672c542b44af2717b4c832882, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 673d635672c542b44af2717b4c832882, type: 3}
 --- !u!1 &813348604
 GameObject:
   m_ObjectHideFlags: 0
@@ -4565,12 +4777,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1523017189}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 5
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 156197419}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateSizeText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &954619779
 GameObject:
   m_ObjectHideFlags: 0
@@ -4851,6 +5075,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 967508374}
   m_CullTransparentMesh: 1
+--- !u!4 &983301283 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6538256312678152227, guid: 673d635672c542b44af2717b4c832882, type: 3}
+  m_PrefabInstance: {fileID: 801840854}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &983795528
 GameObject:
   m_ObjectHideFlags: 0
@@ -5066,12 +5295,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1731585313}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 10
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 156197419}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateSpeedText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1040254434
 GameObject:
   m_ObjectHideFlags: 0
@@ -6046,12 +6287,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 131810224}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 100
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1501698070}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateSightText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1228376211
 GameObject:
   m_ObjectHideFlags: 0
@@ -6248,12 +6501,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 871531974}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 100
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1994082263}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateSightText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1286077461
 GameObject:
   m_ObjectHideFlags: 0
@@ -6582,6 +6847,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!4 &1377259749 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3951743296650663603, guid: 78b0c3200397bff4c991a44661ad17cb, type: 3}
+  m_PrefabInstance: {fileID: 159064239}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1377259757 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 354103798133286141, guid: 78b0c3200397bff4c991a44661ad17cb, type: 3}
+  m_PrefabInstance: {fileID: 159064239}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ece1127730996f47b707f04af63aa47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Bear
 --- !u!1 &1409291666
 GameObject:
   m_ObjectHideFlags: 0
@@ -6929,6 +7210,67 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1001 &1471642089
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 584321184}
+    m_Modifications:
+    - target: {fileID: 4167753896645195812, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 129.62045
+      objectReference: {fileID: 0}
+    - target: {fileID: 4167753896645195812, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.48106
+      objectReference: {fileID: 0}
+    - target: {fileID: 4167753896645195812, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -802.21484
+      objectReference: {fileID: 0}
+    - target: {fileID: 4167753896645195812, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4167753896645195812, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4167753896645195812, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4167753896645195812, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4167753896645195812, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4167753896645195812, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4167753896645195812, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4266865027632842223, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
+      propertyPath: m_Name
+      value: WolfPrefab
+      objectReference: {fileID: 0}
+    - target: {fileID: 4266865027632842223, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
 --- !u!1 &1483589622
 GameObject:
   m_ObjectHideFlags: 0
@@ -7223,6 +7565,10 @@ MonoBehaviour:
   sizeText: {fileID: 413648898}
   sightText: {fileID: 1995275539}
   hearingText: {fileID: 1583934213}
+  speedSlider: {fileID: 2016292048}
+  sizeSlider: {fileID: 1573405650}
+  sightSlider: {fileID: 1212546064}
+  hearingSlider: {fileID: 126698537}
   baseSpeed: 5
   baseSize: 1
   baseSight: 0
@@ -7378,12 +7724,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 726804124}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 100
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 156197419}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateHearingText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1523017188
 GameObject:
   m_ObjectHideFlags: 0
@@ -7544,12 +7902,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 763815537}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 10
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1994082263}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateSpeedText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1527565888
 GameObject:
   m_ObjectHideFlags: 0
@@ -8063,12 +8433,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2104077762}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 5
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1501698070}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateSizeText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1573970216
 GameObject:
   m_ObjectHideFlags: 0
@@ -10105,12 +10487,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1286077462}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 100
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1994082263}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateHearingText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1935452873
 GameObject:
   m_ObjectHideFlags: 0
@@ -10523,7 +10917,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 578f66b386e65d843a23cc01a6b14d31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalAttributeSetup
-  animal: {fileID: 354103798133286141, guid: 78b0c3200397bff4c991a44661ad17cb, type: 3}
+  animal: {fileID: 1377259757}
   animalName: Bears
   attributePanel: {fileID: 1043054972}
   amountSlider: {fileID: 1453632930}
@@ -10532,6 +10926,10 @@ MonoBehaviour:
   sizeText: {fileID: 2053875113}
   sightText: {fileID: 89138195}
   hearingText: {fileID: 1573970218}
+  speedSlider: {fileID: 1523746789}
+  sizeSlider: {fileID: 69313228}
+  sightSlider: {fileID: 1284479417}
+  hearingSlider: {fileID: 1919912977}
   baseSpeed: 5
   baseSize: 1
   baseSight: 0
@@ -10969,12 +11367,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1914320654}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 10
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1501698070}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateSpeedText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &2025915610
 GameObject:
   m_ObjectHideFlags: 0
@@ -13886,3 +14296,4 @@ SceneRoots:
   - {fileID: 684557007}
   - {fileID: 1064092552}
   - {fileID: 726680586}
+  - {fileID: 584321184}
