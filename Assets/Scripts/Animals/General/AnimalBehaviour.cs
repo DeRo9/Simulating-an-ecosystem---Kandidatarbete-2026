@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.InputSystem.Android;
 
 
 // This is an abstract class that defines the general behaviour of an animal. More specific implementations will inherit this class and build upon it.
@@ -11,10 +12,12 @@ public abstract class AnimalBehaviour : MonoBehaviour
     // Internal states of the animal
     protected enum State
     {
-        Idle,
-        Wander,
-        Eat,
-        Drink,
+        Idle, // General
+        Wander, // General
+        Eat, // General, different implementations for each animal
+        Drink, // General
+        Hunt, // For animals that hunt, wolves and bears
+        Fleeing, // For animals that flee (moose)
     }
 
     // Current state of the animal
@@ -57,7 +60,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
     // Checks if the moose has reached its destination
     protected bool hasArrived()
     {
-        return agent.remainingDistance <= agent.stoppingDistance;
+        return !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance;
     }
 
     // Changes the state of the moose and updates behavior accordingly
@@ -80,6 +83,12 @@ public abstract class AnimalBehaviour : MonoBehaviour
             case State.Drink:
                 DrinkStateForSpecificAnimal();
                 break;
+            case State.Hunt:
+                HuntState();
+                break;
+            case State.Fleeing:
+                FleeState();
+                break;
         }
 
     }
@@ -87,22 +96,9 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected virtual void Update()
     {
         // Update animation based on movement
-        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f); // "isWalking" Ã¤r en bool i animator
+        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f ); // "isWalking" Ã¤r en bool i animator
+        anim.SetBool("isRunning", agent.velocity.magnitude > 3f); // "isRunning" Ã¤r en bool i animator
         
-        if(CurrentState != State.Eat && CurrentState != State.Drink){
-     
-            if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
-            {
-                ChangeState(State.Drink);
-            }
-            else if (needs.howThirstyInPercent > needs.howHungryInPercent && IsHungry())
-            {
-                ChangeState(State.Eat);
-            }
-        }
-        
-    
-
 
         // State machine logic
         switch (CurrentState)
@@ -119,6 +115,12 @@ public abstract class AnimalBehaviour : MonoBehaviour
             case State.Drink:
                 UpdateDrink();
                 break;
+            case State.Hunt:
+                UpdateHunt();
+                break;
+            case State.Fleeing:
+                UpdateFlee();
+                break;
         }
     }
 
@@ -128,10 +130,13 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected virtual void EatStateForSpecificAnimal() { }
 
     protected virtual void DrinkStateForSpecificAnimal() { }
-    protected abstract void UpdateIdle();
-    protected abstract void UpdateWander();
-    protected abstract void UpdateEat();
-    protected abstract void UpdateDrink();
-
+    protected virtual void UpdateIdle() { return; }
+    protected virtual void UpdateWander() { return; }
+    protected virtual void UpdateEat() { return; }
+    protected virtual void UpdateDrink() { return;  }
+    protected virtual void UpdateHunt() { return; }
+    protected virtual void UpdateFlee() { return; }
+    protected virtual void HuntState() { return; }
+    protected virtual void FleeState() { return; }
 
 }

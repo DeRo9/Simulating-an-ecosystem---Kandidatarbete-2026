@@ -16,13 +16,12 @@ public class AnimalInteractor : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit))
             {
-                if (hit.collider.CompareTag("Moose")) // Check if the clicked object has the "Moose" tag
+                if (hit.collider.CompareTag("Moose") || hit.collider.CompareTag("Wolf") || hit.collider.CompareTag("Bear")) // Check if the clicked object has the "Moose" tag
                 {
-                    Debug.Log("Moose clicked!");
-                    AnimalNeeds needs = hit.collider.GetComponentInParent<AnimalNeeds>();
-                    if (needs != null)
+                    Animal animal = hit.collider.GetComponentInParent<Animal>();
+                    if (animal != null)
                     {
-                        informationUI.ShowInfo(needs); // Show UI Panel with Moose information
+                        informationUI.ShowInfo(animal); // Show UI Panel with Moose information
                     }
                 }
                 else

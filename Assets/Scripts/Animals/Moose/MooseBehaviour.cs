@@ -1,3 +1,4 @@
+using System;
 using System.IO.Pipes;
 using Unity.VisualScripting;
 using UnityEditor.AdaptivePerformance.Editor;
@@ -10,10 +11,12 @@ public class MooseBehaviour : AnimalBehaviour
 
     private Animal animal;
 
-    AnimalNeeds needs;
+    new AnimalNeeds needs;
     GameObject foodTarget;
     GameObject waterTarget;
     MooseFOV fov;
+
+    GameObject enemy; // For fleeing from wolves and bears
 
     protected override void Start()
     {
@@ -21,6 +24,28 @@ public class MooseBehaviour : AnimalBehaviour
         animal = GetComponent<Animal>();
         needs = GetComponent<AnimalNeeds>();
         fov = GetComponent<MooseFOV>();
+    }
+
+
+    protected override void Update()
+    {
+
+        // If not currently eating, drinking or fleeing, check if the moose needs to eat or drink and switch to the appropriate state
+        if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Fleeing)
+        {
+            // If the moose is more thirsty than hungry, switch to drink state, if more hungry than thirsty, switch to eat state
+            if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
+            {
+                ChangeState(State.Drink);
+            }
+            else if (needs.howThirstyInPercent > needs.howHungryInPercent && IsHungry())
+            {
+                ChangeState(State.Eat);
+            }
+        }
+
+        base.Update();
+
     }
 
     // Finds the closest food item within the detection radius and sets it as the target
@@ -203,6 +228,7 @@ bool FindWater()
             agent.isStopped = true;
             Debug.Log("Moose drank water.");
 
+            // No longer thirsty
             if (!needs.isThirsty)
             {
             waterTarget = null;
@@ -214,12 +240,56 @@ bool FindWater()
         {
             agent.isStopped = false;
         }
-        
-        // If the moose is no longer thirsty, stop drinking and switch back to wandering
  
-        
     }
-    
-    
+
+    protected override void UpdateFlee()
+    {
+        // If there is no enemy, switch back to wandering
+        if (enemy == null)
+        {
+            agent.speed = animal.speed;
+            ChangeState(State.Wander);
+            return;
+        }
+
+        // Flee in the opposite direction of the enemy
+        Vector3 fleeDirection = (transform.position - enemy.transform.position).normalized;
+        Vector3 fleeDestination = transform.position + fleeDirection * animal.sightRange;
+
+        NavMeshHit hit;
+        // sample a valid position on the navmesh in the flee direction
+        if (NavMesh.SamplePosition(fleeDestination, out hit, animal.sightRange, NavMesh.AllAreas))
+        {
+            if (!agent.hasPath)
+                agent.SetDestination(hit.position);
+        }
+    }
+
+    protected override void FleeState()
+    {
+        // set food and water to null to stop the moose from trying to eat or drink while fleeing
+        foodTarget = null; 
+        waterTarget = null;
+
+        agent.isStopped = false;
+        agent.speed = animal.runningSpeed; // Increase speed while fleeing
+    }
+
+    public void OnBeingHunted(GameObject predator)
+    {
+        enemy = predator;
+        ChangeState(State.Fleeing);
+    }
+
+    public void OnNoLongerHunted(GameObject predator)
+    {
+        if(enemy == predator)
+        {
+            enemy = null;
+            agent.speed = animal.speed; // Reset speed to normal
+            ChangeState(State.Wander);
+        }
+    }
 
 }

@@ -6,22 +6,22 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Camera")]
+    public FreeCamera cameraMovement;
+
     [Header("Folders")]
     public Transform herbivoresFolder;
     public Transform carnivoreFolder;
     public Transform omnivoreFolder;
-
     public Transform berryBushFolder;
 
     [Header("UI")]
     public GameObject startMenuPanel;
-    public Slider mooseAmountSlider;
-    public TextMeshProUGUI mooseAmountSliderText;
-    public Slider wolfAmountSlider;
-    public TextMeshProUGUI wolfAmountSliderText;
-    public Slider bearAmountSlider;
-    public TextMeshProUGUI bearAmountSliderText;
 
+    [Header("Animal Setup Panels")]
+    public AnimalSetupPanel mooseSetup;
+    public AnimalSetupPanel wolfSetup;
+    public AnimalSetupPanel bearSetup;
 
     [Header("Prefabs")]
     public GameObject moosePrefab;
@@ -33,15 +33,22 @@ public class GameManager : MonoBehaviour
     [Header("information UI")]
     public InformationUI informationUI;
 
+    public float spawnRadius = 1000f;
+
+    private void Start()
+    {
+        cameraMovement.enabled = false;
+    }
+
     public void StartSimulation()
     {
-        int mooseCount = (int)mooseAmountSlider.value;
-        int wolfCount = (int)wolfAmountSlider.value;
-        int bearCount = (int)bearAmountSlider.value;
-        SpawnAnimals(moosePrefab, mooseCount, herbivoresFolder);
-        SpawnAnimals(wolfPrefab, wolfCount, carnivoreFolder);
-        SpawnAnimals(bearPrefab, bearCount, omnivoreFolder);
+        cameraMovement.enabled = true;
+
+        SpawnAnimals(moosePrefab, mooseSetup.amount, herbivoresFolder);
+        SpawnAnimals(wolfPrefab, wolfSetup.amount, carnivoreFolder);
+        SpawnAnimals(bearPrefab, bearSetup.amount, omnivoreFolder);
         SpawnFood(berryBushPrefab, 100, berryBushFolder);
+
         startMenuPanel.SetActive(false);
     }
 
@@ -49,26 +56,31 @@ public class GameManager : MonoBehaviour
     {
         Vector3 Point = new Vector3(285.539246f, 55.4835625f, 264.506256f);
         Instantiate(animalPrefab, Point, Quaternion.identity, parentFolder);
+
         for (int i = 0; i < count; i++)
         {
             Vector3 randomPoint = GetRandomNavMeshPoint();
-            Instantiate(animalPrefab, randomPoint, Quaternion.identity, parentFolder);
-            informationUI.SetType("Moose");
+            GameObject animalObj = Instantiate(animalPrefab, randomPoint, Quaternion.identity, parentFolder);
+            Animal animal = animalObj.GetComponent<Animal>();
+
+
+            /*if (animal != null)
+            {
+                animal.speed = setup.Speed;
+                animal.size = setup.Size;
+                animal.strength = setup.Strength;
+            }*/
         }
     }
 
     void SpawnFood(GameObject foodPrefab, int count, Transform parentFolder)
     {
-        //Vector3 Point2 = new Vector3(285.539246f, 55.4835625f, 264.506256f);
-        //Instantiate(berryBushPrefab, Point2, Quaternion.identity, berryBushFolder);
         for (int i = 0; i < count; i++)
         {
             Vector3 randomPoint = GetRandomNavMeshPoint();
             Instantiate(berryBushPrefab, randomPoint, Quaternion.identity, parentFolder);
         }
     }
-
-    public float spawnRadius = 1000;
 
     Vector3 GetRandomNavMeshPoint()
     {
@@ -89,18 +101,4 @@ public class GameManager : MonoBehaviour
         return transform.position;
     }
 
-    public void UpdateMooseAmountSliderText()
-    {
-        mooseAmountSliderText.text = "Amount of Moose: " + mooseAmountSlider.value;
-    }
-
-    public void UpdateWolfAmountSliderText()
-    {
-        wolfAmountSliderText.text = "Amount of Wolves: " + wolfAmountSlider.value;
-    }
-
-    public void UpdateBearAmountSliderText()
-    {
-        bearAmountSliderText.text = "Amount of Bears: " + bearAmountSlider.value;
-    }
 }

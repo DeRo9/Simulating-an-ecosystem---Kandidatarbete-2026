@@ -457,7 +457,7 @@ GameObject:
   - component: {fileID: 4513155347532626333}
   m_Layer: 0
   m_Name: Bone
-  m_TagString: Untagged
+  m_TagString: Moose
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -491,7 +491,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6538256312678152227}
-  - component: {fileID: 7919972281377852384}
   - component: {fileID: 4130331568563197886}
   - component: {fileID: 4656165741010984386}
   - component: {fileID: 2652676559356234131}
@@ -526,43 +525,6 @@ Transform:
   - {fileID: 5000025066152606849}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!111 &7919972281377852384
-Animation:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2670038152025143281}
-  m_Enabled: 0
-  serializedVersion: 4
-  m_Animation: {fileID: 7400040, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
-  m_Animations:
-  - {fileID: 7400000, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
-  - {fileID: 7400002, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
-  - {fileID: 7400004, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
-  - {fileID: 7400006, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
-  - {fileID: 7400008, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
-  - {fileID: 7400010, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
-  - {fileID: 7400012, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
-  - {fileID: 7400014, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
-  - {fileID: 7400016, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
-  - {fileID: 7400018, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
-  - {fileID: 7400020, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
-  - {fileID: 7400022, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
-  - {fileID: 7400024, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
-  - {fileID: 7400026, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
-  - {fileID: 7400028, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
-  - {fileID: 7400030, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
-  - {fileID: 7400032, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
-  - {fileID: 7400034, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
-  - {fileID: 7400036, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
-  - {fileID: 7400038, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
-  - {fileID: 7400040, guid: 32355c58d1ff4794381057cb17a96e8d, type: 3}
-  m_WrapMode: 0
-  m_PlayAutomatically: 1
-  m_AnimatePhysics: 0
-  m_UpdateMode: 0
-  m_CullingType: 1
 --- !u!114 &4130331568563197886
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -575,13 +537,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f5aa61d156a9034a83b2f0a240c1c2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Moose
+  species: 2
   age: 0
   agingSpeed: 0.1
+  grownUpAge: 10
+  oldAge: 20
   IsMale: 0
   sightRange: 40
   hearingRange: 10
-  grownUpAge: 10
-  oldAge: 20
+  speed: 2
+  runningSpeed: 4
+  size: 1
+  strength: 0
+  needs: {fileID: 0}
 --- !u!114 &4656165741010984386
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -599,7 +567,6 @@ MonoBehaviour:
   minTimeWaiting: 2
   maxTimeWaiting: 5
   waitTime: 0
-  animal: {fileID: 4130331568563197886}
 --- !u!114 &2652676559356234131
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -612,7 +579,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: beb6439965c573b4e8ab1624b4079bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Aging
-  animal: {fileID: 4130331568563197886}
   childScale: 0.5
   adultScale: 1
 --- !u!114 &7690077303167740514
@@ -753,12 +719,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ffadf3d2ef29a947904e874f049bf4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MooseFOV
-  viewRange: 15
   viewAngle: 100
   viewLayer:
     serializedVersion: 2
     m_Bits: 0
-  animalprefab: {fileID: 6538256312678152227}
 --- !u!1 &2992573502856677246
 GameObject:
   m_ObjectHideFlags: 0

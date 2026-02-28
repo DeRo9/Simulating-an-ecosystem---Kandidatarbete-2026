@@ -1511,7 +1511,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3951743296650663603}
-  - component: {fileID: 6268845075865066587}
   - component: {fileID: 8643121547165636674}
   - component: {fileID: 3228180883506121390}
   - component: {fileID: 354103798133286141}
@@ -1521,6 +1520,7 @@ GameObject:
   - component: {fileID: 6418187023096637690}
   - component: {fileID: 1070128744223743822}
   - component: {fileID: 5138632922600550119}
+  - component: {fileID: -6116638918593094840}
   m_Layer: 0
   m_Name: BearPrefab
   m_TagString: Bear
@@ -1545,47 +1545,6 @@ Transform:
   - {fileID: 2111820543280782285}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!111 &6268845075865066587
-Animation:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8565310438801436797}
-  m_Enabled: 0
-  serializedVersion: 4
-  m_Animation: {fileID: 7400048, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  m_Animations:
-  - {fileID: 7400000, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400002, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400004, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400006, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400008, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400010, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400012, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400014, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400016, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400018, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400020, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400022, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400024, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400026, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400028, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400030, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400032, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400034, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400036, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400038, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400040, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400042, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400044, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400046, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  - {fileID: 7400048, guid: 716d7e8e7ab526f4ba5ca918687b3fe5, type: 3}
-  m_WrapMode: 0
-  m_PlayAutomatically: 1
-  m_AnimatePhysics: 0
-  m_UpdateMode: 0
-  m_CullingType: 1
 --- !u!95 &8643121547165636674
 Animator:
   serializedVersion: 7
@@ -1618,7 +1577,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
+  m_Speed: 2
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -1642,13 +1601,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ece1127730996f47b707f04af63aa47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bear
+  species: 1
   age: 0
   agingSpeed: 0.1
+  grownUpAge: 10
+  oldAge: 20
   IsMale: 0
   sightRange: 40
   hearingRange: 10
-  grownUpAge: 10
-  oldAge: 20
+  speed: 2
+  runningSpeed: 4
+  size: 1
+  strength: 0
+  needs: {fileID: 0}
 --- !u!114 &8115009223279749859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1666,7 +1631,6 @@ MonoBehaviour:
   minTimeWaiting: 2
   maxTimeWaiting: 5
   waitTime: 0
-  animal: {fileID: 354103798133286141}
 --- !u!114 &5642719112376538877
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1697,7 +1661,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: beb6439965c573b4e8ab1624b4079bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Aging
-  animal: {fileID: 354103798133286141}
   childScale: 0.5
   adultScale: 1
 --- !u!114 &6418187023096637690
@@ -1764,6 +1727,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.77996826, y: 0.87387466, z: 1.245697}
   m_Center: {x: -0.11001587, y: 0.8952465, z: -0.034225464}
+--- !u!114 &-6116638918593094840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8565310438801436797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4afa63622caa2ec46bae015df0700687, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BearFOV
+  viewAngle: 120
+  viewLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &8881512897072243634
 GameObject:
   m_ObjectHideFlags: 0

@@ -30,18 +30,17 @@ public class InformationUI : MonoBehaviour
         {
             hungerSlider.maxValue = current.maxHunger;
             hungerSlider.value = current.hungerLevel;
+
+            thirstSlider.maxValue = current.maxThirst;
+            thirstSlider.value = current.thirstLevel;
+
         }
     }
 
 
-    public void SetMoose(AnimalNeeds newMoose)
+    public void SetMoose(AnimalNeeds newAnimal)
     {
-        current = newMoose;
-    }
-
-    public void SetType(string type)
-    {
-        animalType.text = type;
+        current = newAnimal;
     }
 
     public void ClearInfo()
@@ -50,10 +49,10 @@ public class InformationUI : MonoBehaviour
         panel.SetActive(false);
     }
 
-    public void ShowInfo(AnimalNeeds moose)
+    public void ShowInfo(Animal animal)
     {
-        Debug.Log("SHOW INFO");
-        current = moose;
+        current = animal.needs;
+        animalType.text = animal.species.ToString();
         panel.SetActive(true);
     }
 

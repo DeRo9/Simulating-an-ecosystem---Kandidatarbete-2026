@@ -30,16 +30,28 @@ public class Animal : MonoBehaviour
 
     [Header("Forces")]
     public float speed = 2f;
-    public float size = 1; //I guess this well be equivalent to hp in the future... right now scale
-    public float strength;
+    public float runningSpeed = 4f;
+    public float size = 1f; //I guess this well be equivalent to hp in the future... right now scale
+    public float strength = 1f;
+
+    public AnimalNeeds needs;
 
     protected virtual void Awake()
     {
         IsMale = Random.value > 0.5f;
+        needs = GetComponent<AnimalNeeds>();
     }
 
     protected virtual void Update()
     {
         age += Time.deltaTime * agingSpeed;
+    }
+
+    public virtual void GetStats(out float speed, out float size, out float sight, out float hearing)
+    {
+        speed = this.speed;
+        size = this.size;
+        sight = this.sightRange;
+        hearing = this.hearingRange;
     }
 }
