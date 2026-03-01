@@ -11,6 +11,7 @@ public class Wolf : Animal
         size = 2f;
         sightRange = 80f;
         hearingRange = 50f;
+        attackDamage = 20f;
 
         base.Awake();
     }

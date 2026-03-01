@@ -11,7 +11,7 @@ public class WolfBehaviour : AnimalBehaviour
 
     GameObject preyTarget;
     public GameObject CurrentTarget => preyTarget;
-    float attackRange = 2f; // Range within which the wolf can attack prey
+    float attackRange = 3.5f; // Range within which the wolf can attack prey
 
     float maxHuntTime = 20f; // Maximum time the wolf will spend hunting before giving up
     [SerializeField]
@@ -23,6 +23,9 @@ public class WolfBehaviour : AnimalBehaviour
 
     float repathTimer = 0f;
     float repathInterval = 0.3f; // Time interval for recalculating path to prey
+
+    float attackTimer = 0f;
+    float attackInterval = 1f; // Time interval for attacking, to prevent multiple attacks in quick succession
 
 
     GameObject waterTarget;
@@ -188,13 +191,50 @@ public class WolfBehaviour : AnimalBehaviour
         // Attack if within range
         if (distance <= attackRange)
         {
-            // Implement attacking here
+            AttackOnContact();
+        } else if (distance > attackRange)
+        {
+            anim.SetBool("isAttacking", false);
+            agent.isStopped = false;
         }
+
     }
 
+    void AttackOnContact()
+    {
+        if(preyTarget != null)
+        {
+            MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
+            if (moose != null)
+            {
+
+                if(attackTimer >= attackInterval) // Attack at regular intervals
+                {
+                    moose.InflictDamage(animal.attackDamage); // Inflict damage to the moose
+                    attackTimer = 0f; // Reset attack timer
+                }
+                else
+                {
+                    attackTimer += Time.deltaTime; // Increase attack timer
+                }
+
+            }
+        }
+
+        agent.isStopped = true;
+        anim.SetBool("isAttacking", true);
+        Debug.Log("Wolf attacked prey!");
+    }
+
+    void StopAttack() { 
+        anim.SetBool("isAttacking", false);
+        agent.isStopped = false;
+    }
 
     void LostPrey()
     {
+        StopAttack(); // Stop attacking if the prey is lost
+
         if (preyTarget != null)
         {
             MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();

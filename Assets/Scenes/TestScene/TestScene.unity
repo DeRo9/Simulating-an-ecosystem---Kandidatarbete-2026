@@ -416,9 +416,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 0}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
-  m_Value: 1
+  m_MaxValue: 100
+  m_WholeNumbers: 1
+  m_Value: 100
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1128,9 +1128,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 0}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
+  m_MaxValue: 100
   m_WholeNumbers: 0
-  m_Value: 1
+  m_Value: 100
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1529,9 +1529,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 0}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
-  m_Value: 1
+  m_MaxValue: 100
+  m_WholeNumbers: 1
+  m_Value: 100
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1625,6 +1625,10 @@ PrefabInstance:
     - target: {fileID: 4130331568563197886, guid: 673d635672c542b44af2717b4c832882, type: 3}
       propertyPath: speed
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5458290157786460551, guid: 673d635672c542b44af2717b4c832882, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6538256312678152227, guid: 673d635672c542b44af2717b4c832882, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1923,6 +1927,10 @@ PrefabInstance:
     - target: {fileID: -8542277066833054746, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
       propertyPath: speed
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -5019463054831179927, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
+      propertyPath: viewAngle
+      value: 360
       objectReference: {fileID: 0}
     - target: {fileID: 1081293250822596563, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
       propertyPath: hungerDecreaseRate
@@ -2373,9 +2381,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 0}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
-  m_Value: 1
+  m_MaxValue: 100
+  m_WholeNumbers: 1
+  m_Value: 100
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []

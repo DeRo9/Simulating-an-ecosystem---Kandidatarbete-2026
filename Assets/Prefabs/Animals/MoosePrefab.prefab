@@ -549,6 +549,7 @@ MonoBehaviour:
   runningSpeed: 4
   size: 1
   strength: 0
+  attackDamage: 20
   needs: {fileID: 0}
 --- !u!114 &4656165741010984386
 MonoBehaviour:
@@ -610,8 +611,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MooseNeeds
   maxHunger: 100
   maxThirst: 100
+  maxHealth: 100
   hungerLevel: 100
   thirstLevel: 100
+  healthLevel: 100
   hungerDecreaseRate: 0.8
   thirstDecreaseRate: 1
 --- !u!195 &5458290157786460551
