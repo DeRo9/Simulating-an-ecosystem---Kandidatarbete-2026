@@ -21,6 +21,10 @@ public class WolfBehaviour : AnimalBehaviour
     [SerializeField]
     float huntCooldownTimer = 0;
 
+    float repathTimer = 0f;
+    float repathInterval = 0.3f; // Time interval for recalculating path to prey
+
+
     GameObject waterTarget;
 
 
@@ -79,7 +83,7 @@ public class WolfBehaviour : AnimalBehaviour
         {
             preyTarget = closestPrey;
 
-            MooseBehaviour moose = preyTarget.GetComponent<MooseBehaviour>();
+            MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
             if (moose != null)
             {
                 moose.OnBeingHunted(gameObject); // Notify the moose that it is being hunted
@@ -173,7 +177,13 @@ public class WolfBehaviour : AnimalBehaviour
 
         // Keep moving towards the prey
         agent.isStopped = false;
-        agent.SetDestination(preyTarget.transform.position);
+        repathTimer += Time.deltaTime;
+
+        if(repathTimer >= repathInterval) // Stuttering prevention: Recalculate path to prey at regular intervals
+        {
+            agent.SetDestination(preyTarget.transform.position);
+            repathTimer = 0f;
+        }
 
         // Attack if within range
         if (distance <= attackRange)
@@ -187,7 +197,7 @@ public class WolfBehaviour : AnimalBehaviour
     {
         if (preyTarget != null)
         {
-            MooseBehaviour moose = preyTarget.GetComponent<MooseBehaviour>();
+            MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
             if (moose != null)
             {
                 moose.OnNoLongerHunted(gameObject); // Notify the moose that it is no longer being hunted

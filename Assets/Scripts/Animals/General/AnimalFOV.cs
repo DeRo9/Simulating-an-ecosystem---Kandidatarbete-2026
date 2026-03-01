@@ -13,11 +13,19 @@ public class AnimalFOV : MonoBehaviour
 
     public LayerMask viewLayer;
 
+    void Awake()
+    {
+        animal = GetComponent<Animal>();
+    }
+
+    void OnValidate()
+    {
+        animal = GetComponent<Animal>();
+    }
+
     // Visualize the FOV
     void OnDrawGizmosSelected()
     {
-        animal = GetComponent<Animal>();
-
         // Draw the view range (Sphere)
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, animal.sightRange);

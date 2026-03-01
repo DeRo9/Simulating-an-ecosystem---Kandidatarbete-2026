@@ -360,7 +360,7 @@ MonoBehaviour:
   bearPrefab: {fileID: 8565310438801436797, guid: 78b0c3200397bff4c991a44661ad17cb, type: 3}
   berryBushPrefab: {fileID: 8586240158754271358, guid: c3040d7ed5a212f45a05efa69587ba80, type: 3}
   informationUI: {fileID: 2108928193}
-  spawnRadius: 200
+  spawnRadius: 100
 --- !u!1 &34181463
 GameObject:
   m_ObjectHideFlags: 0
@@ -446,12 +446,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1802882010}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 100
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 9701376}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateSightText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &44702048
 GameObject:
   m_ObjectHideFlags: 0
@@ -2193,12 +2205,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 747578901}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 100
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1474142828}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateHearingText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &493360527
 GameObject:
   m_ObjectHideFlags: 0
@@ -2809,12 +2833,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 924023240}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 5
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 9701376}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateSizeText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &568052820
 GameObject:
   m_ObjectHideFlags: 0
@@ -3357,12 +3393,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1215930322}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 100
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 754283740}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateHearingText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &650905552
 GameObject:
   m_ObjectHideFlags: 0
@@ -5103,12 +5151,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2085304247}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 100
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 754283740}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateSightText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &850344226
 GameObject:
   m_ObjectHideFlags: 0
@@ -6860,12 +6920,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 624738573}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 100
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 9701376}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateHearingText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1157874329
 GameObject:
   m_ObjectHideFlags: 0
@@ -7026,12 +7098,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1282340400}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 5
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1474142828}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateSizeText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1197303219
 GameObject:
   m_ObjectHideFlags: 0
@@ -7795,12 +7879,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1595044950}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 100
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1474142828}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateSightText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1301790831
 GameObject:
   m_ObjectHideFlags: 0
@@ -8780,12 +8876,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1388428768}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 10
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 9701376}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateSpeedText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1434431283
 GameObject:
   m_ObjectHideFlags: 0
@@ -9316,12 +9424,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1134973228}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 5
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 754283740}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateSizeText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1530694220
 GameObject:
   m_ObjectHideFlags: 0
@@ -10024,12 +10144,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 209672295}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 10
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 754283740}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateSpeedText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1662392095
 GameObject:
   m_ObjectHideFlags: 0
@@ -11842,12 +11974,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 493360528}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_MaxValue: 10
+  m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1474142828}
+        m_TargetAssemblyTypeName: AnimalSetupPanel, Assembly-CSharp
+        m_MethodName: UpdateSpeedText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1904595425
 GameObject:
   m_ObjectHideFlags: 0
