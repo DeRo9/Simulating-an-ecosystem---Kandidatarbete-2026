@@ -8,17 +8,23 @@ public class BearBehaviour : AnimalBehaviour
     new AnimalNeeds needs;
     GameObject foodTarget;
     GameObject waterTarget;
+    BearHearing hearing;
 
     protected override void Start()
     {
         base.Start();
         animal = GetComponent<Animal>();
         needs = GetComponent<AnimalNeeds>();
-
+        hearing = GetComponent<BearHearing>();
     }
 
     protected override void Update()
     {
+        if (hearing != null && hearing.HeardSomething)
+        {
+            Debug.Log("Bear heard: " + hearing.HeardAnimal.name);
+            ChangeState(State.Idle);
+        }
         if (CurrentState != State.Eat && CurrentState != State.Drink)
         {
 

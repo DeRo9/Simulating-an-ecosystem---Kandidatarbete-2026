@@ -34,6 +34,11 @@ public class Animal : MonoBehaviour
     public float size = 1f; //I guess this well be equivalent to hp in the future... right now scale
     public float strength = 1f;
 
+    [Header("Hearing")]
+    public bool isMoving{get;private set;}
+    public float currentSpeed{get; private set;}
+
+
     public AnimalNeeds needs;
 
     protected virtual void Awake()
@@ -53,5 +58,10 @@ public class Animal : MonoBehaviour
         size = this.size;
         sight = this.sightRange;
         hearing = this.hearingRange;
+    }
+
+    public virtual void SetMovementState(bool moving, float speed){
+        isMoving = moving;
+        currentSpeed = speed;
     }
 }
