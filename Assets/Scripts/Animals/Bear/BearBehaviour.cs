@@ -23,7 +23,7 @@ public class BearBehaviour : AnimalBehaviour
         if (hearing != null && hearing.HeardSomething)
         {
             Debug.Log("Bear heard: " + hearing.HeardAnimal.name);
-            ChangeState(State.Idle);
+           // ChangeState(State.Idle); testing
         }
         if (CurrentState != State.Eat && CurrentState != State.Drink)
         {
