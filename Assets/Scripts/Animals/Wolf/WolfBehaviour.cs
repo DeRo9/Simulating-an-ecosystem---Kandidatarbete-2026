@@ -178,24 +178,23 @@ public class WolfBehaviour : AnimalBehaviour
             return;
         }
 
-        // Keep moving towards the prey
-        agent.isStopped = false;
-        repathTimer += Time.deltaTime;
-
-        if(repathTimer >= repathInterval) // Stuttering prevention: Recalculate path to prey at regular intervals
-        {
-            agent.SetDestination(preyTarget.transform.position);
-            repathTimer = 0f;
-        }
-
         // Attack if within range
         if (distance <= attackRange)
         {
-            agent.isStopped = true;
+            agent.SetDestination(preyTarget.transform.position);
             AttackOnContact();
         } else
         {
+
+            // Keep moving towards the prey
             agent.isStopped = false;
+            repathTimer += Time.deltaTime;
+
+            if (repathTimer >= repathInterval) // Stuttering prevention: Recalculate path to prey at regular intervals
+            {
+                agent.SetDestination(preyTarget.transform.position);
+                repathTimer = 0f;
+            }
         }
 
     }
@@ -204,8 +203,14 @@ public class WolfBehaviour : AnimalBehaviour
     {
         if(preyTarget != null)
         {
-            anim.SetTrigger("Attack");
-            Debug.Log("Wolf attacked prey");
+            attackTimer += Time.deltaTime;
+
+            if (attackTimer >= attackInterval)
+            {
+                anim.SetTrigger("Attack");
+                attackTimer = 0f;
+                Debug.Log("Wolf attacked prey");
+            }
         }
     }
 
