@@ -7,7 +7,6 @@ public class BearBehaviour : AnimalBehaviour
 
     new AnimalNeeds needs;
     GameObject foodTarget;
-    GameObject waterTarget;
 
     protected override void Start()
     {
@@ -70,57 +69,12 @@ public class BearBehaviour : AnimalBehaviour
         return false;
     }
 
-    bool FindWater()
-    {
-        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange);
-
-        float closestDistance = Mathf.Infinity;
-        GameObject closestWater = null;
-
-        foreach (Collider hit in hits)
-        {
-
-            Debug.Log("Detected water collider");
-
-            if (hit.CompareTag("Water"))
-            {
-                float distance = Vector3.Distance(transform.position, hit.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestWater = hit.gameObject;
-                }
-
-            }
-
-        }
-
-        if(closestWater != null)
-        {
-            waterTarget = closestWater;
-            return true;
-        }
-        return false;
-
-    }
-
-
     protected override bool IsHungry()
     {
         // Bear is hungry, find food
         if (needs.isHungry)
         {
             return FindFood();
-        }
-        return false;
-    }
-
-    protected override bool IsThirsty()
-    {
-        // Bear is thristy, find water source
-        if (needs.isThirsty)
-        {
-            return FindWater();
         }
         return false;
     }
@@ -190,40 +144,6 @@ public class BearBehaviour : AnimalBehaviour
             foodTarget = null;
             ChangeState(State.Wander);
         }
-    }
-
-
-
-    protected override void UpdateDrink()
-    {
-        // If the water target is null, switch back to wandering
-        if (waterTarget == null)
-        {
-            ChangeState(State.Wander);
-            return;
-        }
-
-        // If the moose has reached the water, stop moving
-        if (hasArrived())
-        {
-            agent.isStopped = true;
-            Debug.Log("Moose drank water.");
-
-            if (!needs.isThirsty)
-            {
-            waterTarget = null;
-            ChangeState(State.Wander);
-            }
-        }
-
-        else
-        {
-            agent.isStopped = false;
-        }
-        
-        // If the moose is no longer thirsty, stop drinking and switch back to wandering
- 
-        
     }
 
 }

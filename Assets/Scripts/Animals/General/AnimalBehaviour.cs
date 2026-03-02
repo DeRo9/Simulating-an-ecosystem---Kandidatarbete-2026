@@ -34,6 +34,8 @@ public abstract class AnimalBehaviour : MonoBehaviour
     [SerializeField]
     protected float waitTime = 0f;
 
+    public GameObject waterTarget;
+
 
     protected Animal animal;
     protected Rigidbody rb;
@@ -142,7 +144,15 @@ public abstract class AnimalBehaviour : MonoBehaviour
     }
 
     protected virtual bool IsHungry() { return false; }
-    protected virtual bool IsThirsty() { return false; }
+    protected bool IsThirsty()
+    {
+        // Wolf is thristy, find water source
+        if (needs.isThirsty)
+        {
+            return FindWater();
+        }
+        return false;
+    }
 
     protected virtual void EatStateForSpecificAnimal() { }
 
@@ -150,7 +160,94 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected virtual void UpdateIdle() { return; }
     protected virtual void UpdateWander() { return; }
     protected virtual void UpdateEat() { return; }
-    protected virtual void UpdateDrink() { return;  }
+
+    bool FindWater()
+    {
+        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange);
+
+        float closestDistance = Mathf.Infinity;
+        GameObject closestWater = null;
+
+        foreach (Collider hit in hits)
+        {
+
+            Debug.Log("Detected water collider");
+
+            if (hit.CompareTag("Water"))
+            {
+                float distance = Vector3.Distance(transform.position, hit.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestWater = hit.gameObject;
+                }
+
+            }
+
+        }
+
+        if(closestWater != null)
+        {
+            waterTarget = closestWater;
+            return true;
+        }
+        return false;
+
+    }
+
+    public void OnFinishedDrinking()
+    {
+        waterTarget = null;
+        agent.isStopped = true;
+
+        if (needs.isHungry)
+        {
+            ChangeState(State.Eat);
+        }
+        else
+        {
+            ChangeState(State.Wander);
+        }
+    }
+
+    public void UpdateDrink()
+    {
+        // If the water target is null, switch back to wandering
+        if (waterTarget == null)
+        {
+            ChangeState(State.Wander);
+            return;
+        }
+
+        // If the moose has reached the water, stop moving
+        if (hasArrived())
+        {
+            agent.isStopped = true;
+
+
+            // No longer thirsty
+            if (!needs.isThirsty)
+            {
+                if (needs.isHungry)
+                {
+                    ChangeState(State.Eat);
+                }
+                else
+                {
+                    ChangeState(State.Wander);
+                }
+
+                return;
+            }
+        }
+
+        else
+        {
+            agent.isStopped = false;
+        }
+ 
+    }    
+    
     protected virtual void UpdateHunt() { return; }
     protected virtual void UpdateFlee() { return; }
     protected virtual void HuntState() { return; }

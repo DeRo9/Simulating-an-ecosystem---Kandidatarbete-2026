@@ -13,7 +13,6 @@ public class MooseBehaviour : AnimalBehaviour
 
     new AnimalNeeds needs;
     GameObject foodTarget;
-    GameObject waterTarget;
     MooseFOV fov;
 
     GameObject enemy; // For fleeing from wolves and bears
@@ -89,40 +88,6 @@ public class MooseBehaviour : AnimalBehaviour
         return false;
     }
 
-bool FindWater()
-    {
-        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange);
-
-        float closestDistance = Mathf.Infinity;
-        GameObject closestWater = null;
-
-        foreach (Collider hit in hits)
-        {
-
-            Debug.Log("Detected water collider");
-
-            if (hit.CompareTag("Water"))
-            {
-                float distance = Vector3.Distance(transform.position, hit.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestWater = hit.gameObject;
-                }
-
-            }
-
-        }
-
-        if(closestWater != null)
-        {
-            waterTarget = closestWater;
-            return true;
-        }
-        return false;
-
-    }
-
 
     protected override bool IsHungry()
     {
@@ -130,16 +95,6 @@ bool FindWater()
         if (needs.isHungry)
         {
             return FindFood();
-        }
-        return false;
-    }
-
-    protected override bool IsThirsty()
-    {
-        // Moose is thristy, find water source
-        if (needs.isThirsty)
-        {
-            return FindWater();
         }
         return false;
     }
@@ -211,59 +166,6 @@ bool FindWater()
         }
     }
 
-
-    public void OnFinishedDrinking()
-    {
-        waterTarget = null;
-        agent.isStopped = true;
-
-        if (needs.isHungry)
-        {
-            ChangeState(State.Eat);
-        }
-        else
-        {
-            ChangeState(State.Wander);
-        }
-    }
-
-    protected override void UpdateDrink()
-    {
-        // If the water target is null, switch back to wandering
-        if (waterTarget == null)
-        {
-            ChangeState(State.Wander);
-            return;
-        }
-
-        // If the moose has reached the water, stop moving
-        if (hasArrived())
-        {
-            agent.isStopped = true;
-
-
-            // No longer thirsty
-            if (!needs.isThirsty)
-            {
-                if (needs.isHungry)
-                {
-                    ChangeState(State.Eat);
-                }
-                else
-                {
-                    ChangeState(State.Wander);
-                }
-
-                return;
-            }
-        }
-
-        else
-        {
-            agent.isStopped = false;
-        }
- 
-    }
 
     protected override void UpdateFlee()
     {
