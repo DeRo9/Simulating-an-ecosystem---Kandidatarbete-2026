@@ -15,6 +15,7 @@ public class MooseBehaviour : AnimalBehaviour
     GameObject foodTarget;
     GameObject waterTarget;
     MooseFOV fov;
+    MooseHearing hearing;
 
     GameObject enemy; // For fleeing from wolves and bears
 
@@ -24,12 +25,31 @@ public class MooseBehaviour : AnimalBehaviour
         animal = GetComponent<Animal>();
         needs = GetComponent<AnimalNeeds>();
         fov = GetComponent<MooseFOV>();
+        hearing = GetComponent<MooseHearing>();
     }
 
 
     protected override void Update()
     {
-
+        if (hearing != null && hearing.HeardSomething)
+        {
+            Animal heard = hearing.HeardAnimal;
+            if (heard.species == Species.bear || heard.species == Species.wolf)
+            {
+                Debug.Log("Moose heard a predator");
+                enemy = heard.gameObject;
+                ChangeState(State.Fleeing);
+            }
+        }
+        else
+        {
+            if (CurrentState == State.Fleeing)
+            {
+                Debug.Log ("Moose has escaped");
+                enemy = null;
+                CurrentState = State.Wander;
+            }
+        }
         // If not currently eating, drinking or fleeing, check if the moose needs to eat or drink and switch to the appropriate state
         if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Fleeing)
         {
