@@ -11,7 +11,7 @@ public class WolfBehaviour : AnimalBehaviour
 
     GameObject preyTarget;
     public GameObject CurrentTarget => preyTarget;
-    float attackRange = 2f; // Range within which the wolf can attack prey
+    float attackRange = 3.5f; // Range within which the wolf can attack prey
 
     float maxHuntTime = 20f; // Maximum time the wolf will spend hunting before giving up
     [SerializeField]
@@ -23,6 +23,9 @@ public class WolfBehaviour : AnimalBehaviour
 
     float repathTimer = 0f;
     float repathInterval = 0.3f; // Time interval for recalculating path to prey
+
+    float attackTimer = 0f;
+    float attackInterval = 1f; // Time interval for attacking, to prevent multiple attacks in quick succession
 
 
     GameObject waterTarget;
@@ -175,26 +178,58 @@ public class WolfBehaviour : AnimalBehaviour
             return;
         }
 
-        // Keep moving towards the prey
-        agent.isStopped = false;
-        repathTimer += Time.deltaTime;
-
-        if(repathTimer >= repathInterval) // Stuttering prevention: Recalculate path to prey at regular intervals
-        {
-            agent.SetDestination(preyTarget.transform.position);
-            repathTimer = 0f;
-        }
-
         // Attack if within range
         if (distance <= attackRange)
         {
-            // Implement attacking here
+            agent.SetDestination(preyTarget.transform.position);
+            AttackOnContact();
+        } else
+        {
+
+            // Keep moving towards the prey
+            agent.isStopped = false;
+            repathTimer += Time.deltaTime;
+
+            if (repathTimer >= repathInterval) // Stuttering prevention: Recalculate path to prey at regular intervals
+            {
+                agent.SetDestination(preyTarget.transform.position);
+                repathTimer = 0f;
+            }
+        }
+
+    }
+
+    void AttackOnContact()
+    {
+        if(preyTarget != null)
+        {
+            attackTimer += Time.deltaTime;
+
+            if (attackTimer >= attackInterval)
+            {
+                anim.SetTrigger("Attack");
+                attackTimer = 0f;
+                Debug.Log("Wolf attacked prey");
+            }
         }
     }
 
+    public void DamageMoose()
+    {
+        if (preyTarget != null)
+        {
+            MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
+            if (moose != null)
+            {
+                moose.InflictDamage(animal.attackDamage);
+            }
+        }
+    }
 
     void LostPrey()
     {
+        //StopAttack(); // Stop attacking if the prey is lost
+
         if (preyTarget != null)
         {
             MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();

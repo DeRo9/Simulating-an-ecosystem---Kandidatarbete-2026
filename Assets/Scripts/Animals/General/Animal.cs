@@ -33,6 +33,7 @@ public class Animal : MonoBehaviour
     public float runningSpeed = 4f;
     public float size = 1f; //I guess this well be equivalent to hp in the future... right now scale
     public float strength = 1f;
+    public float attackDamage = 20f;
 
     public AnimalNeeds needs;
 

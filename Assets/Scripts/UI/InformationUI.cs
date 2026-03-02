@@ -34,6 +34,9 @@ public class InformationUI : MonoBehaviour
             thirstSlider.maxValue = current.maxThirst;
             thirstSlider.value = current.thirstLevel;
 
+            healthSlider.maxValue = current.maxHealth;
+            healthSlider.value = current.healthLevel;
+
         }
     }
 

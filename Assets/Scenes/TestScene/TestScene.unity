@@ -416,9 +416,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 0}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
-  m_Value: 1
+  m_MaxValue: 100
+  m_WholeNumbers: 1
+  m_Value: 100
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -709,7 +709,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.12, y: 6.44, z: -10}
+  m_LocalPosition: {x: 15.4, y: 6.44, z: -3.07}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1128,9 +1128,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 0}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
+  m_MaxValue: 100
   m_WholeNumbers: 0
-  m_Value: 1
+  m_Value: 100
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1529,9 +1529,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 0}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
-  m_Value: 1
+  m_MaxValue: 100
+  m_WholeNumbers: 1
+  m_Value: 100
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1624,7 +1624,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4130331568563197886, guid: 673d635672c542b44af2717b4c832882, type: 3}
       propertyPath: speed
-      value: 2
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4130331568563197886, guid: 673d635672c542b44af2717b4c832882, type: 3}
+      propertyPath: runningSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5458290157786460551, guid: 673d635672c542b44af2717b4c832882, type: 3}
+      propertyPath: m_Speed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5458290157786460551, guid: 673d635672c542b44af2717b4c832882, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6538256312678152227, guid: 673d635672c542b44af2717b4c832882, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1636,7 +1648,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6538256312678152227, guid: 673d635672c542b44af2717b4c832882, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 11.97
+      value: 16.88
       objectReference: {fileID: 0}
     - target: {fileID: 6538256312678152227, guid: 673d635672c542b44af2717b4c832882, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1924,9 +1936,17 @@ PrefabInstance:
       propertyPath: speed
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: -5019463054831179927, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
+      propertyPath: viewAngle
+      value: 360
+      objectReference: {fileID: 0}
+    - target: {fileID: 1081293250822596563, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
+      propertyPath: hungerLevel
+      value: 70
+      objectReference: {fileID: 0}
     - target: {fileID: 1081293250822596563, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
       propertyPath: hungerDecreaseRate
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 1081293250822596563, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
       propertyPath: thirstDecreaseRate
@@ -1942,7 +1962,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4167753896645195812, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 25.65
+      value: 22.82
       objectReference: {fileID: 0}
     - target: {fileID: 4167753896645195812, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2373,9 +2393,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 0}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
-  m_Value: 1
+  m_MaxValue: 100
+  m_WholeNumbers: 1
+  m_Value: 100
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
