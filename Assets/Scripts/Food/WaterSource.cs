@@ -7,21 +7,23 @@ public class WaterSource : MonoBehaviour
 {
     [SerializeField]
     
-    private float chunkOfWater = 50f;
+    private float chunkOfWater = 100f;
 
     void OnTriggerEnter(Collider other)
     {
-        
+        Debug.Log("Something entered water: " + other.name);
+
         AnimalNeeds needs = other.GetComponentInParent<AnimalNeeds>();
              
         if (needs != null && needs.isThirsty) //Only drink if thirsty
         {
             needs.drinkFromSource(chunkOfWater);
             
-            
+            MooseBehaviour behaviour = other.GetComponentInParent<MooseBehaviour>();
+            if (behaviour != null)
+            {
+                behaviour.OnFinishedDrinking();
+            }
         }
-            
-        
     }
-
 }

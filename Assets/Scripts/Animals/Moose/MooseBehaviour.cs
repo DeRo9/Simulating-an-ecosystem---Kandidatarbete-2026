@@ -212,6 +212,20 @@ bool FindWater()
     }
 
 
+    public void OnFinishedDrinking()
+    {
+        waterTarget = null;
+        agent.isStopped = true;
+
+        if (needs.isHungry)
+        {
+            ChangeState(State.Eat);
+        }
+        else
+        {
+            ChangeState(State.Wander);
+        }
+    }
 
     protected override void UpdateDrink()
     {
@@ -226,13 +240,21 @@ bool FindWater()
         if (hasArrived())
         {
             agent.isStopped = true;
-            Debug.Log("Moose drank water.");
+
 
             // No longer thirsty
             if (!needs.isThirsty)
             {
-            waterTarget = null;
-            ChangeState(State.Wander);
+                if (needs.isHungry)
+                {
+                    ChangeState(State.Eat);
+                }
+                else
+                {
+                    ChangeState(State.Wander);
+                }
+
+                return;
             }
         }
 
