@@ -115,7 +115,11 @@ public abstract class AnimalBehaviour : MonoBehaviour
         // Update animation based on movement
         anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f ); // "isWalking" Ã¤r en bool i animator
         anim.SetBool("isRunning", agent.velocity.magnitude > 3f); // "isRunning" Ã¤r en bool i animator
-        
+        if (animal != null)
+        {
+            bool moving = agent.velocity.magnitude > 0.1f;
+            animal.SetMovementState (moving,agent.velocity.magnitude);
+        }
 
         // State machine logic
         switch (CurrentState)
