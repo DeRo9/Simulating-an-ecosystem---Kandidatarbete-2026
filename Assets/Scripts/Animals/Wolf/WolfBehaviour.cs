@@ -191,10 +191,10 @@ public class WolfBehaviour : AnimalBehaviour
         // Attack if within range
         if (distance <= attackRange)
         {
+            agent.isStopped = true;
             AttackOnContact();
-        } else if (distance > attackRange)
+        } else
         {
-            anim.SetBool("isAttacking", false);
             agent.isStopped = false;
         }
 
@@ -204,36 +204,26 @@ public class WolfBehaviour : AnimalBehaviour
     {
         if(preyTarget != null)
         {
+            anim.SetTrigger("Attack");
+            Debug.Log("Wolf attacked prey");
+        }
+    }
+
+    public void DamageMoose()
+    {
+        if (preyTarget != null)
+        {
             MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
             if (moose != null)
             {
-
-                if(attackTimer >= attackInterval) // Attack at regular intervals
-                {
-                    moose.InflictDamage(animal.attackDamage); // Inflict damage to the moose
-                    attackTimer = 0f; // Reset attack timer
-                }
-                else
-                {
-                    attackTimer += Time.deltaTime; // Increase attack timer
-                }
-
+                moose.InflictDamage(animal.attackDamage);
             }
         }
-
-        agent.isStopped = true;
-        anim.SetBool("isAttacking", true);
-        Debug.Log("Wolf attacked prey!");
-    }
-
-    void StopAttack() { 
-        anim.SetBool("isAttacking", false);
-        agent.isStopped = false;
     }
 
     void LostPrey()
     {
-        StopAttack(); // Stop attacking if the prey is lost
+        //StopAttack(); // Stop attacking if the prey is lost
 
         if (preyTarget != null)
         {
