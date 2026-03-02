@@ -8,6 +8,7 @@ public class WolfBehaviour : AnimalBehaviour
 
     new AnimalNeeds needs;
     AnimalFOV fov;
+    WolfHearing hearing;
 
     GameObject preyTarget;
     public GameObject CurrentTarget => preyTarget;
@@ -38,11 +39,17 @@ public class WolfBehaviour : AnimalBehaviour
         animal = GetComponent<Animal>();
         needs = GetComponent<AnimalNeeds>();
         fov = GetComponent<AnimalFOV>();
+        hearing = GetComponent<WolfHearing>();
     }
 
 
     protected override void Update()
     {
+        if (hearing != null && hearing.HeardSomething)
+        {
+            Debug.Log("Wolf heard: " + hearing.HeardAnimal.name);
+           // ChangeState(State.Idle); testing
+        }
         if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt)
         {
             if(IsHungry()) { /* Impemented inside isHungry(), so it will automatically change to hunt there*/ }

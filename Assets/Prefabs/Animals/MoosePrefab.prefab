@@ -501,6 +501,8 @@ GameObject:
   - component: {fileID: 4377887995782312641}
   - component: {fileID: -7914532255645837834}
   - component: {fileID: 7253260387713355870}
+  - component: {fileID: 5694396359575962331}
+  - component: {fileID: 8839650572549012831}
   m_Layer: 0
   m_Name: MoosePrefab
   m_TagString: Moose
@@ -725,6 +727,40 @@ MonoBehaviour:
   viewLayer:
     serializedVersion: 2
     m_Bits: 0
+--- !u!135 &5694396359575962331
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2670038152025143281}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8839650572549012831
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2670038152025143281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 706da7dd76967fb40a62dba58f1b19e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MooseHearing
+  minHearingSpeed: 0.1
 --- !u!1 &2992573502856677246
 GameObject:
   m_ObjectHideFlags: 0

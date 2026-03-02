@@ -22,7 +22,8 @@ public class AnimalHearing : MonoBehaviour
     void OnValidate(){
         animal = GetComponent <Animal>();
     }
-    void OnTriggerEnter(Collider other){
+    //checks if an animal has entered the range
+    void OnTriggerEnter(Collider other){ 
         var a = other.GetComponentInParent<Animal>();
         if (a == null) return;
         if (a == animal) return;
@@ -31,7 +32,7 @@ public class AnimalHearing : MonoBehaviour
             animalsInRange.Add(a);
         }
     }
-
+    // check if the animal has left the range
     void OnTriggerExit(Collider other){
         var a = other.GetComponentInParent<Animal>();
         if (a == null) return;
@@ -43,7 +44,7 @@ public class AnimalHearing : MonoBehaviour
     {
         DetectMovement();
     }
-    protected virtual void DetectMovement()
+    protected virtual void DetectMovement() //Checks which animal it heard and which one is the closest
     {
         HeardAnimal = null;
         float dist = Mathf.Infinity;
