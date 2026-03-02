@@ -998,6 +998,7 @@ MonoBehaviour:
   runningSpeed: 4
   size: 2
   strength: 0
+  attackDamage: 20
   needs: {fileID: 0}
 --- !u!114 &2432284124251840962
 MonoBehaviour:
@@ -1031,8 +1032,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AnimalNeeds
   maxHunger: 100
   maxThirst: 100
+  maxHealth: 100
   hungerLevel: 100
   thirstLevel: 100
+  healthLevel: 100
   hungerDecreaseRate: 0.8
   thirstDecreaseRate: 1
 --- !u!114 &3984187836223728344

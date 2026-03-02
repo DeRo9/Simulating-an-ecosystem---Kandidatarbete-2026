@@ -292,4 +292,9 @@ bool FindWater()
         }
     }
 
+    public void InflictDamage(float damage)
+    {
+        needs.TakeDamage(damage);
+    }
+
 }
