@@ -173,18 +173,43 @@ public class WolfBehaviour : AnimalBehaviour
             notifyDeath();
         }
 
-        // Check if the prey is still within sight range
-        float distance = Vector3.Distance(transform.position, preyTarget.transform.position);
-        if(distance > animal.sightRange)
+        if (preyTarget != null)
         {
-            LostPrey(); // If the prey is too far away, give up
-            return;
-        }
+            // Check if the prey is still within sight range
+            float distance = Vector3.Distance(transform.position, preyTarget.transform.position);
+            if (distance > animal.sightRange)
+            {
+                LostPrey(); // If the prey is too far away, give up
+                return;
+            }
 
-        if(!fov.IsInFOV(preyTarget.transform))
-        {
-            LostPrey(); // If the prey is no longer in the wolf's field of view, give up
-            return;
+            // Attack if within range
+            if (distance <= attackRange)
+            {
+                agent.SetDestination(preyTarget.transform.position);
+                AttackOnContact();
+            }
+            else
+            {
+
+                // Keep moving towards the prey
+                agent.isStopped = false;
+                repathTimer += Time.deltaTime;
+
+                if (repathTimer >= repathInterval) // Stuttering prevention: Recalculate path to prey at regular intervals
+                {
+                    agent.SetDestination(preyTarget.transform.position);
+                    repathTimer = 0f;
+                }
+
+            }
+
+            if (!fov.IsInFOV(preyTarget.transform))
+            {
+                LostPrey(); // If the prey is no longer in the wolf's field of view, give up
+                return;
+            }
+
         }
 
         // Hunting timer
@@ -193,25 +218,6 @@ public class WolfBehaviour : AnimalBehaviour
         {   
             LostPrey(); // If the wolf has been hunting for too long, give up
             return;
-        }
-
-        // Attack if within range
-        if (distance <= attackRange)
-        {
-            agent.SetDestination(preyTarget.transform.position);
-            AttackOnContact();
-        } else
-        {
-
-            // Keep moving towards the prey
-            agent.isStopped = false;
-            repathTimer += Time.deltaTime;
-
-            if (repathTimer >= repathInterval) // Stuttering prevention: Recalculate path to prey at regular intervals
-            {
-                agent.SetDestination(preyTarget.transform.position);
-                repathTimer = 0f;
-            }
         }
 
     }
