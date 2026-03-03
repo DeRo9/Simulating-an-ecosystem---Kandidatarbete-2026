@@ -18,6 +18,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         Drink, // General
         Hunt, // For animals that hunt, wolves and bears
         Fleeing, // For animals that flee (moose)
+        Dead,
     }
 
     // Current state of the animal
@@ -89,6 +90,9 @@ public abstract class AnimalBehaviour : MonoBehaviour
             case State.Fleeing:
                 FleeState();
                 break;
+            case State.Dead:
+                // Do nothing
+                break;
         }
 
     }
@@ -142,9 +146,13 @@ public abstract class AnimalBehaviour : MonoBehaviour
             case State.Fleeing:
                 UpdateFlee();
                 break;
+            case State.Dead:
+                // Do nothing i guess? 
+                break;
         }
     }
 
+    public virtual void OnDeath() { return; }
     protected virtual bool IsHungry() { return false; }
     protected virtual bool IsThirsty() { return false; }
 

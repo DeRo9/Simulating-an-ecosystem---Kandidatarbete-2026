@@ -18,6 +18,7 @@ public class MooseBehaviour : AnimalBehaviour
     MooseHearing hearing;
 
     GameObject enemy; // For fleeing from wolves and bears
+    public bool isDead;
 
     protected override void Start()
     {
@@ -31,6 +32,12 @@ public class MooseBehaviour : AnimalBehaviour
 
     protected override void Update()
     {
+
+        if (isDead)
+        {
+            return;
+        }
+
         if (hearing != null && hearing.HeardSomething)
         {
             Animal heard = hearing.HeardAnimal;
@@ -62,6 +69,13 @@ public class MooseBehaviour : AnimalBehaviour
             {
                 ChangeState(State.Eat);
             }
+        }
+
+
+        if (animal.GetHealth() <= 0f)
+        {
+            OnDeath();
+            return;
         }
 
         base.Update();
@@ -337,6 +351,32 @@ bool FindWater()
     public void InflictDamage(float damage)
     {
         needs.TakeDamage(damage);
+    }
+
+    public override void OnDeath()
+    {
+        if (isDead) return;
+        isDead = true;
+
+        WolfBehaviour[] wolves = FindObjectsByType<WolfBehaviour>(FindObjectsSortMode.None); // All wolves hunting the moose
+        foreach (WolfBehaviour wolf in wolves)
+        {
+            if(wolf.CurrentTarget == gameObject)
+            {
+                wolf.notifyDeath();
+            }
+        }
+
+        gameObject.tag = "carcass";
+        anim.SetBool("isWalking", false);
+        anim.SetBool("isRunning", false);
+        anim.SetTrigger("isDead");
+
+        animal.agingSpeed = 0f;
+
+
+        ChangeState(State.Dead);
+        agent.isStopped = true;
     }
 
 }

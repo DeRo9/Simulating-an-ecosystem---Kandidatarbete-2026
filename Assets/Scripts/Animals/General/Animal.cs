@@ -65,4 +65,9 @@ public class Animal : MonoBehaviour
         isMoving = moving;
         currentSpeed = speed;
     }
+
+    public virtual float GetHealth()
+    {
+        return needs.healthLevel;
+    }
 }

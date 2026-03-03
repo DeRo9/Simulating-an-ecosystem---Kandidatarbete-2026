@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem.Android;
 
@@ -78,6 +79,9 @@ public class WolfBehaviour : AnimalBehaviour
             
             if (hit.CompareTag("Moose"))
             {
+                MooseBehaviour moose = hit.GetComponentInParent<MooseBehaviour>();
+                if (moose == null || moose.isDead) continue; // Skip if moose is already dead.
+
                 float distance = Vector3.Distance(transform.position, hit.transform.position);
                 if (distance < closestDistance)
                 {
@@ -161,6 +165,12 @@ public class WolfBehaviour : AnimalBehaviour
         {
             ChangeState(State.Wander);
             return; // If the wolf has no prey, switch to wandering
+        }
+
+        MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
+        if(moose != null && moose.isDead)
+        {
+            notifyDeath();
         }
 
         // Check if the prey is still within sight range
@@ -340,11 +350,16 @@ public class WolfBehaviour : AnimalBehaviour
         else
         {
             agent.isStopped = false;
-        }
-        
-        
- 
-        
+        }   
+    }
+
+    public void notifyDeath()
+    {
+        preyTarget = null;
+        huntTime = 0f;
+        agent.speed = animal.speed;
+        ChangeState(State.Wander);
+
     }
 
 }
