@@ -80,16 +80,6 @@ public class BearBehaviour : AnimalBehaviour
         return false;
     }
 
-    protected override bool IsThirsty()
-    {
-        // Bear is thristy, find water source
-        if (needs.isThirsty)
-        {
-            return FindWater();
-        }
-        return false;
-    }
-
     protected override void EatStateForSpecificAnimal()
     {
         if (foodTarget != null)
@@ -147,39 +137,6 @@ public class BearBehaviour : AnimalBehaviour
         }
     }
 
-
-
-    protected override void UpdateDrink()
-    {
-        // If the water target is null, switch back to wandering
-        if (waterTarget == null)
-        {
-            ChangeState(State.Wander);
-            return;
-        }
-
-        // If the moose has reached the water, stop moving
-        if (hasArrived())
-        {
-            agent.isStopped = true;
-            Debug.Log("Moose drank water.");
-
-            if (!needs.isThirsty)
-            {
-            waterTarget = null;
-            ChangeState(State.Wander);
-            }
-        }
-
-        else
-        {
-            agent.isStopped = false;
-        }
-        
-        // If the moose is no longer thirsty, stop drinking and switch back to wandering
- 
-        
-    }
 
 }
 
