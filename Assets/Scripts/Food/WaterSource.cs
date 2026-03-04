@@ -11,18 +11,22 @@ public class WaterSource : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Something entered water: " + other.name);
-
-        AnimalNeeds needs = other.GetComponentInParent<AnimalNeeds>();
-             
-        if (needs != null && needs.isThirsty) //Only drink if thirsty
+        if (!(other is SphereCollider)) // Sphere collider is for hearing? It interferes with the animal's body
         {
-            needs.drinkFromSource(chunkOfWater);
-            
-            MooseBehaviour behaviour = other.GetComponentInParent<MooseBehaviour>();
-            if (behaviour != null)
+
+            Debug.Log("Something entered water: " + other.name);
+
+            AnimalNeeds needs = other.GetComponentInParent<AnimalNeeds>();
+
+            if (needs != null && needs.isThirsty) //Only drink if thirsty
             {
-                behaviour.OnFinishedDrinking();
+                needs.drinkFromSource(chunkOfWater);
+
+                MooseBehaviour behaviour = other.GetComponentInParent<MooseBehaviour>();
+                if (behaviour != null)
+                {
+                    behaviour.OnFinishedDrinking();
+                }
             }
         }
     }

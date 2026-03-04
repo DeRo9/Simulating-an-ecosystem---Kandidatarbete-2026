@@ -42,6 +42,8 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected NavMeshAgent agent;
     protected AnimalNeeds needs;
 
+    protected GameObject waterTarget;
+
 
     protected virtual void Start()
     {
@@ -150,6 +152,40 @@ public abstract class AnimalBehaviour : MonoBehaviour
                 // Do nothing i guess? 
                 break;
         }
+    }
+
+    protected virtual bool FindWater()
+    {
+        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange);
+
+        float closestDistance = Mathf.Infinity;
+        GameObject closestWater = null;
+
+        foreach (Collider hit in hits)
+        {
+
+            Debug.Log("Detected water collider");
+
+            if (hit.CompareTag("Water"))
+            {
+                float distance = Vector3.Distance(transform.position, hit.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestWater = hit.gameObject;
+                }
+
+            }
+
+        }
+
+        if (closestWater != null)
+        {
+            waterTarget = closestWater;
+            return true;
+        }
+        return false;
+
     }
 
     public virtual void OnDeath() { return; }

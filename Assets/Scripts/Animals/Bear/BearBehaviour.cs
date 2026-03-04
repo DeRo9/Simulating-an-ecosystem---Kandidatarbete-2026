@@ -2,19 +2,12 @@ using UnityEngine;
 
 public class BearBehaviour : AnimalBehaviour
 {
-    //Animaltype
-    private new Animal animal;
-
-    new AnimalNeeds needs;
     GameObject foodTarget;
-    GameObject waterTarget;
     BearHearing hearing;
 
     protected override void Start()
     {
         base.Start();
-        animal = GetComponent<Animal>();
-        needs = GetComponent<AnimalNeeds>();
         hearing = GetComponent<BearHearing>();
     }
 

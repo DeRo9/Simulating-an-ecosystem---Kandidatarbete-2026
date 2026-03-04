@@ -27,8 +27,6 @@ public class WolfBehaviour : AnimalBehaviour
     float attackInterval = 1f; // Time interval for attacking, to prevent multiple attacks in quick succession
 
 
-    GameObject waterTarget;
-
 
 
     protected override void Start()

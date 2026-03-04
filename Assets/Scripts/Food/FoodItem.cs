@@ -13,7 +13,7 @@ public class FoodItem : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Moose")) // Add || "Bear" too?
+        if (other.CompareTag("Moose") && !(other is SphereCollider)) // Add || "Bear" too?
         {
             AnimalNeeds mooseNeeds = other.GetComponentInParent<AnimalNeeds>();
 
