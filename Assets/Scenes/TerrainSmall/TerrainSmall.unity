@@ -1722,8 +1722,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
   m_SerializedVersion: 0
-  m_Size: {x: 10, y: 6, z: 20}
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Size: {x: 15.442691, y: 6, z: 20}
+  m_Center: {x: -2.7213454, y: 1, z: 0}
   m_Area: 1
   m_AffectedAgents: ffffffff
 --- !u!1 &323542747
@@ -3624,8 +3624,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
   m_SerializedVersion: 0
-  m_Size: {x: 12, y: 6, z: 20}
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Size: {x: 12, y: 6, z: 21.100433}
+  m_Center: {x: 0, y: 1, z: 0.5502162}
   m_Area: 1
   m_AffectedAgents: ffffffff
 --- !u!1 &662173675
@@ -6531,7 +6531,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 18
+  m_Radius: 20
   m_Center: {x: -5, y: 0, z: 1}
 --- !u!114 &1073768951
 MonoBehaviour:
@@ -6816,8 +6816,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
   m_SerializedVersion: 0
-  m_Size: {x: 10, y: 6, z: 30}
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Size: {x: 10, y: 6, z: 34.770294}
+  m_Center: {x: 0, y: 1, z: -2.3851538}
   m_Area: 1
   m_AffectedAgents: ffffffff
 --- !u!1 &1119735520
@@ -9440,8 +9440,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
   m_SerializedVersion: 0
-  m_Size: {x: 10, y: 6, z: 20}
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Size: {x: 10, y: 6, z: 22.218445}
+  m_Center: {x: 0, y: 1, z: 1.1092224}
   m_Area: 1
   m_AffectedAgents: ffffffff
 --- !u!1 &1474142824
@@ -10041,8 +10041,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
   m_SerializedVersion: 0
-  m_Size: {x: 12, y: 6, z: 30}
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Size: {x: 12, y: 6, z: 33.656315}
+  m_Center: {x: 0, y: 1, z: -1.8281593}
   m_Area: 1
   m_AffectedAgents: ffffffff
 --- !u!1 &1582591251

@@ -13,6 +13,8 @@ public class MooseBehaviour : AnimalBehaviour
     MooseFOV fov;
     MooseHearing hearing;
 
+    float foodSearchingCooldown;
+
     GameObject enemy; // For fleeing from wolves and bears
     public bool isDead;
 
@@ -36,20 +38,18 @@ public class MooseBehaviour : AnimalBehaviour
             Animal heard = hearing.HeardAnimal;
             if (heard.species == Species.bear || heard.species == Species.wolf)
             {
-                Debug.Log("Moose heard a predator");
-                enemy = heard.gameObject;
-                ChangeState(State.Fleeing);
+                WolfBehaviour wolf = heard.GetComponent<WolfBehaviour>(); // only wolf for now
+                if(animal != null && wolf.CurrentTarget == gameObject)
+                {
+                    Debug.Log("Moose heard a predator");
+                    enemy = heard.gameObject;
+                    ChangeState(State.Fleeing);
+
+                }
+
             }
         }
-        else
-        {
-            if (CurrentState == State.Fleeing)
-            {
-                Debug.Log ("Moose has escaped");
-                enemy = null;
-                CurrentState = State.Wander;
-            }
-        }
+
         // If not currently eating, drinking or fleeing, check if the moose needs to eat or drink and switch to the appropriate state
         if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Fleeing)
         {
@@ -58,7 +58,7 @@ public class MooseBehaviour : AnimalBehaviour
             {
                 ChangeState(State.Drink);
             }
-            else if (needs.howThirstyInPercent > needs.howHungryInPercent && IsHungry())
+            else if (IsHungry())
             {
                 ChangeState(State.Eat);
             }
@@ -78,6 +78,13 @@ public class MooseBehaviour : AnimalBehaviour
     // Finds the closest food item within the detection radius and sets it as the target
     bool FindFood()
     {
+
+        if(foodSearchingCooldown > 0f)
+        {
+            foodSearchingCooldown -= Time.deltaTime;
+            return foodTarget != null;
+        }
+        foodSearchingCooldown = 0.5f;
 
         Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange);
 
@@ -147,15 +154,6 @@ public class MooseBehaviour : AnimalBehaviour
         }
     }  
 
-    protected override void DrinkStateForSpecificAnimal()
-    {
-        if (waterTarget != null)
-        {
-            agent.isStopped = false;
-            agent.SetDestination(waterTarget.transform.position);
-        }
-    } 
-
 
     protected override void UpdateWander()
     {
@@ -209,7 +207,7 @@ public class MooseBehaviour : AnimalBehaviour
     public void OnFinishedDrinking()
     {
         waterTarget = null;
-        agent.isStopped = true;
+        agent.isStopped = false;
 
         if (needs.isHungry)
         {

@@ -294,15 +294,6 @@ public class WolfBehaviour : AnimalBehaviour
         // When the wolf has killed its prey, it will eat it
     }
 
-    protected override void DrinkStateForSpecificAnimal()
-    {
-        if (waterTarget != null)
-        {
-            agent.isStopped = false;
-            agent.SetDestination(waterTarget.transform.position);
-        }
-    } 
-
 
     protected override void UpdateWander()
     {

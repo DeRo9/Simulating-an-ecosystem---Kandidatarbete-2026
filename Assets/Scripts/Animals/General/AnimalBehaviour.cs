@@ -1,3 +1,4 @@
+using System.Transactions;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem.Android;
@@ -84,7 +85,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
                 EatStateForSpecificAnimal();
                 break;
             case State.Drink:
-                DrinkStateForSpecificAnimal();
+                DrinkState();
                 break;
             case State.Hunt:
                 HuntState();
@@ -188,13 +189,26 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
     }
 
+    protected virtual void DrinkState()
+    {
+        if (waterTarget != null)
+        {
+            agent.isStopped = false;
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(waterTarget.transform.position, out hit, 20f, NavMesh.AllAreas))
+            {
+                agent.SetDestination(hit.position);
+            }
+
+        }
+    }
+
     public virtual void OnDeath() { return; }
     protected virtual bool IsHungry() { return false; }
     protected virtual bool IsThirsty() { return false; }
 
     protected virtual void EatStateForSpecificAnimal() { }
 
-    protected virtual void DrinkStateForSpecificAnimal() { }
     protected virtual void UpdateIdle() { return; }
     protected virtual void UpdateWander() { return; }
     protected virtual void UpdateEat() { return; }

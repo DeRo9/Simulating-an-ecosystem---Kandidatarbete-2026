@@ -9,9 +9,9 @@ public class WaterSource : MonoBehaviour
     
     private float chunkOfWater = 100f;
 
-    void OnTriggerEnter(Collider other)
+    void OnTriggerStay(Collider other)
     {
-        if (!(other is SphereCollider)) // Sphere collider is for hearing? It interferes with the animal's body
+        if (!(other is SphereCollider))
         {
 
             Debug.Log("Something entered water: " + other.name);

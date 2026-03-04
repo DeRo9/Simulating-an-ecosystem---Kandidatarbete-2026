@@ -69,40 +69,6 @@ public class BearBehaviour : AnimalBehaviour
         return false;
     }
 
-    bool FindWater()
-    {
-        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange);
-
-        float closestDistance = Mathf.Infinity;
-        GameObject closestWater = null;
-
-        foreach (Collider hit in hits)
-        {
-
-            Debug.Log("Detected water collider");
-
-            if (hit.CompareTag("Water"))
-            {
-                float distance = Vector3.Distance(transform.position, hit.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestWater = hit.gameObject;
-                }
-
-            }
-
-        }
-
-        if(closestWater != null)
-        {
-            waterTarget = closestWater;
-            return true;
-        }
-        return false;
-
-    }
-
 
     protected override bool IsHungry()
     {
@@ -131,17 +97,7 @@ public class BearBehaviour : AnimalBehaviour
             agent.isStopped = false;
             agent.SetDestination(foodTarget.transform.position);
         }
-    }  
-
-    protected override void DrinkStateForSpecificAnimal()
-    {
-        if (waterTarget != null)
-        {
-            agent.isStopped = false;
-            agent.SetDestination(waterTarget.transform.position);
-        }
     } 
-
 
     protected override void UpdateWander()
     {

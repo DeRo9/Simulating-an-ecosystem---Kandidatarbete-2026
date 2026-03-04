@@ -15,11 +15,11 @@ public class FoodItem : MonoBehaviour
     {
         if (other.CompareTag("Moose") && !(other is SphereCollider)) // Add || "Bear" too?
         {
-            AnimalNeeds mooseNeeds = other.GetComponentInParent<AnimalNeeds>();
+            AnimalNeeds needs = other.GetComponentInParent<AnimalNeeds>();
 
-            if (mooseNeeds != null && mooseNeeds.isHungry) // Only eat if the moose is hungry
+            if (needs != null && needs.isHungry) // Only eat if the moose is hungry
             {
-                mooseNeeds.Eat(nutritionValue);
+                needs.Eat(nutritionValue);
 
                 if (spawner != null)
                 {
