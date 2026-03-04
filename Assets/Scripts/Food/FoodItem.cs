@@ -8,7 +8,7 @@ public class FoodItem : MonoBehaviour
 
     void Start()
     {
-        spawner = FindObjectOfType<MushroomSpawner>();
+        spawner = FindFirstObjectByType<MushroomSpawner>();
     }
 
     void OnTriggerEnter(Collider other)

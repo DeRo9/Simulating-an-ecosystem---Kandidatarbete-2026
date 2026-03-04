@@ -4,10 +4,7 @@ using UnityEngine.InputSystem.Android;
 
 public class WolfBehaviour : AnimalBehaviour
 {
-    //Animaltype
-    private new Animal animal;
 
-    new AnimalNeeds needs;
     AnimalFOV fov;
     WolfHearing hearing;
 
@@ -37,8 +34,6 @@ public class WolfBehaviour : AnimalBehaviour
     protected override void Start()
     {
         base.Start();
-        animal = GetComponent<Animal>();
-        needs = GetComponent<AnimalNeeds>();
         fov = GetComponent<AnimalFOV>();
         hearing = GetComponent<WolfHearing>();
     }

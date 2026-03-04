@@ -9,9 +9,6 @@ using UnityEngine.InputSystem.Android;
 public class MooseBehaviour : AnimalBehaviour
 {
 
-    private Animal animal;
-
-    new AnimalNeeds needs;
     GameObject foodTarget;
     GameObject waterTarget;
     MooseFOV fov;
@@ -23,8 +20,6 @@ public class MooseBehaviour : AnimalBehaviour
     protected override void Start()
     {
         base.Start();
-        animal = GetComponent<Animal>();
-        needs = GetComponent<AnimalNeeds>();
         fov = GetComponent<MooseFOV>();
         hearing = GetComponent<MooseHearing>();
     }
