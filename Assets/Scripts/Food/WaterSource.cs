@@ -22,10 +22,13 @@ public class WaterSource : MonoBehaviour
             {
                 needs.drinkFromSource(chunkOfWater);
 
-                MooseBehaviour behaviour = other.GetComponentInParent<MooseBehaviour>();
-                if (behaviour != null)
+                if (!needs.isThirsty)
                 {
-                    behaviour.OnFinishedDrinking();
+                    AnimalBehaviour behaviour = other.GetComponentInParent<AnimalBehaviour>();
+                    if (behaviour != null)
+                    {
+                        behaviour.OnFinishedDrinking();
+                    }
                 }
             }
         }

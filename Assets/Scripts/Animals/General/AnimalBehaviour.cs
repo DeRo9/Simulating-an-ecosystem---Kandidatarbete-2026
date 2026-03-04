@@ -155,7 +155,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         }
     }
 
-    protected virtual bool FindWater()
+    bool FindWater()
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange);
 
@@ -180,7 +180,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
         }
 
-        if (closestWater != null)
+        if(closestWater != null)
         {
             waterTarget = closestWater;
             return true;
@@ -205,14 +205,74 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
     public virtual void OnDeath() { return; }
     protected virtual bool IsHungry() { return false; }
-    protected virtual bool IsThirsty() { return false; }
-
+    
+    protected bool IsThirsty()
+    {
+        // Wolf is thristy, find water source
+        if (needs.isThirsty)
+        {
+            return FindWater();
+        }
+        return false;
+    }
     protected virtual void EatStateForSpecificAnimal() { }
 
     protected virtual void UpdateIdle() { return; }
     protected virtual void UpdateWander() { return; }
     protected virtual void UpdateEat() { return; }
-    protected virtual void UpdateDrink() { return;  }
+
+    public void OnFinishedDrinking()
+    {
+        waterTarget = null;
+        agent.isStopped = true;
+
+        if (needs.isHungry)
+        {
+            ChangeState(State.Eat);
+        }
+        else
+        {
+            ChangeState(State.Wander);
+        }
+    }
+
+    public void UpdateDrink()
+    {
+        // If the water target is null, switch back to wandering
+        if (waterTarget == null)
+        {
+            ChangeState(State.Wander);
+            return;
+        }
+
+        // If the moose has reached the water, stop moving
+        if (hasArrived())
+        {
+            agent.isStopped = true;
+
+
+            // No longer thirsty
+            if (!needs.isThirsty)
+            {
+                if (needs.isHungry)
+                {
+                    ChangeState(State.Eat);
+                }
+                else
+                {
+                    ChangeState(State.Wander);
+                }
+
+                return;
+            }
+        }
+
+        else
+        {
+            agent.isStopped = false;
+        }
+ 
+    }    
     protected virtual void UpdateHunt() { return; }
     protected virtual void UpdateFlee() { return; }
     protected virtual void HuntState() { return; }

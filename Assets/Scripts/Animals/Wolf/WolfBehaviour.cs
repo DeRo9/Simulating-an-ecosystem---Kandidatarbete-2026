@@ -26,9 +26,6 @@ public class WolfBehaviour : AnimalBehaviour
     float attackTimer = 0f;
     float attackInterval = 1f; // Time interval for attacking, to prevent multiple attacks in quick succession
 
-
-
-
     protected override void Start()
     {
         base.Start();
@@ -100,40 +97,6 @@ public class WolfBehaviour : AnimalBehaviour
         }
 
         return false;
-    }
-
-    bool FindWater()
-    {
-        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange);
-
-        float closestDistance = Mathf.Infinity;
-        GameObject closestWater = null;
-
-        foreach (Collider hit in hits)
-        {
-
-            Debug.Log("Detected water collider");
-
-            if (hit.CompareTag("Water"))
-            {
-                float distance = Vector3.Distance(transform.position, hit.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestWater = hit.gameObject;
-                }
-
-            }
-
-        }
-
-        if(closestWater != null)
-        {
-            waterTarget = closestWater;
-            return true;
-        }
-        return false;
-
     }
 
     protected override void HuntState()
@@ -279,16 +242,6 @@ public class WolfBehaviour : AnimalBehaviour
         return false;
     }
 
-    protected override bool IsThirsty()
-    {
-        // Wolf is thristy, find water source
-        if (needs.isThirsty)
-        {
-            return FindWater();
-        }
-        return false;
-    }
-
     protected override void EatStateForSpecificAnimal()
     {
         // When the wolf has killed its prey, it will eat it
@@ -311,36 +264,6 @@ public class WolfBehaviour : AnimalBehaviour
         {
             ChangeState(State.Wander);
         }
-    }
-
-
-
-    protected override void UpdateDrink()
-    {
-        // If the water target is null, switch back to wandering
-        if (waterTarget == null)
-        {
-            ChangeState(State.Wander);
-            return;
-        }
-
-        // If the wolf has reached the water, stop moving
-        if (hasArrived())
-        {
-            agent.isStopped = true;
-            Debug.Log("Wolf drank water.");
-
-            if (!needs.isThirsty)
-            {
-            waterTarget = null;
-            ChangeState(State.Wander);
-            }
-        }
-
-        else
-        {
-            agent.isStopped = false;
-        }   
     }
 
     public void notifyDeath()
