@@ -18,6 +18,9 @@ public class MooseBehaviour : AnimalBehaviour
     GameObject enemy; // For fleeing from wolves and bears
     public bool isDead;
 
+    float fleeRepathTimer = 0f;
+    float fleeRepathInterval = 0.5f; // Time interval for recalculating path to prey
+
     protected override void Start()
     {
         base.Start();
@@ -203,16 +206,30 @@ public class MooseBehaviour : AnimalBehaviour
             return;
         }
 
-        // Flee in the opposite direction of the enemy
-        Vector3 fleeDirection = (transform.position - enemy.transform.position).normalized;
-        Vector3 fleeDestination = transform.position + fleeDirection * animal.sightRange;
-
-        NavMeshHit hit;
-        // sample a valid position on the navmesh in the flee direction
-        if (NavMesh.SamplePosition(fleeDestination, out hit, animal.sightRange, NavMesh.AllAreas))
+        float distanceToPredator = Vector3.Distance(transform.position, enemy.transform.position);
+        if (distanceToPredator > animal.sightRange * 1.2)
         {
-            if (!agent.hasPath)
+            enemy = null;
+            agent.speed = animal.speed;
+            ChangeState(State.Wander);
+            return;
+        }
+
+        fleeRepathTimer += Time.deltaTime;
+        if (fleeRepathTimer >= fleeRepathInterval)
+        {
+            // Flee in the opposite direction of the enemy
+            Vector3 fleeDirection = (transform.position - enemy.transform.position).normalized;
+            Vector3 fleeDestination = transform.position + fleeDirection * animal.sightRange;
+
+            NavMeshHit hit;
+            // sample a valid position on the navmesh in the flee direction
+            if (NavMesh.SamplePosition(fleeDestination, out hit, animal.sightRange, NavMesh.AllAreas))
+            {
                 agent.SetDestination(hit.position);
+            }
+
+            fleeRepathTimer = 0f;
         }
     }
 
@@ -238,7 +255,10 @@ public class MooseBehaviour : AnimalBehaviour
         {
             enemy = null;
             agent.speed = animal.speed; // Reset speed to normal
-            ChangeState(State.Wander);
+            if (CurrentState == State.Fleeing)
+            {
+                ChangeState(State.Wander);
+            }
         }
     }
 

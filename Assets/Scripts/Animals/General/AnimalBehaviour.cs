@@ -226,11 +226,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         waterTarget = null;
         agent.isStopped = true;
 
-        if (needs.isHungry)
-        {
-            ChangeState(State.Eat);
-        }
-        else
+        if (!IsHungry())
         {
             ChangeState(State.Wander);
         }
@@ -254,11 +250,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
             // No longer thirsty
             if (!needs.isThirsty)
             {
-                if (needs.isHungry)
-                {
-                    ChangeState(State.Eat);
-                }
-                else
+                if (!IsHungry())
                 {
                     ChangeState(State.Wander);
                 }
