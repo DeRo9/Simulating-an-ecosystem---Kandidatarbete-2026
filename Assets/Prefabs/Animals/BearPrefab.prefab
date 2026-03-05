@@ -1633,6 +1633,7 @@ MonoBehaviour:
   minTimeWaiting: 2
   maxTimeWaiting: 5
   waitTime: 0
+  isDead: 0
 --- !u!114 &5642719112376538877
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1681,6 +1682,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Mating
   animal: {fileID: 354103798133286141}
   animalPrefab: {fileID: 8565310438801436797}
+  heartPrefab: {fileID: 7228168900247499859, guid: a1e57a5696459574181cf83539b13772, type: 3}
+  heartHeight: 2
   matingRange: 5
   matingCooldown: 30
 --- !u!54 &1070128744223743822
