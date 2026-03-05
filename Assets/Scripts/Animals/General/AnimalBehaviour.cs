@@ -45,6 +45,8 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
     protected GameObject waterTarget;
 
+    public bool isDead;
+
 
     protected virtual void Start()
     {
@@ -119,6 +121,18 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
     protected virtual void Update()
     {
+
+        if (isDead)
+        {
+            return;
+        }
+
+        if (animal.GetHealth() <= 0f)
+        {
+            OnDeath();
+            return;
+        }
+
         // Update animation based on movement
         anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f ); // "isWalking" Ã¤r en bool i animator
         anim.SetBool("isRunning", agent.velocity.magnitude > 3f); // "isRunning" Ã¤r en bool i animator
@@ -127,6 +141,8 @@ public abstract class AnimalBehaviour : MonoBehaviour
             bool moving = agent.velocity.magnitude > 0.1f;
             animal.SetMovementState (moving,agent.velocity.magnitude);
         }
+
+
 
         // State machine logic
         switch (CurrentState)
@@ -203,7 +219,22 @@ public abstract class AnimalBehaviour : MonoBehaviour
         }
     }
 
-    public virtual void OnDeath() { return; }
+    public virtual void OnDeath() 
+    {
+        if (isDead) return;
+        isDead = true;
+
+        gameObject.tag = "carcass";
+        anim.SetBool("isWalking", false);
+        anim.SetBool("isRunning", false);
+        anim.SetTrigger("isDead");
+
+        animal.agingSpeed = 0f;
+
+
+        ChangeState(State.Dead);
+        agent.isStopped = true;
+    }
     protected virtual bool IsHungry() { return false; }
     
     protected bool IsThirsty()
@@ -226,11 +257,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         waterTarget = null;
         agent.isStopped = true;
 
-        if (needs.isHungry)
-        {
-            ChangeState(State.Eat);
-        }
-        else
+        if (!IsHungry())
         {
             ChangeState(State.Wander);
         }
@@ -254,11 +281,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
             // No longer thirsty
             if (!needs.isThirsty)
             {
-                if (needs.isHungry)
-                {
-                    ChangeState(State.Eat);
-                }
-                else
+                if (!IsHungry())
                 {
                     ChangeState(State.Wander);
                 }

@@ -131,6 +131,12 @@ public class WolfBehaviour : AnimalBehaviour
 
         if (preyTarget != null)
         {
+            if (!fov.IsInFOV(preyTarget.transform))
+            {
+                LostPrey(); // If the prey is no longer in the wolf's field of view, give up
+                return;
+            }
+
             // Check if the prey is still within sight range
             float distance = Vector3.Distance(transform.position, preyTarget.transform.position);
             if (distance > animal.sightRange)
@@ -158,12 +164,6 @@ public class WolfBehaviour : AnimalBehaviour
                     repathTimer = 0f;
                 }
 
-            }
-
-            if (!fov.IsInFOV(preyTarget.transform))
-            {
-                LostPrey(); // If the prey is no longer in the wolf's field of view, give up
-                return;
             }
 
         }

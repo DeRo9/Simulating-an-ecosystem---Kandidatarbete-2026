@@ -23,7 +23,7 @@ public class FoodItem : MonoBehaviour
 
                 if (spawner != null)
                 {
-                    spawner.DecreaseMushroomCount();
+                    spawner.RemoveMushroom(gameObject);
                 }
                 
                 Destroy(gameObject);
