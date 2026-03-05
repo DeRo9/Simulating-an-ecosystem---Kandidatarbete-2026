@@ -12,10 +12,19 @@ public class MushroomSpawner : MonoBehaviour
 
     private int currentMushrooms = 0;
     private float timer;
+    private bool isSimulationRunning = false;
 
     void Start()
     {
-        for (int i = 0; i < maxMushrooms / 2; i++)
+        isSimulationRunning = false;
+    }
+
+    public void InitializeSpawn()
+    {
+        isSimulationRunning = true;
+        // Spawn half the mushrooms initially, rest will be spawned gradually in Update()
+        int initialAmount = maxMushrooms / 2;
+        for (int i = 0; i < initialAmount; i++)
         {
             SpawnMushroom();
         }
@@ -23,6 +32,10 @@ public class MushroomSpawner : MonoBehaviour
 
     void Update()
     {
+        // Only spawn additional mushrooms if simulation is running
+        if (!isSimulationRunning)
+            return;
+
         timer += Time.deltaTime;
 
         if (timer >= spawnInterval)
@@ -65,5 +78,11 @@ Vector3 GetRandomNavMeshPosition()
     public void DecreaseMushroomCount()
     {
         currentMushrooms--;
+    }
+
+
+    public void SetMaxMushrooms(int max)
+    {
+        maxMushrooms = max;
     }
 }
