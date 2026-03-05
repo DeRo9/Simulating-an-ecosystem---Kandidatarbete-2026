@@ -26,6 +26,10 @@ public class WolfBehaviour : AnimalBehaviour
     float attackTimer = 0f;
     float attackInterval = 1f; // Time interval for attacking, to prevent multiple attacks in quick succession
 
+    float foodSearchingCooldown;
+
+    GameObject foodTarget;
+
     protected override void Start()
     {
         base.Start();
@@ -39,11 +43,11 @@ public class WolfBehaviour : AnimalBehaviour
         if (hearing != null && hearing.HeardSomething)
         {
             Debug.Log("Wolf heard: " + hearing.HeardAnimal.name);
-           // ChangeState(State.Idle); testing
+            // ChangeState(State.Idle); testing
         }
         if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt)
         {
-            if(IsHungry()) { /* Impemented inside isHungry(), so it will automatically change to hunt there*/ }
+            if (IsHungry()) { /* Impemented inside isHungry(), so it will automatically change to hunt there*/ }
         }
 
         base.Update();
@@ -65,8 +69,8 @@ public class WolfBehaviour : AnimalBehaviour
 
             if (!fov.IsInFOV(hit.transform))
                 continue; // Skip if the collider is not in the wolf's field of view
-            
-            
+
+
             if (hit.CompareTag("Moose"))
             {
                 MooseBehaviour moose = hit.GetComponentInParent<MooseBehaviour>();
@@ -83,7 +87,7 @@ public class WolfBehaviour : AnimalBehaviour
 
         }
 
-        if(closestPrey != null)
+        if (closestPrey != null)
         {
             preyTarget = closestPrey;
 
@@ -101,13 +105,13 @@ public class WolfBehaviour : AnimalBehaviour
 
     protected override void HuntState()
     {
-        if(preyTarget != null)
+        if (preyTarget != null)
         {
             agent.isStopped = false;
             agent.speed = animal.runningSpeed; // Set speed to hunt speed
             agent.SetDestination(preyTarget.transform.position);
         }
-         else
+        else
         {
             agent.speed = animal.speed; // Reset speed to normal
             ChangeState(State.Wander); // If the prey is lost, switch to wandering
@@ -117,14 +121,14 @@ public class WolfBehaviour : AnimalBehaviour
     protected override void UpdateHunt()
     {
 
-        if(preyTarget == null)
+        if (preyTarget == null)
         {
             ChangeState(State.Wander);
             return; // If the wolf has no prey, switch to wandering
         }
 
         MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
-        if(moose != null && moose.isDead)
+        if (moose != null && moose.isDead)
         {
             notifyDeath();
         }
@@ -169,9 +173,9 @@ public class WolfBehaviour : AnimalBehaviour
         }
 
         // Hunting timer
-        huntTime += Time.deltaTime; 
+        huntTime += Time.deltaTime;
         if (huntTime >= maxHuntTime)
-        {   
+        {
             LostPrey(); // If the wolf has been hunting for too long, give up
             return;
         }
@@ -180,7 +184,7 @@ public class WolfBehaviour : AnimalBehaviour
 
     void AttackOnContact()
     {
-        if(preyTarget != null)
+        if (preyTarget != null)
         {
             attackTimer += Time.deltaTime;
 
@@ -227,26 +231,61 @@ public class WolfBehaviour : AnimalBehaviour
 
     protected override bool IsHungry()
     {
-        if(huntCooldownTimer > 0)
+        if (huntCooldownTimer > 0)
         {
             huntCooldownTimer -= Time.deltaTime; // Decrease cooldown timer
             return false; // Can't hunt while on cooldown
         }
 
         // Wolf is hungry, find food
-        if (needs.isHungry && FindPrey())
+        if (needs.isHungry)
         {
-            ChangeState(State.Hunt);
-            return true;
+            if (FindPrey())
+            {
+                ChangeState(State.Hunt);
+                return true;
+            }
+            else if (FindCarcass())
+            {
+                ChangeState(State.Eat);
+                return true;
+            }
         }
         return false;
     }
 
     protected override void EatStateForSpecificAnimal()
     {
-        // When the wolf has killed its prey, it will eat it
+        if (foodTarget != null)
+        {
+            agent.isStopped = false;
+            agent.SetDestination(foodTarget.transform.position);
+        }
     }
 
+
+    protected override void UpdateEat()
+    {
+        if (foodTarget == null)
+        {
+            ChangeState(State.Wander);
+        }
+
+        if (hasArrived())
+        {
+            agent.isStopped = true;
+            needs.Eat(100);
+            Destroy(foodTarget);
+            foodTarget = null;
+            ChangeState(State.Wander);
+        }
+
+        if (!needs.isHungry)
+        {
+            foodTarget = null;
+            ChangeState(State.Wander);
+        }
+    }
 
     protected override void UpdateWander()
     {
@@ -273,6 +312,54 @@ public class WolfBehaviour : AnimalBehaviour
         agent.speed = animal.speed;
         ChangeState(State.Wander);
 
+    }
+
+    // Finds the closest food item within the detection radius and sets it as the target
+    bool FindCarcass()
+    {
+
+        if (foodSearchingCooldown > 0f)
+        {
+            foodSearchingCooldown -= Time.deltaTime;
+            return foodTarget != null;
+        }
+        foodSearchingCooldown = 0.5f;
+
+        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange);
+
+        float closestDistance = Mathf.Infinity;
+        GameObject closestFood = null;
+
+        foreach (Collider hit in hits)
+        {
+
+
+            if (!fov.IsInFOV(hit.transform))
+            {
+                continue; // Skip if not in FOV
+            }
+
+            Debug.Log("Wolf found carcass.");
+            if (hit.CompareTag("carcass"))
+            {
+                float distance = Vector3.Distance(transform.position, hit.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestFood = hit.gameObject;
+                }
+
+            }
+
+        }
+
+        if (closestFood != null)
+        {
+            foodTarget = closestFood;
+            return true;
+        }
+
+        return false;
     }
 
 }
