@@ -8854,11 +8854,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f346c03cde1c14777b8419a8bea01b12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MushroomSpawner
-  Mushroom: {fileID: 867574789282101160, guid: edfba5393d29181408282f1fe3dec338, type: 3}
+  mushroomPrefab: {fileID: 867574789282101160, guid: edfba5393d29181408282f1fe3dec338, type: 3}
   Mushrooms: {fileID: 1631463089}
-  maxMushrooms: 30
-  spawnRadius: 40
-  spawnInterval: 5
+  mushroomMaxInitialization: 30
+  mushroomMapLimit: 500
+  SpawnRadius: 100
+  reproduceRadius: 10
+  timeInterval: 10
 --- !u!1 &1403267127
 GameObject:
   m_ObjectHideFlags: 0
