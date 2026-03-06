@@ -23,7 +23,7 @@ public class MushroomSpawner : MonoBehaviour
 
     void Start()
     {
-        // Default to inspector value until GameManager sets this from slider.
+    
         maxMushrooms = mushroomMaxInitialization;
         isSimulationRunning = false;
     }
