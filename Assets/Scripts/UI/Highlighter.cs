@@ -29,8 +29,6 @@ public class Highlighter : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         }
 
         
-
-
     }
 
     public void OnPointerExit(PointerEventData eventData)

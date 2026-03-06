@@ -1,7 +1,7 @@
 
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections.Generic; //To be able to use lists
+using System.Collections.Generic; // To be able to use lists
 
 public class MushroomSpawner : MonoBehaviour
 {
@@ -9,32 +9,42 @@ public class MushroomSpawner : MonoBehaviour
     [SerializeField] private Transform Mushrooms;
 
     [SerializeField] private int mushroomMaxInitialization = 30;
-
     [SerializeField] private int mushroomMapLimit = 500;
-
 
     [SerializeField] private float SpawnRadius = 100f;
     [SerializeField] private float reproduceRadius = 10f;
-
     [SerializeField] private float timeInterval = 8760f; // 1 second = 1 hour
 
     private float timer;
+    private bool isSimulationRunning = false;
+    private int maxMushrooms;
 
-    private List<GameObject> mushrooms = new List<GameObject>();
-
+    private readonly List<GameObject> mushrooms = new List<GameObject>();
 
     void Start()
     {
-        // initial mushrooms spawn
-        for (int i = 0; i < mushroomMaxInitialization; i++)
+    
+        maxMushrooms = mushroomMaxInitialization;
+        isSimulationRunning = false;
+    }
+
+    public void InitializeSpawn()
+    {
+        isSimulationRunning = true;
+
+        // Spawn half initially, then let reproduction handle growth.
+        int initialAmount = Mathf.Min(maxMushrooms / 2, mushroomMapLimit);
+        for (int i = 0; i < initialAmount; i++)
         {
             SpawnMushrooms();
         }
     }
 
-
     void Update()
     {
+        if (!isSimulationRunning)
+            return;
+
         timer += Time.deltaTime;
 
         if (timer >= timeInterval)
@@ -44,23 +54,21 @@ public class MushroomSpawner : MonoBehaviour
         }
     }
 
-
     void ReproduceMushrooms()
     {
+        mushrooms.RemoveAll(item => item == null);
         List<GameObject> current = new List<GameObject>(mushrooms);
 
         foreach (GameObject mushroom in current)
         {
-            if (mushrooms.Count >= mushroomMapLimit)
+            if (mushrooms.Count >= mushroomMapLimit || mushrooms.Count >= maxMushrooms)
                 return;
 
-            // 50% chance to reproduce for each mushroom
             if (Random.value > 0.5f)
                 continue;
 
             Vector3 spawnPos;
 
-            // 90% spawn near parent, other just randomly
             if (Random.value < 0.9f)
             {
                 spawnPos = GetNavMeshPositionNearOtherMushrooms(mushroom.transform.position, reproduceRadius);
@@ -78,9 +86,11 @@ public class MushroomSpawner : MonoBehaviour
         }
     }
 
-
     void SpawnMushrooms()
     {
+        if (mushrooms.Count >= mushroomMapLimit || mushrooms.Count >= maxMushrooms)
+            return;
+
         Vector3 pos = GetRandomNavMeshPoint();
 
         if (pos != Vector3.zero)
@@ -89,7 +99,6 @@ public class MushroomSpawner : MonoBehaviour
             mushrooms.Add(newMushroom);
         }
     }
-
 
     Vector3 GetRandomNavMeshPoint()
     {
@@ -109,7 +118,6 @@ public class MushroomSpawner : MonoBehaviour
         return Vector3.zero;
     }
 
-
     Vector3 GetNavMeshPositionNearOtherMushrooms(Vector3 origin, float radius)
     {
         for (int i = 0; i < 10; i++)
@@ -128,9 +136,13 @@ public class MushroomSpawner : MonoBehaviour
         return Vector3.zero;
     }
 
-
     public void RemoveMushroom(GameObject mushroom)
     {
         mushrooms.Remove(mushroom);
+    }
+
+    public void SetMaxMushrooms(int max)
+    {
+        maxMushrooms = Mathf.Max(0, max);
     }
 }
