@@ -12,10 +12,6 @@ public class WolfBehaviour : AnimalBehaviour
     public GameObject CurrentTarget => preyTarget;
     float attackRange = 3.5f; // Range within which the wolf can attack prey
 
-    float maxHuntTime = 20f; // Maximum time the wolf will spend hunting before giving up
-    [SerializeField]
-    float huntTime = 0;
-
     float huntCooldown = 5f; // Time the wolf must wait after giving up on a hunt before it can hunt again
     [SerializeField]
     float huntCooldownTimer = 0;
@@ -28,7 +24,12 @@ public class WolfBehaviour : AnimalBehaviour
 
     float foodSearchingCooldown;
 
+    float deathWaitTimer = 0f;
+    float deathWaitDuration = 2f; // Timer to wait before eating, otherwise the moose will instantly be eaten (Not leting the animation finish).
+    bool waitingForDeathAnimation = false;
+
     GameObject foodTarget;
+    GameObject pendingCarcass;
 
     protected override void Start()
     {
@@ -40,6 +41,21 @@ public class WolfBehaviour : AnimalBehaviour
 
     protected override void Update()
     {
+        if (waitingForDeathAnimation)
+        {
+            deathWaitTimer -= Time.deltaTime;
+            if(deathWaitTimer <= 0f)
+            {
+                waitingForDeathAnimation = false;
+                foodTarget = pendingCarcass;
+                pendingCarcass = null;
+                agent.speed = animal.speed;
+                ChangeState(State.Eat);
+            }
+            return;
+        }
+
+
         if (hearing != null && hearing.HeardSomething)
         {
             Debug.Log("Wolf heard: " + hearing.HeardAnimal.name);
@@ -221,7 +237,6 @@ public class WolfBehaviour : AnimalBehaviour
         }
 
         preyTarget = null; // Give up on the prey after hunting for too long
-        huntTime = 0; // Reset hunting time
         huntCooldownTimer = huntCooldown; // Start cooldown timer
         agent.speed = animal.speed; // Reset speed to normal
         ChangeState(State.Wander);
@@ -305,10 +320,11 @@ public class WolfBehaviour : AnimalBehaviour
 
     public void notifyDeath()
     {
+        pendingCarcass = preyTarget;
         preyTarget = null;
-        huntTime = 0f;
-        agent.speed = animal.speed;
-        ChangeState(State.Wander);
+        agent.isStopped = true;
+        waitingForDeathAnimation = true;
+        deathWaitTimer = deathWaitDuration;
 
     }
 
