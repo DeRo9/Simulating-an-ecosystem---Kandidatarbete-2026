@@ -37,6 +37,9 @@ public class InformationUI : MonoBehaviour
             healthSlider.maxValue = current.maxHealth;
             healthSlider.value = current.healthLevel;
 
+            staminaSlider.maxValue = current.maxStamina;
+            staminaSlider.value = current.staminaLevel;
+
         }
     }
 
