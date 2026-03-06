@@ -9318,10 +9318,7 @@ MonoBehaviour:
   mushroomMapLimit: 500
   SpawnRadius: 100
   reproduceRadius: 10
-  timeInterval: 8760
-  navMeshSampleHeight: 500
-  navMeshSampleDistance: 1000
-  navMeshAttempts: 100
+  timeInterval: 10
 --- !u!1 &1403267127
 GameObject:
   m_ObjectHideFlags: 0
