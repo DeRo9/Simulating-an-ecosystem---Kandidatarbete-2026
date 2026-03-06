@@ -121,6 +121,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
     protected virtual void Update()
     {
+        AnimatorStateInfo animatorState = anim.GetCurrentAnimatorStateInfo(0);
 
         if (isDead)
         {
@@ -142,6 +143,13 @@ public abstract class AnimalBehaviour : MonoBehaviour
             animal.SetMovementState (moving,agent.velocity.magnitude);
         }
 
+        if (animatorState.IsName("Running"))
+        {
+            needs.DrainStamina();
+        } else
+        {
+            needs.RegenerateStamina();
+        }
 
 
         // State machine logic

@@ -168,11 +168,9 @@ public class WolfBehaviour : AnimalBehaviour
 
         }
 
-        // Hunting timer
-        huntTime += Time.deltaTime; 
-        if (huntTime >= maxHuntTime)
+        if (needs.noMoreStamina)
         {   
-            LostPrey(); // If the wolf has been hunting for too long, give up
+            LostPrey(); // If the wolf has no more stamina to run after, give up
             return;
         }
 
@@ -227,7 +225,7 @@ public class WolfBehaviour : AnimalBehaviour
 
     protected override bool IsHungry()
     {
-        if(huntCooldownTimer > 0)
+        if(huntCooldownTimer > 0 && needs.isTired)
         {
             huntCooldownTimer -= Time.deltaTime; // Decrease cooldown timer
             return false; // Can't hunt while on cooldown
