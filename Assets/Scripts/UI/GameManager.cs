@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 
 public class GameManager : MonoBehaviour
@@ -30,15 +31,19 @@ public class GameManager : MonoBehaviour
     [Header("Food")]
     public MushroomSpawner mushroomSpawner;
 
-
-
-
     [Header("Prefabs")]
     public GameObject moosePrefab;
     public GameObject wolfPrefab;
     public GameObject bearPrefab;
 
     public GameObject berryBushPrefab;
+
+    [Header("Simulation Length")]
+    public Slider simulationLengthSlider;
+    public TextMeshProUGUI simulationTimeText;
+    private float simulationTime;
+    private float timer;
+    private bool simulationRunning;
 
     [Header("information UI")]
     public InformationUI informationUI;
@@ -47,7 +52,25 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        simulationLengthSlider.value = 60f;
         cameraMovement.enabled = false;
+        Time.timeScale = 1f;
+
+    }
+
+    void Update() 
+    {
+        if (!simulationRunning) 
+        {
+            return;
+        }
+
+        timer += Time.deltaTime;
+
+        if (timer >= simulationTime)
+        {
+            EndSimulation();
+        }
     }
 
     public void StartSimulation()
@@ -61,6 +84,10 @@ public class GameManager : MonoBehaviour
         
         mushroomSpawner.SetMaxMushrooms(mushroomSetup.amount);
         mushroomSpawner.InitializeSpawn();
+
+        simulationTime = simulationLengthSlider.value;
+        timer = 0f;
+        simulationRunning = true;
 
         startMenuPanel.SetActive(false);
     }
@@ -111,6 +138,20 @@ public class GameManager : MonoBehaviour
         }
         Debug.LogWarning("Failed to find NavMesh point");
         return transform.position;
+    }
+
+    void EndSimulation ()
+    {
+        simulationRunning = false;
+
+        Time.timeScale = 0f;
+
+        SceneManager.LoadScene("SimOver");
+    }
+
+    public void UpdateTimeText()
+    {
+        simulationTimeText.text = $"Simulation Length: {simulationLengthSlider.value} seconds";
     }
 
 }
