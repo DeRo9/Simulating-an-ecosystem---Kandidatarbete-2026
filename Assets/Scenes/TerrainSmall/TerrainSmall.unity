@@ -8925,8 +8925,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 475.3374, y: -334.12756}
-  m_SizeDelta: {x: -1016.1747, y: -706.3685}
+  m_AnchoredPosition: {x: 497.85144, y: -375.9946}
+  m_SizeDelta: {x: -1061.2029, y: -790.1026}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1333261916
 MonoBehaviour:
@@ -8978,6 +8978,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95228004b86401242b2e42c6b9432708, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FoodSetupPanel
+  itemName: Berry Bush
   amountSlider: {fileID: 1976008875}
   amountText: {fileID: 2055895708}
 --- !u!1 &1358570443
@@ -9317,7 +9318,10 @@ MonoBehaviour:
   mushroomMapLimit: 500
   SpawnRadius: 100
   reproduceRadius: 10
-  timeInterval: 10
+  timeInterval: 8760
+  navMeshSampleHeight: 500
+  navMeshSampleDistance: 1000
+  navMeshAttempts: 100
 --- !u!1 &1403267127
 GameObject:
   m_ObjectHideFlags: 0
@@ -10908,8 +10912,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 484.38623, y: 345.41034}
-  m_SizeDelta: {x: -1023.45, y: -738.6538}
+  m_AnchoredPosition: {x: -465.8, y: -371.82}
+  m_SizeDelta: {x: -1038.2893, y: -786.33}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1612285555
 MonoBehaviour:
@@ -10961,6 +10965,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95228004b86401242b2e42c6b9432708, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FoodSetupPanel
+  itemName: Mushroom
   amountSlider: {fileID: 352465690}
   amountText: {fileID: 1675658902}
 --- !u!1 &1617118232
@@ -11400,8 +11405,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 2.7121, y: 29.6333}
-  m_SizeDelta: {x: 165.42, y: 46.0666}
+  m_AnchoredPosition: {x: 37.54163, y: 28.945984}
+  m_SizeDelta: {x: 211.7933, y: 15.9586}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1675658902
 MonoBehaviour:
@@ -11423,7 +11428,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Mushrooms
+  m_text: 'Amount of Mushroom:
 
 '
   m_isRightToLeft: 0
@@ -11452,8 +11457,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -11491,7 +11496,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -21.410889, y: -20.647583, z: -6.275879, w: -14.947205}
+  m_margin: {x: -48.441055, y: -21.103027, z: 10.5624695, w: 3.916481}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -14428,8 +14433,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.000058651, y: 28.6}
-  m_SizeDelta: {x: 179.6951, y: 43.5815}
+  m_AnchoredPosition: {x: 9.3, y: 31.791}
+  m_SizeDelta: {x: 252.4657, y: 43.5815}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2055895708
 MonoBehaviour:
@@ -14451,7 +14456,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'BerryBush
+  m_text: 'Amount of Berry Bush:
 
 '
   m_isRightToLeft: 0
@@ -14480,8 +14485,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -14519,7 +14524,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: -0.8434448, y: 0, z: -0.3161621, w: -3.864708}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
