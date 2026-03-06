@@ -29,7 +29,7 @@ public class AnimalNeeds : MonoBehaviour
     public bool isThirsty => thirstLevel < maxThirst * 0.5f;
 
     public bool isTired => staminaLevel < maxStamina * 0.5f;
-    public bool noMoreStamina => staminaLevel <= 0f;
+    public bool noMoreStamina { get; private set; }
 
     public bool isDead => healthLevel <= 0f;
 
@@ -59,6 +59,15 @@ public class AnimalNeeds : MonoBehaviour
         thirstLevel -= thirstDecreaseRate * Time.deltaTime;
         thirstLevel = Mathf.Clamp(thirstLevel, 0f, maxThirst); // Ensure it stays within bounds
 
+        if(staminaLevel <= 0)
+        {
+            noMoreStamina = true;
+        }
+
+        if(noMoreStamina && !isTired)
+        {
+            noMoreStamina = false;
+        }
     }
 
 
@@ -89,7 +98,7 @@ public class AnimalNeeds : MonoBehaviour
 
     public void RegenerateStamina()
     {
-        staminaLevel += staminaIncreaseRate;
+        staminaLevel += staminaIncreaseRate * Time.deltaTime;
         staminaLevel = Mathf.Clamp(staminaLevel, 0f, maxStamina);
     }
     

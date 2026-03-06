@@ -194,6 +194,14 @@ public class MooseBehaviour : AnimalBehaviour
             return;
         }
 
+        if (needs.noMoreStamina)
+        {
+            agent.speed = animal.speed;
+        } else
+        {
+            agent.speed = animal.runningSpeed;
+        }
+
         float distanceToPredator = Vector3.Distance(transform.position, enemy.transform.position);
         if (distanceToPredator > animal.sightRange * 1.2)
         {

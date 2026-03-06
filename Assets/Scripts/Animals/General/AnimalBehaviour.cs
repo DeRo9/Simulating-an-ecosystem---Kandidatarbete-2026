@@ -60,6 +60,8 @@ public abstract class AnimalBehaviour : MonoBehaviour
         {
             agent.speed = animal.speed;
         }
+        int wolf = LayerMask.NameToLayer("wolf");
+        int carcass = LayerMask.NameToLayer("carcass");
 
     }
 
@@ -233,6 +235,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         isDead = true;
 
         gameObject.tag = "carcass";
+        gameObject.layer = 7;
         anim.SetBool("isWalking", false);
         anim.SetBool("isRunning", false);
         anim.SetTrigger("isDead");

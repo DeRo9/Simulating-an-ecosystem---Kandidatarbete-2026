@@ -1649,11 +1649,15 @@ MonoBehaviour:
   maxHunger: 100
   maxThirst: 100
   maxHealth: 100
+  maxStamina: 100
   hungerLevel: 100
   thirstLevel: 100
   healthLevel: 100
+  staminaLevel: 0
   hungerDecreaseRate: 0.8
   thirstDecreaseRate: 1
+  staminaDecreaseRate: 1
+  staminaIncreaseRate: 1.5
 --- !u!114 &1391028911167729743
 MonoBehaviour:
   m_ObjectHideFlags: 0
