@@ -4,6 +4,8 @@ public class Mating : MonoBehaviour
 {
     public Animal animal;
     public GameObject animalPrefab;
+    public GameObject heartPrefab;
+    public float heartHeight = 2f;
 
     public float matingRange = 5f;
     public float matingCooldown = 30f;
@@ -72,6 +74,8 @@ public class Mating : MonoBehaviour
         {
             babyAge.age = 0f;
         }
+        Instantiate(heartPrefab, transform.position + Vector3.up * heartHeight, Quaternion.identity);
+        Instantiate(heartPrefab, partner.transform.position + Vector3.up * heartHeight, Quaternion.identity);
 
         cooldownTimer = matingCooldown;
 

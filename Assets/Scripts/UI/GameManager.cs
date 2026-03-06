@@ -23,6 +23,16 @@ public class GameManager : MonoBehaviour
     public AnimalSetupPanel wolfSetup;
     public AnimalSetupPanel bearSetup;
 
+    [Header("Food Setup Panel")]
+    public FoodSetupPanel berryBushSetup;
+    public FoodSetupPanel mushroomSetup;
+
+    [Header("Food")]
+    public MushroomSpawner mushroomSpawner;
+
+
+
+
     [Header("Prefabs")]
     public GameObject moosePrefab;
     public GameObject wolfPrefab;
@@ -47,7 +57,10 @@ public class GameManager : MonoBehaviour
         SpawnAnimals(moosePrefab, mooseSetup, herbivoresFolder);
         SpawnAnimals(wolfPrefab, wolfSetup, carnivoreFolder);
         SpawnAnimals(bearPrefab, bearSetup, omnivoreFolder);
-        SpawnFood(berryBushPrefab, 100, berryBushFolder);
+        SpawnFood(berryBushPrefab, berryBushSetup.amount, berryBushFolder);
+        
+        mushroomSpawner.SetMaxMushrooms(mushroomSetup.amount);
+        mushroomSpawner.InitializeSpawn();
 
         startMenuPanel.SetActive(false);
     }

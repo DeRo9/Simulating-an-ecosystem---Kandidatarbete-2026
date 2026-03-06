@@ -16,7 +16,6 @@ public class MooseBehaviour : AnimalBehaviour
     float foodSearchingCooldown;
 
     GameObject enemy; // For fleeing from wolves and bears
-    public bool isDead;
 
     float fleeRepathTimer = 0f;
     float fleeRepathInterval = 0.5f; // Time interval for recalculating path to prey
@@ -31,10 +30,7 @@ public class MooseBehaviour : AnimalBehaviour
 
     protected override void Update()
     {
-        if (isDead)
-        {
-            return;
-        }
+        base.Update();
 
         if (hearing != null && hearing.HeardSomething)
         {
@@ -67,14 +63,6 @@ public class MooseBehaviour : AnimalBehaviour
             }
         }
 
-
-        if (animal.GetHealth() <= 0f)
-        {
-            OnDeath();
-            return;
-        }
-
-        base.Update();
 
     }
 
@@ -269,8 +257,7 @@ public class MooseBehaviour : AnimalBehaviour
 
     public override void OnDeath()
     {
-        if (isDead) return;
-        isDead = true;
+        base.OnDeath();
 
         WolfBehaviour[] wolves = FindObjectsByType<WolfBehaviour>(FindObjectsSortMode.None); // All wolves hunting the moose
         foreach (WolfBehaviour wolf in wolves)
@@ -281,16 +268,6 @@ public class MooseBehaviour : AnimalBehaviour
             }
         }
 
-        gameObject.tag = "carcass";
-        anim.SetBool("isWalking", false);
-        anim.SetBool("isRunning", false);
-        anim.SetTrigger("isDead");
-
-        animal.agingSpeed = 0f;
-
-
-        ChangeState(State.Dead);
-        agent.isStopped = true;
     }
 
 }
