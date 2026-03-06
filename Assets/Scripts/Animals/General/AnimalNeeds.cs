@@ -28,6 +28,7 @@ public class AnimalNeeds : MonoBehaviour
     public float howThirstyInPercent => thirstLevel/maxThirst;
 
 
+
     
     void Start()
     {
