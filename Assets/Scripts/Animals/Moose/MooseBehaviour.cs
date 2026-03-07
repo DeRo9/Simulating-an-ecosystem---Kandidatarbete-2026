@@ -276,6 +276,15 @@ public class MooseBehaviour : AnimalBehaviour
             }
         }
 
+        BearBehaviour[] bears = FindObjectsByType <BearBehaviour> (FindObjectsSortMode.None);
+        foreach(BearBehaviour bear in bears)
+        {
+            if (bear.CurrentTarget == gameObject)
+            {
+                bear.notifyDeath();
+            }
+        }
+
     }
 
 }

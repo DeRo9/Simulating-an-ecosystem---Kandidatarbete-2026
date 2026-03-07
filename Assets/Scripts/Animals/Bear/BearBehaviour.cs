@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class BearBehaviour : AnimalBehaviour
 {
@@ -25,16 +26,29 @@ public class BearBehaviour : AnimalBehaviour
     float deathWaitDuration = 2f; // Timer to wait before eating, otherwise the moose will instantly be eaten (Not leting the animation finish).
     bool waitingForDeathAnimation = false;
 
-    GameObject foodTarget;
     GameObject pendingCarcass;
     protected override void Start()
     {
         base.Start();
         hearing = GetComponent<BearHearing>();
+        fov = GetComponent<BearFOV>();
     }
 
     protected override void Update()
     {
+         if (waitingForDeathAnimation)
+        {
+            deathWaitTimer -= Time.deltaTime;
+            if(deathWaitTimer <= 0f)
+            {
+                waitingForDeathAnimation = false;
+                foodTarget = pendingCarcass;
+                pendingCarcass = null;
+                agent.speed = animal.speed;
+                ChangeState(State.Eat);
+            }
+            return;
+        }
         if (hearing != null && hearing.HeardSomething)
         {
             Debug.Log("Bear heard: " + hearing.HeardAnimal.name);
@@ -49,7 +63,17 @@ public class BearBehaviour : AnimalBehaviour
             }
             else if (needs.howThirstyInPercent > needs.howHungryInPercent && IsHungry())
             {
-                ChangeState(State.Eat);
+                //ChangeState(State.Eat);
+                if(preyTarget != null)
+                {
+                    ChangeState(State.Hunt);
+                    Debug.Log("Bear is hunting");
+                }
+                else if(foodTarget != null)
+                {
+                    ChangeState(State.Eat);
+                    Debug.Log("Bear is eating");
+                }
             }
         }
 
@@ -228,7 +252,7 @@ public class BearBehaviour : AnimalBehaviour
             {
                 anim.SetTrigger("Attack");
                 attackTimer = 0f;
-                Debug.Log("Wolf attacked prey");
+                Debug.Log("Bear attacked prey");
             }
         }
     }
@@ -266,12 +290,25 @@ public class BearBehaviour : AnimalBehaviour
 
     protected override bool IsHungry()
     {
-        // Bear is hungry, find food
-        if (needs.isHungry)
+        if (!needs.isHungry)
         {
-            return FindFood();
+            return false;
         }
-        return false;
+        // Bear is hungry, find food
+        if (needs.isHungryBearH)
+        {
+            if (FindCarcass())
+            {
+                return true;
+            }
+            if (FindPrey())
+            {
+                return true;
+            }
+            return FindFood(); // if the bear fails to find meat while very hungry it goes back to look for the plants
+        }
+        
+        return FindFood(); 
     }
 
     protected override void EatStateForSpecificAnimal()
@@ -366,7 +403,7 @@ public class BearBehaviour : AnimalBehaviour
                 continue; // Skip if not in FOV
             }
 
-            Debug.Log("Wolf found carcass.");
+            Debug.Log("Bear found carcass.");
             if (hit.CompareTag("carcass"))
             {
                 float distance = Vector3.Distance(transform.position, hit.transform.position);
