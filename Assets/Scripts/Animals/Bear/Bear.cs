@@ -9,8 +9,9 @@ public class Bear : Animal
         grownUpAge = 8f;
         oldAge = 16f;
         size = 1.5f;
-        sightRange = 30f;
-        hearingRange = 30f;
+        sightRange = 60f;
+        hearingRange = 50f;
+        attackDamage = 40f;
 
         base.Awake();
     }
