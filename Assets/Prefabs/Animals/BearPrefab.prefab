@@ -1604,7 +1604,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bear
   species: 1
-  age: 0
+  age: 8
   agingSpeed: 0.1
   grownUpAge: 8
   oldAge: 16

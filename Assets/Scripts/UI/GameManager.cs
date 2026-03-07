@@ -144,6 +144,18 @@ public class GameManager : MonoBehaviour
     {
         simulationRunning = false;
 
+        SimulationResults.initialBearsAmount = bearSetup.amount;
+        SimulationResults.finalBearsAmount = omnivoreFolder.childCount;
+
+        SimulationResults.initialWolvesAmount = wolfSetup.amount;
+        SimulationResults.finalWolvesAmount = carnivoreFolder.childCount;
+
+        SimulationResults.initialMooseAmount = mooseSetup.amount;
+        SimulationResults.finalMooseAmount = herbivoresFolder.childCount;
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
         Time.timeScale = 0f;
 
         SceneManager.LoadScene("SimOver");

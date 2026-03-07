@@ -67,7 +67,7 @@ public class Mating : MonoBehaviour
     {
         Vector3 spawnPosition = (transform.position + partner.transform.position) / 2f;
 
-        GameObject baby = Instantiate(animalPrefab, spawnPosition, Quaternion.identity);
+        GameObject baby = Instantiate(animalPrefab, spawnPosition, Quaternion.identity, transform.parent);
 
         Animal babyAge = baby.GetComponent<Animal>();
         if (babyAge != null)
