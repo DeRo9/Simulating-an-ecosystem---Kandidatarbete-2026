@@ -61,7 +61,7 @@ public class BearBehaviour : AnimalBehaviour
             {
                 ChangeState(State.Drink);
             }
-            else if (needs.howThirstyInPercent > needs.howHungryInPercent && IsHungry())
+            else if ( IsHungry())
             {
                 //ChangeState(State.Eat);
                 if(preyTarget != null)
@@ -251,6 +251,7 @@ public class BearBehaviour : AnimalBehaviour
             if (attackTimer >= attackInterval)
             {
                 anim.SetTrigger("Attack");
+                DamageMoose();
                 attackTimer = 0f;
                 Debug.Log("Bear attacked prey");
             }
@@ -261,10 +262,13 @@ public class BearBehaviour : AnimalBehaviour
     {
         if (preyTarget != null)
         {
+            Debug.Log("Bear attacks the moose");
             MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
             if (moose != null)
             {
+                
                 moose.InflictDamage(animal.attackDamage);
+                Debug.Log("Damage has been inflicted");
             }
         }
     }
@@ -353,7 +357,11 @@ public class BearBehaviour : AnimalBehaviour
         if (hasArrived())
         {
             agent.isStopped = true;
+            needs.Eat(100);
+            Destroy(foodTarget);
+            foodTarget = null;
             Debug.Log("Bear ate.");
+            ChangeState(State.Wander);
         }
         else
         {
