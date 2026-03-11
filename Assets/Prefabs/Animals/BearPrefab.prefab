@@ -1609,7 +1609,7 @@ MonoBehaviour:
   grownUpAge: 8
   oldAge: 16
   IsMale: 0
-  sightRange: 30
+  sightRange: 18
   hearingRange: 30
   speed: 2
   runningSpeed: 4
@@ -1633,10 +1633,10 @@ MonoBehaviour:
   minTimeWaiting: 2
   maxTimeWaiting: 5
   waitTime: 0
+  isDead: 0
   waterLayer:
     serializedVersion: 2
     m_Bits: 16
-  isDead: 0
   huntCooldownTimer: 0
 --- !u!114 &5642719112376538877
 MonoBehaviour:

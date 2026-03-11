@@ -545,7 +545,7 @@ MonoBehaviour:
   grownUpAge: 4
   oldAge: 8
   IsMale: 0
-  sightRange: 50
+  sightRange: 18
   hearingRange: 20
   speed: 2
   runningSpeed: 4
@@ -569,10 +569,10 @@ MonoBehaviour:
   minTimeWaiting: 2
   maxTimeWaiting: 5
   waitTime: 0
+  isDead: 0
   waterLayer:
     serializedVersion: 2
     m_Bits: 16
-  isDead: 0
   foodLayer:
     serializedVersion: 2
     m_Bits: 1024

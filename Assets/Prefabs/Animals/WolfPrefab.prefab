@@ -994,7 +994,7 @@ MonoBehaviour:
   grownUpAge: 2
   oldAge: 4
   IsMale: 0
-  sightRange: 80
+  sightRange: 18
   hearingRange: 50
   speed: 2
   runningSpeed: 4
@@ -1018,17 +1018,17 @@ MonoBehaviour:
   minTimeWaiting: 2
   maxTimeWaiting: 5
   waitTime: 0
+  isDead: 0
   waterLayer:
     serializedVersion: 2
     m_Bits: 16
-  isDead: 0
-  PreyLayer:
-    serializedVersion: 2
-    m_Bits: 256
   huntCooldownTimer: 0
   carcassLayer:
     serializedVersion: 2
     m_Bits: 128
+  PreyLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!114 &1081293250822596563
 MonoBehaviour:
   m_ObjectHideFlags: 0
