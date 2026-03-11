@@ -181,7 +181,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         }
     }
 
-    bool FindWater()
+    public bool FindWater()
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange);
 
@@ -246,16 +246,14 @@ public abstract class AnimalBehaviour : MonoBehaviour
         ChangeState(State.Dead);
         agent.isStopped = true;
     }
-    protected virtual bool IsHungry() { return false; }
+    protected virtual bool IsHungry() 
+    {
+        return needs.isHungry; 
+    }
     
     protected bool IsThirsty()
     {
-        // Wolf is thristy, find water source
-        if (needs.isThirsty)
-        {
-            return FindWater();
-        }
-        return false;
+        return needs.isThirsty;
     }
     protected virtual void EatStateForSpecificAnimal() { }
 
@@ -267,11 +265,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
     {
         waterTarget = null;
         agent.isStopped = true;
-
-        if (!IsHungry())
-        {
-            ChangeState(State.Wander);
-        }
+        ChangeState(State.Wander);
     }
 
     public void UpdateDrink()
@@ -292,11 +286,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
             // No longer thirsty
             if (!needs.isThirsty)
             {
-                if (!IsHungry())
-                {
-                    ChangeState(State.Wander);
-                }
-
+                ChangeState(State.Wander);
                 return;
             }
         }

@@ -54,14 +54,24 @@ public class MooseBehaviour : AnimalBehaviour
         // If not currently eating, drinking or fleeing, check if the moose needs to eat or drink and switch to the appropriate state
         if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Fleeing)
         {
+
             // If the moose is more thirsty than hungry, switch to drink state, if more hungry than thirsty, switch to eat state
             if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
             {
-                ChangeState(State.Drink);
+                if (FindWater())
+                {
+                    ChangeState(State.Drink);
+                    return;
+                }
             }
-            else if (IsHungry())
+
+            if (IsHungry())
             {
-                ChangeState(State.Eat);
+                if (FindFood())
+                {
+                    ChangeState(State.Eat);
+                    return;
+                }
             }
         }
 
@@ -116,17 +126,6 @@ public class MooseBehaviour : AnimalBehaviour
         return false;
     }
 
-
-
-    protected override bool IsHungry()
-    {
-        // Moose is hungry, find food
-        if (needs.isHungry)
-        {
-            return FindFood();
-        }
-        return false;
-    }
 
     protected override void EatStateForSpecificAnimal()
     {
