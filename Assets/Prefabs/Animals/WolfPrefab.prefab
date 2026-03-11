@@ -989,7 +989,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Wolf
   species: 0
-  age: 2
+  age: 1
   agingSpeed: 0.1
   grownUpAge: 2
   oldAge: 4
