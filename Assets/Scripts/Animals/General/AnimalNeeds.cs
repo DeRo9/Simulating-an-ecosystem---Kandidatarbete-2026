@@ -53,6 +53,8 @@ public class AnimalNeeds : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (isDead) return; // If dead, then we don't need to update anything anymore
+
         // Decrease hunger level over time
         hungerLevel -= hungerDecreaseRate * Time.deltaTime; 
         hungerLevel = Mathf.Clamp(hungerLevel, 0f, maxHunger); // Ensure it stays within bounds

@@ -41,6 +41,8 @@ public class WolfBehaviour : AnimalBehaviour
 
     protected override void Update()
     {
+        base.Update();
+
         if (waitingForDeathAnimation)
         {
             deathWaitTimer -= Time.deltaTime;
@@ -66,7 +68,7 @@ public class WolfBehaviour : AnimalBehaviour
             if (IsHungry()) { /* Impemented inside isHungry(), so it will automatically change to hunt there*/ }
         }
 
-        base.Update();
+        
     }
 
     bool FindPrey()

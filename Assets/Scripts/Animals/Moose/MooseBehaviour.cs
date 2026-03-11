@@ -30,6 +30,8 @@ public class MooseBehaviour : AnimalBehaviour
 
     protected override void Update()
     {
+        
+
         base.Update();
 
         if (hearing != null && hearing.HeardSomething)

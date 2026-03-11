@@ -36,7 +36,10 @@ public class BearBehaviour : AnimalBehaviour
 
     protected override void Update()
     {
-         if (waitingForDeathAnimation)
+        base.Update();
+
+
+        if (waitingForDeathAnimation)
         {
             deathWaitTimer -= Time.deltaTime;
             if(deathWaitTimer <= 0f)
@@ -77,7 +80,7 @@ public class BearBehaviour : AnimalBehaviour
             }
         }
 
-        base.Update();
+        
     }
 
     // Finds the closest food item within the detection radius and sets it as the target
