@@ -10313,7 +10313,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1440956291}
-  m_Layer: 4
+  m_Layer: 0
   m_Name: Water
   m_TagString: Water
   m_Icon: {fileID: 0}
