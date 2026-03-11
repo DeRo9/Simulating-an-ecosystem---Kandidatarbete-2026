@@ -11,6 +11,7 @@ public class BearBehaviour : AnimalBehaviour
     float attackRange = 3.5f; // Range within which the wolf can attack prey
 
     float huntCooldown = 5f; // Time the wolf must wait after giving up on a hunt before it can hunt again
+    [Header("Hunting")]
     [SerializeField]
     float huntCooldownTimer = 0;
 

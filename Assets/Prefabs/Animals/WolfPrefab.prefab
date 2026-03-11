@@ -1018,8 +1018,17 @@ MonoBehaviour:
   minTimeWaiting: 2
   maxTimeWaiting: 5
   waitTime: 0
+  waterLayer:
+    serializedVersion: 2
+    m_Bits: 16
   isDead: 0
+  PreyLayer:
+    serializedVersion: 2
+    m_Bits: 256
   huntCooldownTimer: 0
+  carcassLayer:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!114 &1081293250822596563
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1039,7 +1048,7 @@ MonoBehaviour:
   hungerLevel: 100
   thirstLevel: 100
   healthLevel: 100
-  staminaLevel: 0
+  staminaLevel: 100
   hungerDecreaseRate: 0.8
   thirstDecreaseRate: 1
   staminaDecreaseRate: 5

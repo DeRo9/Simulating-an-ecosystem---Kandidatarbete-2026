@@ -9,12 +9,15 @@ public class WolfBehaviour : AnimalBehaviour
     WolfHearing hearing;
 
     GameObject preyTarget;
-    public GameObject CurrentTarget => preyTarget;
-    float attackRange = 3.5f; // Range within which the wolf can attack prey
 
+    
     float huntCooldown = 5f; // Time the wolf must wait after giving up on a hunt before it can hunt again
+    [Header("Hunting")]
     [SerializeField]
     float huntCooldownTimer = 0;
+
+    public GameObject CurrentTarget => preyTarget;
+    float attackRange = 3.5f; // Range within which the wolf can attack prey
 
     float repathTimer = 0f;
     float repathInterval = 0.3f; // Time interval for recalculating path to prey
@@ -30,6 +33,13 @@ public class WolfBehaviour : AnimalBehaviour
 
     GameObject foodTarget;
     GameObject pendingCarcass;
+
+    [Header("Layers")]
+    [SerializeField]
+    LayerMask carcassLayer;
+
+    [SerializeField]
+    LayerMask PreyLayer;
 
     protected override void Start()
     {
@@ -65,9 +75,17 @@ public class WolfBehaviour : AnimalBehaviour
         }
         if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt)
         {
-            if (IsHungry()) { /* Impemented inside isHungry(), so it will automatically change to hunt there*/ }
+            if (IsHungry() && huntCooldownTimer <= 0 && !needs.isTired) 
+            {
+                if (FindPrey())
+                    ChangeState(State.Hunt);
+                else if (FindCarcass())
+                    ChangeState(State.Eat);
+            }
         }
 
+        if(huntCooldownTimer > 0)
+            huntCooldownTimer -= Time.deltaTime;
         
     }
 
@@ -77,7 +95,7 @@ public class WolfBehaviour : AnimalBehaviour
         if (preyTarget != null)
             return true; // If the wolf already has a target, don't change prey
 
-        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange);
+        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange, PreyLayer);
 
         float closestDistance = Mathf.Infinity;
         GameObject closestPrey = null;
@@ -246,27 +264,7 @@ public class WolfBehaviour : AnimalBehaviour
 
     protected override bool IsHungry()
     {
-        if(huntCooldownTimer > 0 && needs.isTired)
-        {
-            huntCooldownTimer -= Time.deltaTime; // Decrease cooldown timer
-            return false; // Can't hunt while on cooldown
-        }
-
-        // Wolf is hungry, find food
-        if (needs.isHungry)
-        {
-            if (FindPrey())
-            {
-                ChangeState(State.Hunt);
-                return true;
-            }
-            else if (FindCarcass())
-            {
-                ChangeState(State.Eat);
-                return true;
-            }
-        }
-        return false;
+        return needs.isHungry;
     }
 
     protected override void EatStateForSpecificAnimal()
@@ -341,7 +339,7 @@ public class WolfBehaviour : AnimalBehaviour
         }
         foodSearchingCooldown = 0.5f;
 
-        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange);
+        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange, carcassLayer);
 
         float closestDistance = Mathf.Infinity;
         GameObject closestFood = null;
@@ -355,9 +353,10 @@ public class WolfBehaviour : AnimalBehaviour
                 continue; // Skip if not in FOV
             }
 
-            Debug.Log("Wolf found carcass.");
+            
             if (hit.CompareTag("carcass"))
             {
+                Debug.Log("Wolf found carcass.");
                 float distance = Vector3.Distance(transform.position, hit.transform.position);
                 if (distance < closestDistance)
                 {

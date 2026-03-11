@@ -22,6 +22,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         Dead,
     }
 
+    [Header("Other")]
     // Current state of the animal
     [SerializeField]
     protected State CurrentState = State.Idle;
@@ -47,6 +48,10 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
     public bool isDead;
 
+    [Header("Water Layer")]
+    [SerializeField]
+    LayerMask waterLayer;
+
 
     protected virtual void Start()
     {
@@ -60,8 +65,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
         {
             agent.speed = animal.speed;
         }
-        int wolf = LayerMask.NameToLayer("wolf");
-        int carcass = LayerMask.NameToLayer("carcass");
 
     }
 
@@ -183,7 +186,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
     public bool FindWater()
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange);
+        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange, waterLayer);
 
         float closestDistance = Mathf.Infinity;
         GameObject closestWater = null;
@@ -235,7 +238,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         isDead = true;
 
         gameObject.tag = "carcass";
-        gameObject.layer = 7;
+        gameObject.layer = LayerMask.NameToLayer("carcass"); ;
         anim.SetBool("isWalking", false);
         anim.SetBool("isRunning", false);
         anim.SetTrigger("isDead");

@@ -20,6 +20,10 @@ public class MooseBehaviour : AnimalBehaviour
     float fleeRepathTimer = 0f;
     float fleeRepathInterval = 2f; // Time interval for recalculating path to prey
 
+    [Header("Layers")]
+    [SerializeField]
+    LayerMask foodLayer;
+
     protected override void Start()
     {
         base.Start();
@@ -89,7 +93,7 @@ public class MooseBehaviour : AnimalBehaviour
         }
         foodSearchingCooldown = 0.5f;
 
-        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange);
+        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange, foodLayer);
 
         float closestDistance = Mathf.Infinity;
         GameObject closestFood = null;
