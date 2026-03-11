@@ -58,6 +58,9 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public float recordInterval = 5f;
+    private float recordTimer = 0f;
+
     void Update() 
     {
         if (!simulationRunning) 
@@ -66,6 +69,13 @@ public class GameManager : MonoBehaviour
         }
 
         timer += Time.deltaTime;
+        recordTimer += Time.deltaTime;
+
+        if(recordTimer >= recordInterval)
+        {
+            RecordPopulation();
+            recordTimer = 0f;
+        }
 
         if (timer >= simulationTime)
         {
@@ -144,19 +154,21 @@ public class GameManager : MonoBehaviour
     {
         simulationRunning = false;
 
-        SimulationResults.initialBearsAmount = bearSetup.amount;
+        /*SimulationResults.initialBearsAmount = bearSetup.amount;
         SimulationResults.finalBearsAmount = omnivoreFolder.childCount;
 
         SimulationResults.initialWolvesAmount = wolfSetup.amount;
         SimulationResults.finalWolvesAmount = carnivoreFolder.childCount;
 
         SimulationResults.initialMooseAmount = mooseSetup.amount;
-        SimulationResults.finalMooseAmount = herbivoresFolder.childCount;
+        SimulationResults.finalMooseAmount = herbivoresFolder.childCount;*/
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
         Time.timeScale = 0f;
+
+        SimulationResults.simulationLength = simulationTime;
 
         SceneManager.LoadScene("SimOver");
     }
@@ -165,5 +177,14 @@ public class GameManager : MonoBehaviour
     {
         simulationTimeText.text = $"Simulation Length: {simulationLengthSlider.value} seconds";
     }
+
+    void RecordPopulation()
+    {
+        SimulationResults.bearsHistory.Add(omnivoreFolder.childCount);
+        SimulationResults.wolvesHistory.Add(carnivoreFolder.childCount);
+        SimulationResults.mooseHistory.Add(herbivoresFolder.childCount);
+
+    }
+
 
 }

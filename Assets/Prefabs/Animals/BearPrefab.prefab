@@ -1604,7 +1604,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bear
   species: 1
-  age: 8
+  age: 4
   agingSpeed: 0.1
   grownUpAge: 8
   oldAge: 16
@@ -1690,7 +1690,7 @@ MonoBehaviour:
   heartPrefab: {fileID: 7228168900247499859, guid: a1e57a5696459574181cf83539b13772, type: 3}
   heartHeight: 2
   matingRange: 5
-  matingCooldown: 30
+  matingCooldown: 10
 --- !u!54 &1070128744223743822
 Rigidbody:
   m_ObjectHideFlags: 0
