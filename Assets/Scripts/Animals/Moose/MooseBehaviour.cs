@@ -18,7 +18,7 @@ public class MooseBehaviour : AnimalBehaviour
     GameObject enemy; // For fleeing from wolves and bears
 
     float fleeRepathTimer = 0f;
-    float fleeRepathInterval = 0.5f; // Time interval for recalculating path to prey
+    float fleeRepathInterval = 2f; // Time interval for recalculating path to prey
 
     protected override void Start()
     {
@@ -194,6 +194,14 @@ public class MooseBehaviour : AnimalBehaviour
             return;
         }
 
+        if (needs.noMoreStamina)
+        {
+            agent.speed = animal.speed;
+        } else
+        {
+            agent.speed = animal.runningSpeed;
+        }
+
         float distanceToPredator = Vector3.Distance(transform.position, enemy.transform.position);
         if (distanceToPredator > animal.sightRange * 1.2)
         {
@@ -214,7 +222,8 @@ public class MooseBehaviour : AnimalBehaviour
             // sample a valid position on the navmesh in the flee direction
             if (NavMesh.SamplePosition(fleeDestination, out hit, animal.sightRange, NavMesh.AllAreas))
             {
-                agent.SetDestination(hit.position);
+                if(!agent.hasPath)
+                    agent.SetDestination(hit.position);
             }
 
             fleeRepathTimer = 0f;
@@ -265,6 +274,15 @@ public class MooseBehaviour : AnimalBehaviour
             if(wolf.CurrentTarget == gameObject)
             {
                 wolf.notifyDeath();
+            }
+        }
+
+        BearBehaviour[] bears = FindObjectsByType <BearBehaviour> (FindObjectsSortMode.None);
+        foreach(BearBehaviour bear in bears)
+        {
+            if (bear.CurrentTarget == gameObject)
+            {
+                bear.notifyDeath();
             }
         }
 

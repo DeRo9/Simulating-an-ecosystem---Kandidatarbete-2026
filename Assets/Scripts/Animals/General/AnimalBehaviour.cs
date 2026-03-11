@@ -60,6 +60,8 @@ public abstract class AnimalBehaviour : MonoBehaviour
         {
             agent.speed = animal.speed;
         }
+        int wolf = LayerMask.NameToLayer("wolf");
+        int carcass = LayerMask.NameToLayer("carcass");
 
     }
 
@@ -121,6 +123,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
     protected virtual void Update()
     {
+        AnimatorStateInfo animatorState = anim.GetCurrentAnimatorStateInfo(0);
 
         if (isDead)
         {
@@ -142,6 +145,13 @@ public abstract class AnimalBehaviour : MonoBehaviour
             animal.SetMovementState (moving,agent.velocity.magnitude);
         }
 
+        if (animatorState.IsName("Running"))
+        {
+            needs.DrainStamina();
+        } else
+        {
+            needs.RegenerateStamina();
+        }
 
 
         // State machine logic
@@ -225,6 +235,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         isDead = true;
 
         gameObject.tag = "carcass";
+        gameObject.layer = 7;
         anim.SetBool("isWalking", false);
         anim.SetBool("isRunning", false);
         anim.SetTrigger("isDead");
