@@ -540,7 +540,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Moose
   species: 2
-  age: 4
+  age: 2
   agingSpeed: 0.1
   grownUpAge: 4
   oldAge: 8

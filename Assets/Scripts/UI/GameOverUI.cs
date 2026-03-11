@@ -11,9 +11,9 @@ public class GameOverUI : MonoBehaviour
 
     void Start()
     {
-        bearsGraph.UpdateGraph(SimulationResults.initialBearsAmount, SimulationResults.finalBearsAmount);
-        wolvesGraph.UpdateGraph(SimulationResults.initialWolvesAmount, SimulationResults.finalWolvesAmount);
-        mooseGraph.UpdateGraph(SimulationResults.initialMooseAmount, SimulationResults.finalMooseAmount);
+        bearsGraph.DrawGraph(SimulationResults.bearsHistory, SimulationResults.simulationLength);
+        wolvesGraph.DrawGraph(SimulationResults.wolvesHistory, SimulationResults.simulationLength);
+        mooseGraph.DrawGraph(SimulationResults.mooseHistory, SimulationResults.simulationLength);
     }
 
     public void RestartSimulation()
