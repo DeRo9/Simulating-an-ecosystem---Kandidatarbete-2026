@@ -198,14 +198,8 @@ public class MooseBehaviour : AnimalBehaviour
             ChangeState(State.Wander);
             return;
         }
-
-        if (needs.noMoreStamina)
-        {
-            agent.speed = animal.speed;
-        } else
-        {
-            agent.speed = animal.runningSpeed;
-        }
+    
+        agent.speed = needs.noMoreStamina ? animal.speed : animal.runningSpeed;
 
         float distanceToPredator = Vector3.Distance(transform.position, enemy.transform.position);
         if (distanceToPredator > animal.sightRange * 1.2)
@@ -219,20 +213,45 @@ public class MooseBehaviour : AnimalBehaviour
         fleeRepathTimer += Time.deltaTime;
         if (fleeRepathTimer >= fleeRepathInterval)
         {
-            // Flee in the opposite direction of the enemy
-            Vector3 fleeDirection = (transform.position - enemy.transform.position).normalized;
-            Vector3 fleeDestination = transform.position + fleeDirection * animal.sightRange;
-
-            NavMeshHit hit;
-            // sample a valid position on the navmesh in the flee direction
-            if (NavMesh.SamplePosition(fleeDestination, out hit, animal.sightRange, NavMesh.AllAreas))
-            {
-                if(!agent.hasPath)
-                    agent.SetDestination(hit.position);
-            }
-
+            Vector3 fleePoint = CalculateFleePath();
+            agent.SetDestination(fleePoint);
             fleeRepathTimer = 0f;
         }
+    }
+
+    private Vector3 CalculateFleePath()
+    {
+        Vector3 dirAwayFromEnemy = (transform.position - enemy.transform.position).normalized;
+
+        Vector3[] directionTests = new Vector3[] // Which direction is best to flee to (to avoid walking to edge of terrain)
+        {
+            dirAwayFromEnemy,
+            Quaternion.Euler(0,45,0) * dirAwayFromEnemy,
+            Quaternion.Euler(0,-45,0) * dirAwayFromEnemy,
+        };
+
+        Vector3 bestPoint = transform.position + dirAwayFromEnemy * animal.sightRange;
+        float furthestEdge = -1f;
+
+        foreach (Vector3 direction in directionTests)
+        {
+            Vector3 point = transform.position + direction * animal.sightRange;
+            NavMeshHit hit;
+
+            if (NavMesh.SamplePosition(point, out hit, animal.sightRange, NavMesh.AllAreas))
+            {
+                NavMeshHit wallHit;
+                if (NavMesh.FindClosestEdge(hit.position, out wallHit, NavMesh.AllAreas))
+                {
+                    if (wallHit.distance > furthestEdge)
+                    {
+                        furthestEdge = wallHit.distance;
+                        bestPoint = hit.position;
+                    }
+                }
+            }
+        }
+        return bestPoint;
     }
 
     protected override void FleeState()

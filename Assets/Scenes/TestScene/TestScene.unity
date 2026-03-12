@@ -339,6 +339,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -7482082836630389072, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
+      propertyPath: m_ExcludeLayers.m_Bits
+      value: 960
+      objectReference: {fileID: 0}
     - target: {fileID: 4167753896645195812, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 12.973423
@@ -382,6 +386,18 @@ PrefabInstance:
     - target: {fileID: 4266865027632842223, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
       propertyPath: m_Name
       value: WolfPrefab
+      objectReference: {fileID: 0}
+    - target: {fileID: 4421475189465629228, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
+      propertyPath: m_ExcludeLayers.m_Bits
+      value: 960
+      objectReference: {fileID: 0}
+    - target: {fileID: 4895227097686489173, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4895227097686489173, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
+      propertyPath: m_ExcludeLayers.m_Bits
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1801,9 +1817,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -7914532255645837834, guid: 673d635672c542b44af2717b4c832882, type: 3}
+      propertyPath: m_ExcludeLayers.m_Bits
+      value: 960
+      objectReference: {fileID: 0}
     - target: {fileID: 2670038152025143281, guid: 673d635672c542b44af2717b4c832882, type: 3}
       propertyPath: m_Name
       value: MoosePrefab
+      objectReference: {fileID: 0}
+    - target: {fileID: 5458290157786460551, guid: 673d635672c542b44af2717b4c832882, type: 3}
+      propertyPath: m_Radius
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6538256312678152227, guid: 673d635672c542b44af2717b4c832882, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1846,8 +1870,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8164022871099551755, guid: 673d635672c542b44af2717b4c832882, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8164022871099551755, guid: 673d635672c542b44af2717b4c832882, type: 3}
       propertyPath: m_ExcludeLayers.m_Bits
-      value: 192
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
