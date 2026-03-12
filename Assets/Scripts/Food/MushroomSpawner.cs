@@ -18,13 +18,19 @@ public class MushroomSpawner : MonoBehaviour
 
     [SerializeField] private float timeInterval = 8760f; // 1 second = 1 hour
 
+    [SerializeField] private float waterSpawnChance = 0.4f;   // chance a spawn is biased toward water
+    [SerializeField] private float waterProximityRadius = 20f; // radius around water sources to spawn in
+
     private float timer;
 
     private List<GameObject> mushrooms = new List<GameObject>();
+    private List<WaterSource> waterSources = new List<WaterSource>();
 
 
     void Start()
     {
+        waterSources.AddRange(FindObjectsOfType<WaterSource>());
+
         // initial mushrooms spawn
         for (int i = 0; i < mushroomMaxInitialization; i++)
         {
@@ -60,10 +66,14 @@ public class MushroomSpawner : MonoBehaviour
 
             Vector3 spawnPos;
 
-            // 90% spawn near parent, other just randomly
+            // 90% spawn near parent, other randomly (with chance to prefer water)
             if (Random.value < 0.9f)
             {
                 spawnPos = GetNavMeshPositionNearOtherMushrooms(mushroom.transform.position, reproduceRadius);
+            }
+            else if (waterSources.Count > 0 && Random.value < waterSpawnChance)
+            {
+                spawnPos = GetNavMeshPositionNearWater();
             }
             else
             {
@@ -81,7 +91,12 @@ public class MushroomSpawner : MonoBehaviour
 
     void SpawnMushrooms()
     {
-        Vector3 pos = GetRandomNavMeshPoint();
+        Vector3 pos;
+
+        if (waterSources.Count > 0 && Random.value < waterSpawnChance)
+            pos = GetNavMeshPositionNearWater();
+        else
+            pos = GetRandomNavMeshPoint();
 
         if (pos != Vector3.zero)
         {
@@ -126,6 +141,13 @@ public class MushroomSpawner : MonoBehaviour
         }
 
         return Vector3.zero;
+    }
+
+
+    Vector3 GetNavMeshPositionNearWater()
+    {
+        WaterSource randomWaterSource = waterSources[Random.Range(0, waterSources.Count)];
+        return GetNavMeshPositionNearOtherMushrooms(randomWaterSource.transform.position, waterProximityRadius);
     }
 
 
