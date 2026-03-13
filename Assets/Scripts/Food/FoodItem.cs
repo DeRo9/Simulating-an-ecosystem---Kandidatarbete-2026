@@ -3,7 +3,7 @@ using UnityEngine;
 public class FoodItem : MonoBehaviour
 {
     [SerializeField]
-    private float nutritionValue = 100f; // The amount of nutrition this food provides
+    private float nutritionValue = 80f; // The amount of nutrition this food provides
     private MushroomSpawner spawner;
 
     void Start()

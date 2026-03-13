@@ -27,9 +27,11 @@ public class GameManager : MonoBehaviour
     [Header("Food Setup Panel")]
     public FoodSetupPanel berryBushSetup;
     public FoodSetupPanel mushroomSetup;
+    public FoodSetupPanel nutrientTree; //??
 
     [Header("Food")]
     public MushroomSpawner mushroomSpawner;
+    public NutrientTreeSpawner nutrientTreeSpawner; //??
 
     [Header("Prefabs")]
     public GameObject moosePrefab;
@@ -94,6 +96,9 @@ public class GameManager : MonoBehaviour
         
         mushroomSpawner.SetMaxMushrooms(mushroomSetup.amount);
         mushroomSpawner.InitializeSpawn();
+
+        nutrientTreeSpawner.SetTreeAmount(nutrientTree.amount);
+        nutrientTreeSpawner.InitializeSpawn();
 
         simulationTime = simulationLengthSlider.value;
         timer = 0f;
