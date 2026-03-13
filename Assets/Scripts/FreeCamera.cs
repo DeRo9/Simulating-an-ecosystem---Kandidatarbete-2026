@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Camera))]
@@ -23,6 +24,12 @@ public class FreeCamera : MonoBehaviour
     private Camera cam;
     private float targetFOV;
 
+    // Bug where the raycaster is ghost hovering, causing glitches. So
+    // then we disable whenever we are rightclicking to prevent this.
+    private PhysicsRaycaster raycaster;
+    private float raycasterCooldown = 0f;
+    private float cooldownDuration = 0.1f;
+
     private InputAction moveAction;
     private InputAction lookDeltaAction;
     private InputAction rmbAction;
@@ -34,6 +41,8 @@ public class FreeCamera : MonoBehaviour
     {
         cam = GetComponent<Camera>();
         targetFOV = cam.fieldOfView;
+
+        raycaster = GetComponent<PhysicsRaycaster>();
 
         moveAction = new InputAction("Move", InputActionType.Value, binding: "<Keyboard>/wasd");
         moveAction.AddCompositeBinding("2DVector").With("Up", "<Keyboard>/w").With("Down", "<Keyboard>/s").With("Left", "<Keyboard>/a").With("Right", "<Keyboard>/d");
@@ -72,11 +81,16 @@ public class FreeCamera : MonoBehaviour
         if (rotation) { 
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
+            raycasterCooldown = cooldownDuration;
+            raycaster.enabled = false;
         }
         else
         {
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
+            raycasterCooldown -= Time.deltaTime;
+            raycaster.enabled = raycasterCooldown <= 0f;
+            
         }
         Vector3 rotationInput = Vector3.zero;
         if (rotation) {
