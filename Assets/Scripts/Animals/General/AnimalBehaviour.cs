@@ -107,6 +107,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
     }
 
+
     public Vector3 GetRandomPoints()
     {
         Vector3 randomDirection = Random.insideUnitSphere * 20f;

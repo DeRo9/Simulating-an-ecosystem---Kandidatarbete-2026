@@ -14,7 +14,7 @@ public class AnimalInteractor : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue()); // Create a ray from the camera to the mouse position
             RaycastHit hit;
 
-            if (Physics.Raycast(ray, out hit))
+            if (Physics.Raycast(ray, out hit, 40f, ~0, QueryTriggerInteraction.Ignore))
             {
                 if (hit.collider.CompareTag("Moose") || hit.collider.CompareTag("Wolf") || hit.collider.CompareTag("Bear")) // Check if the clicked object has the "Moose" tag
                 {
@@ -29,6 +29,10 @@ public class AnimalInteractor : MonoBehaviour
                     informationUI.ClearInfo(); // Clear UI Panel if clicked object is not a Moose
                 }
 
+            }
+            else
+            {
+                informationUI.ClearInfo();
             }
 
         }
