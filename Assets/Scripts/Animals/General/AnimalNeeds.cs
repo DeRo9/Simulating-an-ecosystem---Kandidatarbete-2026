@@ -7,10 +7,10 @@ public class AnimalNeeds : MonoBehaviour
 
 {
 
-    [SerializeField] public float maxHunger = 100f; //so InformationUI works...?
-    [SerializeField] public float maxThirst = 100f;
-    [SerializeField] public float maxHealth = 100f;
-    [SerializeField] public float maxStamina = 100f;
+    public float maxHunger = 100f; //so InformationUI works...?
+    public float maxThirst = 100f;
+    public float maxHealth = 100f;
+    public float maxStamina = 100f;
 
     public float hungerLevel; //so InformationUI works...?
     public float thirstLevel;
@@ -18,27 +18,22 @@ public class AnimalNeeds : MonoBehaviour
     public float staminaLevel;
     
     [SerializeField] private float hungerDecreaseRate = 2f;
-
     [SerializeField] private float thirstDecreaseRate = 1f;
-
     [SerializeField] private float staminaDecreaseRate = 1f;
     [SerializeField] private float staminaIncreaseRate = 1.5f;
 
     public bool isHungry => hungerLevel < maxHunger * 0.8f;
-
-    public bool isHungryBearH => hungerLevel < maxHunger * 0.5f;
-    
+    public bool isHungryBearH => hungerLevel < maxHunger * 0.5f; 
     public bool isThirsty => thirstLevel < maxThirst * 0.5f;
-
     public bool isTired => staminaLevel < maxStamina * 0.5f;
     public bool noMoreStamina { get; private set; }
-
     public bool isDead => healthLevel <= 0f;
 
     // 0 is very hungry/thirsty, 1 is full
     public float howHungryInPercent => hungerLevel/maxHunger;
     public float howThirstyInPercent => thirstLevel/maxThirst;
-
+    private bool IsStarving => howHungryInPercent <= 0f;
+    private bool IsDehydrated => howThirstyInPercent <= 0f;
 
 
     
@@ -47,7 +42,7 @@ public class AnimalNeeds : MonoBehaviour
         hungerLevel = maxHunger; // Start fully satisfied
         thirstLevel = maxThirst; // Start fully hydrated
         healthLevel = maxHealth; // Start at full health
-        staminaLevel = maxStamina;
+        staminaLevel = maxStamina; // Start at full stamina
     }
 
     // Update is called once per frame
@@ -63,7 +58,9 @@ public class AnimalNeeds : MonoBehaviour
         thirstLevel -= thirstDecreaseRate * Time.deltaTime;
         thirstLevel = Mathf.Clamp(thirstLevel, 0f, maxThirst); // Ensure it stays within bounds
 
-        if(staminaLevel <= 0)
+        survivalDamage();
+
+        if(staminaLevel <= 0.1f) // Spare a little bit of stamina
         {
             noMoreStamina = true;
         }
@@ -74,6 +71,20 @@ public class AnimalNeeds : MonoBehaviour
         }
     }
 
+    private void survivalDamage()
+    {
+        if(IsStarving || IsDehydrated)
+        {
+            healthLevel -= 0.5f * Time.deltaTime;
+            healthLevel = Mathf.Clamp(healthLevel, 0f, maxHealth);
+        }
+        
+        if(IsStarving && IsDehydrated)
+        {
+            healthLevel -= Time.deltaTime;
+            healthLevel = Mathf.Clamp(healthLevel, 0f, maxHealth);
+        }
+    }
 
     public void Eat(float nutritionValue)
     {
