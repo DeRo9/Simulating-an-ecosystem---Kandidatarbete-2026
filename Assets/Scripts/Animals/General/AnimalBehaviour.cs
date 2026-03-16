@@ -78,6 +78,8 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected void ChangeState(State newState)
     {
         CurrentState = newState;
+        agent.ResetPath();
+
         switch (CurrentState)
         {
             case State.Idle:
@@ -269,7 +271,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
     {
         waterTarget = null;
         agent.isStopped = true;
-        ChangeState(State.Wander);
+        ChangeState(State.Idle);
     }
 
     public void UpdateDrink()
