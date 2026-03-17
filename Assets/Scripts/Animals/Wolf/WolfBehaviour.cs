@@ -361,7 +361,7 @@ public class WolfBehaviour : AnimalBehaviour
                 if (distance < closestDistance)
                 {
                     closestDistance = distance;
-                    closestFood = hit.gameObject;
+                    closestFood = GetCarcassRoot(hit.gameObject);
                 }
 
             }
@@ -375,6 +375,20 @@ public class WolfBehaviour : AnimalBehaviour
         }
 
         return false;
+    }
+
+    GameObject GetCarcassRoot(GameObject obj)
+    {
+        Transform t = obj.transform;
+        while(t != null)
+        {
+            if (t.CompareTag("carcass"))
+            {
+                return t.gameObject;
+            }
+            t = t.parent;
+        }
+        return obj;
     }
 
 }
