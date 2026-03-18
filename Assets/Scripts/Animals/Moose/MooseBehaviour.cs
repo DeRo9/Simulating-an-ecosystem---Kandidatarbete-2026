@@ -82,6 +82,9 @@ public class MooseBehaviour : AnimalBehaviour
 
     }
 
+
+
+
     // Finds the closest food item within the detection radius and sets it as the target
     bool FindFood()
     {

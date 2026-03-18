@@ -43,6 +43,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected Animator anim;
     protected NavMeshAgent agent;
     protected AnimalNeeds needs;
+    protected AnimalMemory memory;
 
     protected GameObject waterTarget;
 
@@ -60,6 +61,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         anim = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         needs = GetComponent<AnimalNeeds>();
+        memory = GetComponent<AnimalMemory>();
 
         if (agent != null && animal != null)
         {
