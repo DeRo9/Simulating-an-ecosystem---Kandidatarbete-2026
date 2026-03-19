@@ -3,6 +3,7 @@ using UnityEngine.AI;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using System;
 
 
 public class GameManager : MonoBehaviour
@@ -45,7 +46,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI simulationTimeText;
     private float simulationTime;
     private float timer;
-    private bool simulationRunning;
+    private static bool simulationRunning;
 
     [Header("information UI")]
     public InformationUI informationUI;
@@ -140,7 +141,7 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < 100; i++)
         {
-            Vector2 randomCircle = Random.insideUnitCircle * spawnRadius;
+            Vector2 randomCircle = UnityEngine.Random.insideUnitCircle * spawnRadius;
 
             Vector3 randomPoint = transform.position + 
                                 new Vector3(randomCircle.x, 500f, randomCircle.y);
@@ -191,5 +192,9 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public static bool GetSimulationStatus()
+    {
+        return simulationRunning;
+    }
 
 }

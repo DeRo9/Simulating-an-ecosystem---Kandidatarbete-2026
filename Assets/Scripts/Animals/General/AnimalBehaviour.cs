@@ -1,3 +1,4 @@
+using System;
 using System.Transactions;
 using UnityEngine;
 using UnityEngine.AI;
@@ -53,7 +54,8 @@ public abstract class AnimalBehaviour : MonoBehaviour
     [SerializeField]
     LayerMask waterLayer;
 
-
+    public static event Action OnPreyDeath;
+    public static event Action OnPredatorDeath;
     protected virtual void Start()
     {
         animal = GetComponent<Animal>();
@@ -85,7 +87,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         switch (CurrentState)
         {
             case State.Idle:
-                waitTime = Random.Range(minTimeWaiting, maxTimeWaiting); // Random waiting time between min and max
+                waitTime = UnityEngine.Random.Range(minTimeWaiting, maxTimeWaiting); // Random waiting time between min and max
                 agent.isStopped = true;
                 break;
             case State.Wander:
@@ -114,7 +116,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
     public Vector3 GetRandomPoints()
     {
-        Vector3 randomDirection = Random.insideUnitSphere * 20f;
+        Vector3 randomDirection = UnityEngine.Random.insideUnitSphere * 20f;
         randomDirection.y = 0f;
         Vector3 randomPoint = transform.position + randomDirection;
 
@@ -242,6 +244,14 @@ public abstract class AnimalBehaviour : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
+        if(animal.species == Species.moose)
+        {
+            OnPreyDeath?.Invoke();   
+        } else if (animal.species == Species.wolf || animal.species == Species.bear)
+        {
+            OnPredatorDeath?.Invoke();
+        }
+
         gameObject.tag = "carcass";
         gameObject.layer = LayerMask.NameToLayer("carcass"); ;
         anim.SetBool("isWalking", false);
@@ -249,7 +259,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
         anim.SetTrigger("isDead");
 
         animal.agingSpeed = 0f;
-
 
         ChangeState(State.Dead);
         agent.isStopped = true;

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Mating : MonoBehaviour
@@ -12,10 +13,13 @@ public class Mating : MonoBehaviour
     private float cooldownTimer = 0f;
     private float currentAge;
 
+    public static event Action OnMating;
+
     private void Start()
     {
         animal = GetComponent<Animal>();
     }
+
 
     private void Update()
     {
@@ -31,6 +35,7 @@ public class Mating : MonoBehaviour
 
         TryFindMate();
     }
+
 
     private void TryFindMate()
     {
@@ -84,5 +89,10 @@ public class Mating : MonoBehaviour
         {
             partnerMating.cooldownTimer = matingCooldown;
         }
+
+        OnMating?.Invoke();
+
     }
+
+
 }
