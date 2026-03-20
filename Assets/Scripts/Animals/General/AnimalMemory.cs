@@ -59,6 +59,7 @@ public class AnimalMemory : MonoBehaviour
         }
     }
 
+    // Which chunk am I in? (worldPos to chunk)
     Vector2Int GetChunk(Vector3 position)
     {
         float localX = position.x - terrainOrigin.x;
@@ -69,6 +70,23 @@ public class AnimalMemory : MonoBehaviour
 
         return new Vector2Int(x,z);
     }
+
+
+    // (chunk to worldPos)
+    public Vector3 GetRandomPointInChunk(Vector2Int chunk) 
+    {
+        float minX = terrainOrigin.x + chunk.x * chunkSize;
+        float minZ = terrainOrigin.z + chunk.y * chunkSize;
+
+        float randomX = Random.Range(minX, minX + chunkSize);
+        float randomZ = Random.Range(minZ, minZ + chunkSize);
+
+        float y = Terrain.activeTerrain.SampleHeight(new Vector3(randomX, 0, randomZ));
+
+        return new Vector3(randomX, y, randomZ);
+    }
+
+    
 
     public void RememberFood(Vector3 pos)
     {
@@ -83,8 +101,26 @@ public class AnimalMemory : MonoBehaviour
     }
 
 
-    //TODO
-    // Implement GetBestFoodChunk(): find the chunk with the highest remembered food value
+    // Checks all cells and keeps the higesht food
+    public Vector2Int GetBestFoodChunk()
+    {
+        float bestValue = 0f;
+        Vector2Int bestChunk = new Vector2Int(-1, -1);
+
+        for (int x = 0; x < gridSizeX; x++)
+        {
+            for (int z = 0; z < gridSizeZ; z++)
+            {
+                if (foodMemory[x, z] > bestValue)
+                {
+                    bestValue = foodMemory[x, z];
+                    bestChunk = new Vector2Int(x, z);
+                }
+            }
+        }   
+
+        return bestChunk;
+    }
 
 
     //TODO
