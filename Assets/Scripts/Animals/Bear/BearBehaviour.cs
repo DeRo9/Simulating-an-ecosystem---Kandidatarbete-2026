@@ -361,11 +361,32 @@ public class BearBehaviour : AnimalBehaviour
         if (hasArrived())
         {
             agent.isStopped = true;
-            needs.Eat(100);
-            Destroy(foodTarget);
-            foodTarget = null;
-            Debug.Log("Bear ate.");
-            ChangeState(State.Wander);
+            Carcass carcass = foodTarget.GetComponent<Carcass>();
+            if (carcass != null)
+            {
+                float nutrition = carcass.ConsumeOneFeed();
+                if (nutrition > 0f)
+                {
+                    needs.Eat(nutrition);
+                }
+
+                if (carcass.IsEmpty)
+                {
+                    foodTarget = null;
+                    Debug.Log("Bear finished carcass.");
+                    ChangeState(State.Wander);
+                    return;
+                }
+            }
+            else
+            {
+                needs.Eat(100);
+                Destroy(foodTarget);
+                foodTarget = null;
+                Debug.Log("Bear ate.");
+                ChangeState(State.Wander);
+                return;
+            }
         }
         else
         {
