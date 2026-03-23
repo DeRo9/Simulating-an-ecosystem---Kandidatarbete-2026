@@ -9,19 +9,19 @@ public class Mating : MonoBehaviour
     public GameObject heartPrefab;
     public float heartHeight = 2f;
 
-    public float matingRange = 5f;
-    public float matingCooldown = 30f;
+    public float matingRange = 9f;
+    public float matingCooldown = 18f;
     private float cooldownTimer = 0f;
 
     [Header("Mating Requirements (0-1)")]
-    [Range(0f, 1f)] public float minHungerPercentToMate = 0.20f;
-    [Range(0f, 1f)] public float minThirstPercentToMate = 0.20f;
-    [Range(0f, 1f)] public float minStaminaPercentToMate = 0.20f;
+    [Range(0f, 1f)] public float minHungerPercentToMate = 0.10f;
+    [Range(0f, 1f)] public float minThirstPercentToMate = 0.10f;
+    [Range(0f, 1f)] public float minStaminaPercentToMate = 0.10f;
 
     [Header("Reproduction Costs")]
-    public float hungerCostOnMating = 10f;
-    public float thirstCostOnMating = 8f;
-    public float staminaCostOnMating = 15f;
+    public float hungerCostOnMating = 6f;
+    public float thirstCostOnMating = 5f;
+    public float staminaCostOnMating = 10f;
 
     public static event Action OnMating;
 
@@ -68,6 +68,13 @@ public class Mating : MonoBehaviour
 
             AnimalNeeds otherNeeds = col.GetComponent<AnimalNeeds>();
             if (otherNeeds == null)
+                continue;
+
+            Mating otherMating = col.GetComponent<Mating>();
+            if (otherMating == null)
+                continue;
+
+            if (otherMating.cooldownTimer > 0f)
                 continue;
 
             if (other.species != animal.species)
