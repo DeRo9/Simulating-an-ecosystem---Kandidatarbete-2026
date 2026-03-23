@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 using System;
+using System.Collections.Generic;
 
 
 public class GameManager : MonoBehaviour
@@ -88,6 +89,8 @@ public class GameManager : MonoBehaviour
 
     public void StartSimulation()
     {
+        SimulationResults.Reset();
+
         cameraMovement.enabled = true;
 
         SpawnAnimals(moosePrefab, mooseSetup, herbivoresFolder);
@@ -189,6 +192,70 @@ public class GameManager : MonoBehaviour
         SimulationResults.bearsHistory.Add(omnivoreFolder.childCount);
         SimulationResults.wolvesHistory.Add(carnivoreFolder.childCount);
         SimulationResults.mooseHistory.Add(herbivoresFolder.childCount);
+
+        RecordNeedsForSpecies(
+            omnivoreFolder,
+            SimulationResults.bearsAvgHungerHistory,
+            SimulationResults.bearsAvgThirstHistory,
+            SimulationResults.bearsAvgStaminaHistory
+        );
+
+        RecordNeedsForSpecies(
+            carnivoreFolder,
+            SimulationResults.wolvesAvgHungerHistory,
+            SimulationResults.wolvesAvgThirstHistory,
+            SimulationResults.wolvesAvgStaminaHistory
+        );
+
+        RecordNeedsForSpecies(
+            herbivoresFolder,
+            SimulationResults.mooseAvgHungerHistory,
+            SimulationResults.mooseAvgThirstHistory,
+            SimulationResults.mooseAvgStaminaHistory
+        );
+
+    }
+
+    void RecordNeedsForSpecies(
+        Transform speciesFolder,
+        List<float> avgHungerHistory,
+        List<float> avgThirstHistory,
+        List<float> avgStaminaHistory
+    )
+    {
+        float hungerSum = 0f;
+        float thirstSum = 0f;
+        float staminaSum = 0f;
+        int count = 0;
+
+        foreach (Transform child in speciesFolder)
+        {
+            AnimalNeeds animalNeeds = child.GetComponent<AnimalNeeds>();
+            if (animalNeeds == null)
+                continue;
+
+            hungerSum += animalNeeds.howHungryInPercent;
+            thirstSum += animalNeeds.howThirstyInPercent;
+
+            float staminaPercent = animalNeeds.maxStamina <= 0f
+                ? 0f
+                : animalNeeds.staminaLevel / animalNeeds.maxStamina;
+            staminaSum += staminaPercent;
+
+            count++;
+        }
+
+        if (count == 0)
+        {
+            avgHungerHistory.Add(0f);
+            avgThirstHistory.Add(0f);
+            avgStaminaHistory.Add(0f);
+            return;
+        }
+
+        avgHungerHistory.Add(hungerSum / count);
+        avgThirstHistory.Add(thirstSum / count);
+        avgStaminaHistory.Add(staminaSum / count);
 
     }
 
