@@ -5,14 +5,10 @@ using UnityEngine.AI;
 using UnityEngine.InputSystem.Android;
 
 
-// This is an abstract class that defines the general behaviour of an animal. More specific implementations will inherit this class and build upon it.
 public abstract class AnimalBehaviour : MonoBehaviour
 {
-    // The home area of the animal
-    //public Area HomeArea;
-
-    // Internal states of the animal
-    protected enum State
+ 
+    public enum State
     {
         Idle, // General
         Wander, // General
@@ -24,11 +20,9 @@ public abstract class AnimalBehaviour : MonoBehaviour
     }
 
     [Header("Other")]
-    // Current state of the animal
     [SerializeField]
-    protected State CurrentState = State.Idle;
+    public State CurrentState = State.Idle;
 
-    // Waiting timers
     [SerializeField]
     protected float minTimeWaiting = 2f;
 
@@ -259,7 +253,17 @@ public abstract class AnimalBehaviour : MonoBehaviour
         anim.SetTrigger("isDead");
 
         animal.agingSpeed = 0f;
+        Carcass carcass = gameObject.GetComponent<Carcass>();
+        if (carcass == null)
+        {
+            carcass = gameObject.AddComponent<Carcass>();
+        }
 
+        if (animal != null && animal.species == Species.moose)
+        {
+            carcass.Initialize(Species.moose, 10, 10f);
+        }
+        
         ChangeState(State.Dead);
         agent.isStopped = true;
     }
