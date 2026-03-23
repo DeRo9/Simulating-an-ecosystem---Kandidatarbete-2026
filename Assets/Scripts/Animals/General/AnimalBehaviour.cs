@@ -11,7 +11,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
     //public Area HomeArea;
 
     // Internal states of the animal
-    protected enum State
+    public enum State
     {
         Idle, // General
         Wander, // General
@@ -25,7 +25,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
     [Header("Other")]
     // Current state of the animal
     [SerializeField]
-    protected State CurrentState = State.Idle;
+    public State CurrentState = State.Idle;
 
     // Waiting timers
     [SerializeField]
@@ -145,7 +145,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         if (animal != null)
         {
             bool moving = agent.velocity.magnitude > 0.1f;
-            animal.SetMovementState (moving,agent.velocity.magnitude);
+            animal.SetMovementState(moving,agent.velocity.magnitude);
         }
 
         if (animatorState.IsName("Running"))
@@ -245,6 +245,18 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
         animal.agingSpeed = 0f;
 
+
+        // Mark carcass as edible after death
+        Carcass carcass = gameObject.GetComponent<Carcass>();
+        if (carcass == null)
+        {
+            carcass = gameObject.AddComponent<Carcass>();
+        }
+
+        if (animal != null && animal.species == Species.moose)
+        {
+            carcass.Initialize(Species.moose, 10, 10f);
+        }
 
         ChangeState(State.Dead);
         agent.isStopped = true;

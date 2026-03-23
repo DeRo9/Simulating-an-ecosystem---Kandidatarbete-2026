@@ -1,7 +1,12 @@
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 public class Wolf : Animal
 {
+
+    public WolfPackManager pack;
+    public bool isLeader;
     protected override void Awake()
     {
         species = Species.wolf;
@@ -13,14 +18,8 @@ public class Wolf : Animal
         hearingRange = 50f;
         attackDamage = 20f;
 
-        base.Awake();
-    }
+        gameObject.tag = "Wolf";
 
-    public override void GetStats(out float speed, out float size, out float sight, out float hearing)
-    {
-        speed = this.speed;
-        size = this.size;
-        sight = this.sightRange;
-        hearing = this.hearingRange;
+        base.Awake();
     }
 }

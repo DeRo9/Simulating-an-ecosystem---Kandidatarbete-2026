@@ -951,6 +951,7 @@ GameObject:
   - component: {fileID: -5019463054831179927}
   - component: {fileID: 6638387059564927779}
   - component: {fileID: 4620774494346928479}
+  - component: {fileID: 7620864798229009498}
   m_Layer: 6
   m_Name: WolfPrefab
   m_TagString: Wolf
@@ -989,7 +990,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Wolf
   species: 0
-  age: 1
+  age: 2
   agingSpeed: 0.1
   grownUpAge: 2
   oldAge: 4
@@ -1002,6 +1003,8 @@ MonoBehaviour:
   strength: 0
   attackDamage: 20
   needs: {fileID: 0}
+  pack: {fileID: 0}
+  isLeader: 0
 --- !u!114 &2432284124251840962
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1022,6 +1025,7 @@ MonoBehaviour:
   waterLayer:
     serializedVersion: 2
     m_Bits: 16
+  preyTarget: {fileID: 0}
   huntCooldownTimer: 0
   carcassLayer:
     serializedVersion: 2
@@ -1227,6 +1231,19 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7620864798229009498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4266865027632842223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d00ee938a115f34ea6efaaac1ab8cd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WolfPackFormation
+  detectionRadius: 4
 --- !u!1 &4293556539160456709
 GameObject:
   m_ObjectHideFlags: 0

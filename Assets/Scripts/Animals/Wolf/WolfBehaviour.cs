@@ -8,8 +8,10 @@ public class WolfBehaviour : AnimalBehaviour
     AnimalFOV fov;
     WolfHearing hearing;
 
-    GameObject preyTarget;
+    Wolf wolf;
+    WolfPackManager pack;
 
+    public GameObject preyTarget;
     
     float huntCooldown = 5f; // Time the wolf must wait after giving up on a hunt before it can hunt again
     [Header("Hunting")]
@@ -23,7 +25,7 @@ public class WolfBehaviour : AnimalBehaviour
     float repathInterval = 0.3f; // Time interval for recalculating path to prey
 
     float attackTimer = 0f;
-    float attackInterval = 1f; // Time interval for attacking, to prevent multiple attacks in quick succession
+    float attackInterval = 0.5f; // Time interval for attacking, to prevent multiple attacks in quick succession
 
     float foodSearchingCooldown;
 
@@ -46,11 +48,86 @@ public class WolfBehaviour : AnimalBehaviour
         base.Start();
         fov = GetComponent<AnimalFOV>();
         hearing = GetComponent<WolfHearing>();
+
+        wolf = GetComponent<Wolf>();
+        if (wolf != null)
+            pack = wolf.pack;
     }
 
+    Vector3 followOffset = new Vector3(0, 0, -5f); // Offset to maintain behind the leader
+
+    void FollowLeader()
+    {
+        if (pack == null || pack.leader == null)
+            return;
+
+        WolfBehaviour leaderBehaviour = pack.leader.GetComponent<WolfBehaviour>();
+
+        // If leader is eating a carcass, followers should eat the same target
+        if (wolf != null && !wolf.isLeader && leaderBehaviour != null && leaderBehaviour.CurrentState == State.Eat && leaderBehaviour.foodTarget != null)
+        {
+            foodTarget = leaderBehaviour.foodTarget;
+            ChangeState(State.Eat);
+            return;
+        }
+
+        Vector3 targetPosition = pack.leader.transform.position + pack.leader.transform.TransformDirection(followOffset);
+
+        float distance = Vector3.Distance(transform.position, targetPosition);
+
+        if (leaderBehaviour != null && leaderBehaviour.preyTarget != null)
+        {
+            preyTarget = leaderBehaviour.preyTarget;
+            ChangeState(State.Hunt);
+            return;
+        }
+
+        if (distance > 2f)
+        {
+            agent.isStopped = false;
+            agent.SetDestination(targetPosition);
+        }
+        else
+        {
+            agent.isStopped = true; // Stop moving if close enough to the target position
+        }
+
+        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f);
+        anim.SetBool("isRunning", agent.velocity.magnitude > 3f);
+
+        ApplySeperation();
+    }
+
+    public void ApplySeperation()
+    {
+        Vector3 separation = Vector3.zero;
+        foreach (Wolf member in pack.members)
+        {
+            if (member != wolf) //Does not create this force upon itself
+            {
+                float distance = Vector3.Distance(transform.position, member.transform.position);
+                if (distance < 2f) 
+                {
+                    separation += (transform.position - member.transform.position).normalized / distance;
+                }
+            }
+        }
+
+        agent.Move(separation * Time.deltaTime); 
+    }
 
     protected override void Update()
     {
+        pack = wolf.pack;
+        if (pack != null && wolf != null && !wolf.isLeader && pack.leader != null)
+        {
+            if (CurrentState != State.Hunt && CurrentState != State.Eat)
+            {
+                FollowLeader();
+                return; // Only return if we are actually in "follow mode"
+            }
+        }
+
         base.Update();
 
         if (waitingForDeathAnimation)
@@ -224,6 +301,7 @@ public class WolfBehaviour : AnimalBehaviour
 
             if (attackTimer >= attackInterval)
             {
+                agent.isStopped = true; // Stop moving to allow attack animation
                 anim.SetTrigger("Attack");
                 attackTimer = 0f;
                 Debug.Log("Wolf attacked prey");
@@ -241,6 +319,7 @@ public class WolfBehaviour : AnimalBehaviour
                 moose.InflictDamage(animal.attackDamage);
             }
         }
+        agent.isStopped = false; // Resume movement after attack
     }
 
     void LostPrey()
@@ -282,21 +361,47 @@ public class WolfBehaviour : AnimalBehaviour
         if (foodTarget == null)
         {
             ChangeState(State.Wander);
+            return;
         }
 
         if (hasArrived())
         {
             agent.isStopped = true;
-            needs.Eat(100);
-            Destroy(foodTarget);
-            foodTarget = null;
-            ChangeState(State.Wander);
+
+            Carcass carcass = foodTarget.GetComponent<Carcass>();
+            if (carcass != null)
+            {
+                float nutrition = carcass.ConsumeOneFeed();
+                if (nutrition > 0f)
+                {
+                    needs.Eat(nutrition);
+                }
+
+                if (carcass.IsEmpty)
+                {
+                    foodTarget = null;
+                    ChangeState(State.Wander);
+                    return;
+                }
+            }
+            else
+            {
+                needs.Eat(100);
+                Destroy(foodTarget);
+                foodTarget = null;
+                ChangeState(State.Wander);
+                return;
+            }
         }
 
         if (!needs.isHungry)
         {
             foodTarget = null;
             ChangeState(State.Wander);
+        }
+        else
+        {
+            agent.isStopped = false;
         }
     }
 

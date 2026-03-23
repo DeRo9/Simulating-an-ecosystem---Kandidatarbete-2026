@@ -84,7 +84,7 @@ public class FreeCamera : MonoBehaviour
             rotationInput = new Vector3(-delta.y, delta.x, 0f);
         }
 
-        if (!rotation)
+        /*if (!rotation)
         {
             Vector2 mousePosition = Mouse.current?.position.ReadValue() ?? Vector2.zero;
             if (mousePosition.x <= screenEdgeC) { rotationInput.y = -1f; }
@@ -98,9 +98,10 @@ public class FreeCamera : MonoBehaviour
                 rotationInput.x = -1f;
             }
 
-        }
+        }*/
 
-        float multiplier = rotation ? sensitivity : (edgerotation * sensitivity);
+        //float multiplier = rotation ? sensitivity : (edgerotation * sensitivity);
+        float multiplier = sensitivity;
         transform.Rotate(rotationInput * multiplier * Time.deltaTime,Space.Self);
     }
     private void Movement()
