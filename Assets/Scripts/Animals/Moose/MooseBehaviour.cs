@@ -43,6 +43,8 @@ public class MooseBehaviour : AnimalBehaviour
             Animal heard = hearing.HeardAnimal;
             if (heard.species == Species.bear || heard.species == Species.wolf)
             {
+                memory.RememberDanger(heard.transform.position); //AnimalMemory Danger
+                Debug.Log("Moose remember a dangerous chunk");
                 WolfBehaviour wolf = heard.GetComponent<WolfBehaviour>(); // only wolf for now
                 if(animal != null && wolf.CurrentTarget == gameObject)
                 {
@@ -69,6 +71,7 @@ public class MooseBehaviour : AnimalBehaviour
                 }
             }
 
+
             if (IsHungry())
             {
                 if (FindFood())
@@ -76,9 +79,15 @@ public class MooseBehaviour : AnimalBehaviour
                     ChangeState(State.Eat);
                     return;
                 }
+
+            // TODO (AnimalMemory)
+            // Implement some way to decide wheter to go to another place
+            // from memory. 
+            // Could be risky to go to a certain chunk, should it then go to a lower
+            // food chunk, or go around the dangrous chunks to reach the best food
+            // chunk, or should it just stay or explore new areas and try to find food?
             }
         }
-
 
     }
 
@@ -113,6 +122,8 @@ public class MooseBehaviour : AnimalBehaviour
             Debug.Log("Moose found plant.");
             if (hit.CompareTag("Plant"))
             {
+                memory.RememberFood(hit.transform.position); //AnimalMemory Food
+                Debug.Log("Moose remembered food");
                 float distance = Vector3.Distance(transform.position, hit.transform.position);
                 if (distance < closestDistance)
                 {
