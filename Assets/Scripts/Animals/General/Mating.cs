@@ -23,7 +23,7 @@ public class Mating : MonoBehaviour
     public float thirstCostOnMating = 5f;
     public float staminaCostOnMating = 10f;
 
-    public static event Action OnMating;
+    public static event Action<string> OnMating;
 
     private void Start()
     {
@@ -130,7 +130,7 @@ public class Mating : MonoBehaviour
 
         ApplyReproductionCosts(needs);
 
-        OnMating?.Invoke();
+        OnMating?.Invoke(animal.species.ToString());
 
     }
 
