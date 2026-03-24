@@ -51,6 +51,9 @@ public class GameManager : MonoBehaviour
     [Header("information UI")]
     public InformationUI informationUI;
 
+    [Header("Simulation UI")]
+    public SimulationUI simulationUI;
+
     public float spawnRadius = 1000f;
 
     private void Start()
@@ -58,7 +61,7 @@ public class GameManager : MonoBehaviour
         simulationLengthSlider.value = 60f;
         cameraMovement.enabled = false;
         Time.timeScale = 1f;
-
+        simulationUI.gameObject.SetActive(false);
     }
 
     public float recordInterval = 5f;
@@ -106,6 +109,7 @@ public class GameManager : MonoBehaviour
         simulationRunning = true;
 
         startMenuPanel.SetActive(false);
+        simulationUI.gameObject.SetActive(true);
     }
 
     void SpawnAnimals(GameObject animalPrefab, AnimalSetupPanel setup, Transform parentFolder)
