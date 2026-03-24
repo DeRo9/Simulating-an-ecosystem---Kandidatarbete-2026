@@ -140,9 +140,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
             return;
         }
 
-        // Update animation based on movement
-        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f ); // "isWalking" Ã¤r en bool i animator
-        anim.SetBool("isRunning", agent.velocity.magnitude > 3f); // "isRunning" Ã¤r en bool i animator
+
         if (animal != null)
         {
             bool moving = agent.velocity.magnitude > 0.1f;
@@ -194,11 +192,9 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
         foreach (Collider hit in hits)
         {
-
-            Debug.Log("Detected water collider");
-
             if (hit.CompareTag("Water"))
             {
+                Debug.Log("Detected water collider");
                 float distance = Vector3.Distance(transform.position, hit.transform.position);
                 if (distance < closestDistance)
                 {

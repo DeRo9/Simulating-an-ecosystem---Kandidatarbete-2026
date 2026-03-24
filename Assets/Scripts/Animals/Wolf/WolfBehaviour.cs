@@ -133,6 +133,10 @@ public class WolfBehaviour : AnimalBehaviour
 
         base.Update();
 
+        // Update animation based on movement
+        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f); // "isWalking" är en bool i animator
+        anim.SetBool("isRunning", agent.velocity.magnitude > 3f); // "isRunning" är en bool i animator
+
         if (waitingForDeathAnimation)
         {
             deathWaitTimer -= Time.deltaTime;
@@ -155,6 +159,16 @@ public class WolfBehaviour : AnimalBehaviour
         }
         if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt)
         {
+            // If the wolf is more thirsty than hungry, switch to drink state, if more hungry than thirsty, switch to eat state
+            if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
+            {
+                if (FindWater())
+                {
+                    ChangeState(State.Drink);
+                    return;
+                }
+            }
+
             if (IsHungry() && huntCooldownTimer <= 0 && !needs.isTired) 
             {
                 if (FindPrey())
@@ -232,6 +246,11 @@ public class WolfBehaviour : AnimalBehaviour
             agent.speed = animal.speed; // Reset speed to normal
             ChangeState(State.Wander); // If the prey is lost, switch to wandering
         }
+    }
+
+    public void InflictDamage(float damage)
+    {
+        needs.TakeDamage(damage);
     }
 
     protected override void UpdateHunt()
