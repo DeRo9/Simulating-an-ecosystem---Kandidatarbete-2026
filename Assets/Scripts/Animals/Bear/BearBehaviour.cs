@@ -192,6 +192,12 @@ public class BearBehaviour : AnimalBehaviour
                 moose.OnBeingHunted(gameObject); // Notify the moose that it is being hunted
             }
 
+            WolfBehaviour wolf = preyTarget.GetComponentInParent<WolfBehaviour>();
+            if(wolf != null)
+            {
+                wolf.OnBeingHunted(gameObject); // Notify the wolf that it is being hunted
+            }
+
             return true;
         }
 
