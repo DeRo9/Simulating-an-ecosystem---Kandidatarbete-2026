@@ -28,6 +28,18 @@ public class BearBehaviour : AnimalBehaviour
     bool waitingForDeathAnimation = false;
 
     GameObject pendingCarcass;
+
+    [Header("Layers")]
+    [SerializeField]
+    LayerMask foodLayer;
+
+    [Header("Layers")]
+    [SerializeField]
+    LayerMask carcassLayer;
+
+    [SerializeField]
+    LayerMask PreyLayer;
+
     protected override void Start()
     {
         base.Start();
@@ -39,11 +51,14 @@ public class BearBehaviour : AnimalBehaviour
     {
         base.Update();
 
+        // Update animation based on movement
+        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude <= 3.2f); // "isWalking" är en bool i animator
+        anim.SetBool("isRunning", agent.velocity.magnitude > 3.5f); // "isRunning" är en bool i animator
 
         if (waitingForDeathAnimation)
         {
             deathWaitTimer -= Time.deltaTime;
-            if(deathWaitTimer <= 0f)
+            if (deathWaitTimer <= 0f)
             {
                 waitingForDeathAnimation = false;
                 foodTarget = pendingCarcass;
@@ -56,39 +71,41 @@ public class BearBehaviour : AnimalBehaviour
         if (hearing != null && hearing.HeardSomething)
         {
             Debug.Log("Bear heard: " + hearing.HeardAnimal.name);
-           // ChangeState(State.Idle); testing
         }
-        if (CurrentState != State.Eat && CurrentState != State.Drink)
+        if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt)
         {
 
+            // If the bear is more thirsty than hungry, switch to drink state, if more hungry than thirsty, switch to eat state
             if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
             {
-                ChangeState(State.Drink);
+                if (FindWater())
+                {
+                    ChangeState(State.Drink);
+                    return;
+                }
             }
-            else if ( IsHungry())
+
+            if (IsHungry() && huntCooldownTimer <= 0 && !needs.isTired)
             {
-                //ChangeState(State.Eat);
-                if(preyTarget != null)
-                {
+                if (FindPrey())
                     ChangeState(State.Hunt);
-                    Debug.Log("Bear is hunting");
-                }
-                else if(foodTarget != null)
-                {
+                else if (FindCarcass())
                     ChangeState(State.Eat);
-                    Debug.Log("Bear is eating");
-                }
+                else if (FindFood())
+                    ChangeState(State.Eat);
             }
         }
 
-        
+        if (huntCooldownTimer > 0)
+            huntCooldownTimer -= Time.deltaTime;
+
     }
 
     // Finds the closest food item within the detection radius and sets it as the target
     bool FindFood()
     {
 
-        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange);
+        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange, foodLayer);
 
         float closestDistance = Mathf.Infinity;
         GameObject closestFood = null;
@@ -110,7 +127,7 @@ public class BearBehaviour : AnimalBehaviour
 
         }
 
-        if(closestFood != null)
+        if (closestFood != null)
         {
             foodTarget = closestFood;
             return true;
@@ -148,7 +165,19 @@ public class BearBehaviour : AnimalBehaviour
                     closestDistance = distance;
                     closestPrey = hit.gameObject;
                 }
+            }
 
+            if (hit.CompareTag("Wolf"))
+            {
+                WolfBehaviour wolf = hit.GetComponentInParent<WolfBehaviour>();
+                if (wolf == null || wolf.isDead) continue; // Skip if moose is already dead.
+
+                float distance = Vector3.Distance(transform.position, hit.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestPrey = hit.gameObject;
+                }
             }
 
         }
@@ -161,6 +190,12 @@ public class BearBehaviour : AnimalBehaviour
             if (moose != null)
             {
                 moose.OnBeingHunted(gameObject); // Notify the moose that it is being hunted
+            }
+
+            WolfBehaviour wolf = preyTarget.GetComponentInParent<WolfBehaviour>();
+            if(wolf != null)
+            {
+                wolf.OnBeingHunted(gameObject); // Notify the wolf that it is being hunted
             }
 
             return true;
@@ -190,20 +225,28 @@ public class BearBehaviour : AnimalBehaviour
         if (preyTarget == null)
         {
             ChangeState(State.Wander);
-            return; // If the wolf has no prey, switch to wandering
+            return; // If the bear has no prey, switch to wandering
         }
 
         MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
         if (moose != null && moose.isDead)
         {
             notifyDeath();
+            return;
+        }
+
+        WolfBehaviour wolf = preyTarget.GetComponentInParent<WolfBehaviour>();
+        if (wolf != null && wolf.isDead)
+        {
+            notifyDeath();
+            return;
         }
 
         if (preyTarget != null)
         {
             if (!fov.IsInFOV(preyTarget.transform))
             {
-                LostPrey(); // If the prey is no longer in the wolf's field of view, give up
+                LostPrey(); // If the prey is no longer in the bear's field of view, give up
                 return;
             }
 
@@ -239,8 +282,8 @@ public class BearBehaviour : AnimalBehaviour
         }
 
         if (needs.noMoreStamina)
-        {   
-            LostPrey(); // If the wolf has no more stamina to run after, give up
+        {
+            LostPrey(); // If the bear has no more stamina to run after, give up
             return;
         }
 
@@ -255,25 +298,27 @@ public class BearBehaviour : AnimalBehaviour
             if (attackTimer >= attackInterval)
             {
                 anim.SetTrigger("Attack");
-                DamageMoose();
+                DamageTarget();
                 attackTimer = 0f;
                 Debug.Log("Bear attacked prey");
             }
         }
     }
 
-    public void DamageMoose()
+    public void DamageTarget()
     {
-        if (preyTarget != null)
+        if (preyTarget == null) return;
+
+        MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
+        if (moose != null)
         {
-            Debug.Log("Bear attacks the moose");
-            MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
-            if (moose != null)
-            {
-                
-                moose.InflictDamage(animal.attackDamage);
-                Debug.Log("Damage has been inflicted");
-            }
+            moose?.InflictDamage(animal.attackDamage);
+        }
+
+        WolfBehaviour wolf = preyTarget.GetComponentInParent<WolfBehaviour>();
+        if (wolf != null)
+        {
+            wolf?.InflictDamage(animal.attackDamage);
         }
     }
 
@@ -298,25 +343,7 @@ public class BearBehaviour : AnimalBehaviour
 
     protected override bool IsHungry()
     {
-        if (!needs.isHungry)
-        {
-            return false;
-        }
-        // Bear is hungry, find food
-        if (needs.isHungryBearH)
-        {
-            if (FindCarcass())
-            {
-                return true;
-            }
-            if (FindPrey())
-            {
-                return true;
-            }
-            return FindFood(); // if the bear fails to find meat while very hungry it goes back to look for the plants
-        }
-        
-        return FindFood(); 
+        return needs.isHungry;
     }
 
     protected override void EatStateForSpecificAnimal()
@@ -326,7 +353,7 @@ public class BearBehaviour : AnimalBehaviour
             agent.isStopped = false;
             agent.SetDestination(foodTarget.transform.position);
         }
-    } 
+    }
 
     protected override void UpdateWander()
     {
@@ -422,7 +449,7 @@ public class BearBehaviour : AnimalBehaviour
         }
         foodSearchingCooldown = 0.5f;
 
-        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange);
+        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange, carcassLayer);
 
         float closestDistance = Mathf.Infinity;
         GameObject closestFood = null;

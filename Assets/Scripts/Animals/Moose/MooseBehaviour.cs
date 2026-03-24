@@ -38,6 +38,10 @@ public class MooseBehaviour : AnimalBehaviour
 
         base.Update();
 
+        // Update animation based on movement
+        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f); // "isWalking" Ã¤r en bool i animator
+        anim.SetBool("isRunning", agent.velocity.magnitude > 3f); // "isRunning" Ã¤r en bool i animator
+
         if (hearing != null && hearing.HeardSomething)
         {
             Animal heard = hearing.HeardAnimal;
@@ -45,13 +49,23 @@ public class MooseBehaviour : AnimalBehaviour
             {
                 memory.RememberDanger(heard.transform.position); //AnimalMemory Danger
                 Debug.Log("Moose remember a dangerous chunk");
-                WolfBehaviour wolf = heard.GetComponent<WolfBehaviour>(); // only wolf for now
+
+                WolfBehaviour wolf = heard.GetComponent<WolfBehaviour>(); // Wolf heard
                 if(animal != null && wolf.CurrentTarget == gameObject)
                 {
-                    Debug.Log("Moose heard a predator");
+                    Debug.Log("Moose heard a wolf");
                     enemy = heard.gameObject;
                     ChangeState(State.Fleeing);
+                    return;
+                }
 
+                BearBehaviour bear = heard.GetComponent<BearBehaviour>(); // Bear heard
+                if (animal != null && bear.CurrentTarget == gameObject)
+                {
+                    Debug.Log("Moose heard a bear");
+                    enemy = heard.gameObject;
+                    ChangeState(State.Fleeing);
+                    return;
                 }
 
             }

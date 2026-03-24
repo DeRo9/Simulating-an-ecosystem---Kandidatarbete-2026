@@ -4,33 +4,48 @@ using UnityEngine;
 public class Mating : MonoBehaviour
 {
     public Animal animal;
+    private AnimalNeeds needs;
     public GameObject animalPrefab;
     public GameObject heartPrefab;
     public float heartHeight = 2f;
 
-    public float matingRange = 5f;
-    public float matingCooldown = 30f;
+    public float matingRange = 9f;
+    public float matingCooldown = 18f;
     private float cooldownTimer = 0f;
-    private float currentAge;
+
+    [Header("Mating Requirements (0-1)")]
+    [Range(0f, 1f)] public float minHungerPercentToMate = 0.10f;
+    [Range(0f, 1f)] public float minThirstPercentToMate = 0.10f;
+    [Range(0f, 1f)] public float minStaminaPercentToMate = 0.10f;
+
+    [Header("Reproduction Costs")]
+    public float hungerCostOnMating = 6f;
+    public float thirstCostOnMating = 5f;
+    public float staminaCostOnMating = 10f;
 
     public static event Action OnMating;
 
     private void Start()
     {
         animal = GetComponent<Animal>();
+        needs = GetComponent<AnimalNeeds>();
     }
 
 
     private void Update()
     {
-        currentAge = animal.age;
-        
+        if (animal == null || needs == null)
+            return;
+
         cooldownTimer -= Time.deltaTime;
 
         if (cooldownTimer > 0f)
             return;
 
         if (animal.age < animal.grownUpAge)
+            return;
+
+        if (!HasEnoughNeeds(needs))
             return;
 
         TryFindMate();
@@ -51,13 +66,27 @@ public class Mating : MonoBehaviour
             if (other == null)
                 continue;
 
+            AnimalNeeds otherNeeds = col.GetComponent<AnimalNeeds>();
+            if (otherNeeds == null)
+                continue;
+
+            Mating otherMating = col.GetComponent<Mating>();
+            if (otherMating == null)
+                continue;
+
+            if (otherMating.cooldownTimer > 0f)
+                continue;
+
             if (other.species != animal.species)
                 continue;
 
-            if (other.age < animal.grownUpAge)
+            if (other.age < other.grownUpAge)
                 continue;
 
             if (other.IsMale == animal.IsMale)
+                continue;
+
+            if (!HasEnoughNeeds(otherNeeds))
                 continue;
 
             if (gameObject.GetInstanceID() > col.gameObject.GetInstanceID())
@@ -70,6 +99,9 @@ public class Mating : MonoBehaviour
 
     private void MateWith(GameObject partner)
     {
+        if (animalPrefab == null || heartPrefab == null)
+            return;
+
         Vector3 spawnPosition = (transform.position + partner.transform.position) / 2f;
 
         GameObject baby = Instantiate(animalPrefab, spawnPosition, Quaternion.identity, transform.parent);
@@ -87,11 +119,42 @@ public class Mating : MonoBehaviour
         Mating partnerMating = partner.GetComponent<Mating>();
         if (partnerMating != null)
         {
-            partnerMating.cooldownTimer = matingCooldown;
+            partnerMating.cooldownTimer = partnerMating.matingCooldown;
+
+            AnimalNeeds partnerNeeds = partner.GetComponent<AnimalNeeds>();
+            if (partnerNeeds != null)
+            {
+                ApplyReproductionCosts(partnerNeeds);
+            }
         }
+
+        ApplyReproductionCosts(needs);
 
         OnMating?.Invoke();
 
+    }
+
+    private bool HasEnoughNeeds(AnimalNeeds targetNeeds)
+    {
+        float staminaPercent = targetNeeds.maxStamina <= 0f
+            ? 0f
+            : targetNeeds.staminaLevel / targetNeeds.maxStamina;
+
+        return targetNeeds.howHungryInPercent >= minHungerPercentToMate
+            && targetNeeds.howThirstyInPercent >= minThirstPercentToMate
+            && staminaPercent >= minStaminaPercentToMate
+            && !targetNeeds.isDead;
+    }
+
+    private void ApplyReproductionCosts(AnimalNeeds targetNeeds)
+    {
+        targetNeeds.Eat(-hungerCostOnMating);
+        targetNeeds.drinkFromSource(-thirstCostOnMating);
+        targetNeeds.staminaLevel = Mathf.Clamp(
+            targetNeeds.staminaLevel - staminaCostOnMating,
+            0f,
+            targetNeeds.maxStamina
+        );
     }
 
 
