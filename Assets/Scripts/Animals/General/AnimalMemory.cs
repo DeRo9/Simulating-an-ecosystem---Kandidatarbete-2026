@@ -80,7 +80,7 @@ public class AnimalMemory : MonoBehaviour
 
 
     // Convert world position to chunk (which chunk am I in?)
-    Vector2Int GetChunk(Vector3 position)
+    public Vector2Int GetChunk(Vector3 position)
     {
         float localX = position.x - terrainOrigin.x;
         float localZ = position.z - terrainOrigin.z;
@@ -166,15 +166,44 @@ public class AnimalMemory : MonoBehaviour
     }
 
 
+    public float GetFoodValue(int x, int z)
+    {
+    return foodMemory[x, z];
+    }
+
+
+    public float GetDangerValue(int x, int z)
+    {
+        return dangerMemory[x, z];
+    }
+
+    public int GetGridSizeX() => gridSizeX;
+    public int GetGridSizeZ() => gridSizeZ;
+
+
+
+
+    // Implement this is each animal behavior class
+
+
     // when hungry, they need to go through dangerous point, it can either go around it,
     // or risk it depening on how hungry it is. Or just keep searching where it is at depending
-    // on how desperate it i
+    // on how desperate it is
 
 
     // TODO
     // Add some calculations or logic regarding choosing chunk depending on risk
     // priorities, weighting the hunger and the danger
+    // If 50% hungry, search in new area or chunk, or a random adjacent chunk that is the safest
 
+
+    // TODO
+    // If 30% hungry, go to best food chunk, but if it means danger to get there, look for the
+    // next best food chunk, if still danger, look for next best food chunk that is safe to go to
+
+
+    // TODO
+    // If 15% hungry, risk it and go to best food chunk even if danger it may be danger to go there
 
 
 
