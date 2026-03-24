@@ -491,18 +491,18 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6538256312678152227}
+  - component: {fileID: 770165260363730541}
   - component: {fileID: 4130331568563197886}
   - component: {fileID: 4656165741010984386}
+  - component: {fileID: -2986275176863535938}
   - component: {fileID: 2652676559356234131}
   - component: {fileID: 7690077303167740514}
-  - component: {fileID: -2986275176863535938}
-  - component: {fileID: 5458290157786460551}
-  - component: {fileID: 770165260363730541}
+  - component: {fileID: 7253260387713355870}
+  - component: {fileID: 8839650572549012831}
   - component: {fileID: 4377887995782312641}
   - component: {fileID: -7914532255645837834}
-  - component: {fileID: 7253260387713355870}
   - component: {fileID: 5694396359575962331}
-  - component: {fileID: 8839650572549012831}
+  - component: {fileID: 5458290157786460551}
   m_Layer: 8
   m_Name: MoosePrefab
   m_TagString: Moose
@@ -527,6 +527,28 @@ Transform:
   - {fileID: 5000025066152606849}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &770165260363730541
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2670038152025143281}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 83e111bf1d728eb44ab0567dfb94efae, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &4130331568563197886
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -576,6 +598,30 @@ MonoBehaviour:
   foodLayer:
     serializedVersion: 2
     m_Bits: 1024
+--- !u!114 &-2986275176863535938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2670038152025143281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bfb10feed37a4a498b7caeeaf9857bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MooseNeeds
+  maxHunger: 100
+  maxThirst: 100
+  maxHealth: 100
+  maxStamina: 100
+  hungerLevel: 100
+  thirstLevel: 100
+  healthLevel: 100
+  staminaLevel: 100
+  hungerDecreaseRate: 0.8
+  thirstDecreaseRate: 1
+  staminaDecreaseRate: 1
+  staminaIncreaseRate: 1.5
 --- !u!114 &2652676559356234131
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -608,7 +654,13 @@ MonoBehaviour:
   heartHeight: 2
   matingRange: 5
   matingCooldown: 30
---- !u!114 &-2986275176863535938
+  minHungerPercentToMate: 0.1
+  minThirstPercentToMate: 0.1
+  minStaminaPercentToMate: 0.1
+  hungerCostOnMating: 6
+  thirstCostOnMating: 5
+  staminaCostOnMating: 10
+--- !u!114 &7253260387713355870
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -617,65 +669,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 2670038152025143281}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bfb10feed37a4a498b7caeeaf9857bd, type: 3}
+  m_Script: {fileID: 11500000, guid: 5ffadf3d2ef29a947904e874f049bf4b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MooseNeeds
-  maxHunger: 100
-  maxThirst: 100
-  maxHealth: 100
-  maxStamina: 100
-  hungerLevel: 100
-  thirstLevel: 100
-  healthLevel: 100
-  staminaLevel: 100
-  hungerDecreaseRate: 0.8
-  thirstDecreaseRate: 1
-  staminaDecreaseRate: 1
-  staminaIncreaseRate: 1.5
---- !u!195 &5458290157786460551
-NavMeshAgent:
+  m_EditorClassIdentifier: Assembly-CSharp::MooseFOV
+  viewAngle: 100
+  viewLayer:
+    serializedVersion: 2
+    m_Bits: 0
+--- !u!114 &8839650572549012831
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2670038152025143281}
   m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.26
-  m_Speed: 2
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 1
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 2
-  m_BaseOffset: 0
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
---- !u!95 &770165260363730541
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2670038152025143281}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 83e111bf1d728eb44ab0567dfb94efae, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 706da7dd76967fb40a62dba58f1b19e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MooseHearing
+  minHearingSpeed: 0.1
 --- !u!54 &4377887995782312641
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -724,22 +737,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.612854, y: 0.8337898, z: 1.1049194}
   m_Center: {x: -0.040618896, y: 1.0382099, z: 0.052459717}
---- !u!114 &7253260387713355870
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2670038152025143281}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ffadf3d2ef29a947904e874f049bf4b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MooseFOV
-  viewAngle: 100
-  viewLayer:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!135 &5694396359575962331
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -761,19 +758,28 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8839650572549012831
-MonoBehaviour:
+--- !u!195 &5458290157786460551
+NavMeshAgent:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2670038152025143281}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 706da7dd76967fb40a62dba58f1b19e3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MooseHearing
-  minHearingSpeed: 0.1
+  m_AgentTypeID: 0
+  m_Radius: 0.26
+  m_Speed: 2
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 1
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &2992573502856677246
 GameObject:
   m_ObjectHideFlags: 0

@@ -93,12 +93,12 @@ public class PopulationGraph : MonoBehaviour
 
         for (int i = 0; i <= steps; i++)
         {
-            float normalized = i / (float)steps;
+            float normalized = i / (float)steps * 0.95f; 
 
             TextMeshProUGUI label = Instantiate(yAxisLabelPrefab, graphContainer);
             label.text = Mathf.RoundToInt(maxValue * normalized).ToString();
 
-            label.rectTransform.anchoredPosition = new Vector2(-40, normalized * graphHeight + 25);
+            label.rectTransform.anchoredPosition = new Vector2(-30, normalized * (graphHeight));
         }
     }
 
@@ -108,14 +108,14 @@ public class PopulationGraph : MonoBehaviour
 
         for (int i = 0; i <= steps; i++)
         {
-            float normalized = i / (float)steps;
+            float normalized = i / (float)steps * 0.95f;
 
             TextMeshProUGUI label = Instantiate(xAxisLabelPrefab, graphContainer);
 
             float time = simulationLength * normalized;
             label.text = time.ToString("0");
 
-            label.rectTransform.anchoredPosition =new Vector2(normalized * graphWidth, -5);
+            label.rectTransform.anchoredPosition = new Vector2(normalized * (graphWidth) -30, 0);
         }
     }
 }
