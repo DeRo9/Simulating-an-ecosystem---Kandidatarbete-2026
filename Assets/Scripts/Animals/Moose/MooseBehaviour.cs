@@ -38,6 +38,10 @@ public class MooseBehaviour : AnimalBehaviour
 
         base.Update();
 
+        // Update animation based on movement
+        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f); // "isWalking" Ã¤r en bool i animator
+        anim.SetBool("isRunning", agent.velocity.magnitude > 3f); // "isRunning" Ã¤r en bool i animator
+
         if (hearing != null && hearing.HeardSomething)
         {
             Animal heard = hearing.HeardAnimal;
@@ -45,13 +49,23 @@ public class MooseBehaviour : AnimalBehaviour
             {
                 memory.RememberDanger(heard.transform.position); //AnimalMemory Danger
                 Debug.Log("Moose remember a dangerous chunk");
-                WolfBehaviour wolf = heard.GetComponent<WolfBehaviour>(); // only wolf for now
+
+                WolfBehaviour wolf = heard.GetComponent<WolfBehaviour>(); // Wolf heard
                 if(animal != null && wolf.CurrentTarget == gameObject)
                 {
-                    Debug.Log("Moose heard a predator");
+                    Debug.Log("Moose heard a wolf");
                     enemy = heard.gameObject;
                     ChangeState(State.Fleeing);
+                    return;
+                }
 
+                BearBehaviour bear = heard.GetComponent<BearBehaviour>(); // Bear heard
+                if (animal != null && bear.CurrentTarget == gameObject)
+                {
+                    Debug.Log("Moose heard a bear");
+                    enemy = heard.gameObject;
+                    ChangeState(State.Fleeing);
+                    return;
                 }
 
             }
@@ -325,5 +339,104 @@ public class MooseBehaviour : AnimalBehaviour
         }
 
     }
+
+    Vector2Int DecideFoodTargetChunk()
+{
+    // 0 = full, 1 = starving
+    float hunger = 1f - needs.howHungryInPercent;
+
+    Vector2Int bestChunk = new Vector2Int(-1, -1);
+
+    float bestScore = float.MinValue;
+
+    // World pos to chunk
+    Vector2Int currentChunk = memory.GetChunk(transform.position);
+
+    // Hunger affects risk tolerance
+    float dangerWeight = Mathf.Lerp(3f, 0.3f, hunger);
+
+    for (int x = 0; x < memory.GetGridSizeX(); x++)
+    {
+        for (int z = 0; z < memory.GetGridSizeZ(); z++)
+        {
+            float food = memory.GetFoodValue(x, z);
+            float danger = memory.GetDangerValue(x, z);
+
+            // Skip empty memory?
+            if (food <= 0f)
+                continue;
+
+            float distance = Vector2.Distance(
+                new Vector2(x, z),
+                new Vector2(currentChunk.x, currentChunk.y)
+            );
+
+            float reward = food;
+            float risk = danger * dangerWeight;
+            float effort = distance * 0.3f;
+
+            float score = reward - risk - effort;
+
+            if (score > bestScore)
+            {
+                bestScore = score;
+                bestChunk = new Vector2Int(x, z);
+            }
+        }
+    }
+
+    return bestChunk;
+}
+
+
+/*
+    Vector2Int DecideFoodTargetChunk()
+    {
+
+    // 0 = full, 1 = starving
+    float hunger = 1f - needs.howHungryInPercent; 
+
+    Vector2Int bestChunk = new Vector2Int(-1, -1);
+
+    float bestScore = float.MinValue;
+
+    // World pos to chunk
+    Vector2Int currentChunk = memory.GetChunk(transform.position);
+
+
+    for (int x = 0; x < memory.GetGridSizeX(); x++) // limit search (performance!)
+    {
+        for (int z = 0; memory.GetGridSizeZ() < 20; z++)
+        {
+            float food = memory.GetFoodValue(x, z);
+            float danger = memory.GetDangerValue(x, z);
+
+            // bigger number = further away
+            float distance = Vector2.Distance(new Vector2(x,z), new Vector2(currentChunk.x, currentChunk.y));
+
+            float dangerWeight;
+
+            if (hunger < 0.3f)        // not very hungry
+                dangerWeight = 3f;    // avoid danger strongly
+            else if (hunger < 0.7f)   // medium hunger
+                dangerWeight = 1.5f;
+            else                      // starving
+                dangerWeight = 0.3f;  // ignore danger
+
+            float score = food - (danger * dangerWeight) - (distance * 0.5f);
+
+            if (score > bestScore)
+            {
+                bestScore = score;
+                bestChunk = new Vector2Int(x, z);
+            }
+        }
+    }
+
+    return bestChunk;
+}
+*/
+
+
 
 }

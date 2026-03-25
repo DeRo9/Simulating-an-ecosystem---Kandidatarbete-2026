@@ -1512,17 +1512,17 @@ GameObject:
   m_Component:
   - component: {fileID: 3951743296650663603}
   - component: {fileID: 8643121547165636674}
-  - component: {fileID: 3228180883506121390}
   - component: {fileID: 354103798133286141}
   - component: {fileID: 8115009223279749859}
   - component: {fileID: 5642719112376538877}
   - component: {fileID: 1391028911167729743}
   - component: {fileID: 6418187023096637690}
+  - component: {fileID: -6116638918593094840}
+  - component: {fileID: -9080538929342593657}
   - component: {fileID: 1070128744223743822}
   - component: {fileID: 5138632922600550119}
-  - component: {fileID: -6116638918593094840}
   - component: {fileID: -8017201233929457047}
-  - component: {fileID: -9080538929342593657}
+  - component: {fileID: 3228180883506121390}
   m_Layer: 9
   m_Name: BearPrefab
   m_TagString: Bear
@@ -1569,28 +1569,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!195 &3228180883506121390
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8565310438801436797}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.32
-  m_Speed: 2
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 1
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 2
-  m_BaseOffset: 0
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
 --- !u!114 &354103798133286141
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1638,6 +1616,15 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 16
   huntCooldownTimer: 0
+  foodLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  carcassLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  PreyLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &5642719112376538877
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1694,6 +1681,41 @@ MonoBehaviour:
   heartHeight: 2
   matingRange: 5
   matingCooldown: 10
+  minHungerPercentToMate: 0.1
+  minThirstPercentToMate: 0.1
+  minStaminaPercentToMate: 0.1
+  hungerCostOnMating: 6
+  thirstCostOnMating: 5
+  staminaCostOnMating: 10
+--- !u!114 &-6116638918593094840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8565310438801436797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4afa63622caa2ec46bae015df0700687, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BearFOV
+  viewAngle: 120
+  viewLayer:
+    serializedVersion: 2
+    m_Bits: 0
+--- !u!114 &-9080538929342593657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8565310438801436797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d136cb6fa2bd63f43bc509199acc08d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BearHearing
+  minHearingSpeed: 0.1
 --- !u!54 &1070128744223743822
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1742,22 +1764,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7979431, y: 0.87387466, z: 1.9689636}
   m_Center: {x: -0.00843811, y: 0.8952465, z: 0.32740784}
---- !u!114 &-6116638918593094840
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8565310438801436797}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4afa63622caa2ec46bae015df0700687, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BearFOV
-  viewAngle: 120
-  viewLayer:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!135 &-8017201233929457047
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1779,19 +1785,28 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &-9080538929342593657
-MonoBehaviour:
+--- !u!195 &3228180883506121390
+NavMeshAgent:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8565310438801436797}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d136cb6fa2bd63f43bc509199acc08d1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BearHearing
-  minHearingSpeed: 0.1
+  m_AgentTypeID: 0
+  m_Radius: 0.32
+  m_Speed: 2
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 1
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &8881512897072243634
 GameObject:
   m_ObjectHideFlags: 0

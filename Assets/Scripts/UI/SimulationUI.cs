@@ -14,7 +14,7 @@ public class SimulationUI : MonoBehaviour
     private float time;
 
     [Header("Count Animals And Plants")]
-    [SerializeField] TextMeshProUGUI Wolfves;
+    [SerializeField] TextMeshProUGUI Wolves;
     [SerializeField] TextMeshProUGUI Bears;
     [SerializeField] TextMeshProUGUI Moose;
     [SerializeField] TextMeshProUGUI Plants;
@@ -26,8 +26,12 @@ public class SimulationUI : MonoBehaviour
     private int PredatorDeathsCount;
 
     [Header("Matings")]
-    [SerializeField] TextMeshProUGUI matings;
-    private int matingCount;
+    [SerializeField] TextMeshProUGUI wolfMatings;
+    [SerializeField] TextMeshProUGUI bearMatings;
+    [SerializeField] TextMeshProUGUI mooseMatings;
+    private int wolfMatingCount;
+    private int bearMatingCount;
+    private int mooseMatingCount;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -45,7 +49,7 @@ public class SimulationUI : MonoBehaviour
         time = 0f;
         SimTime.SetText("Time: {0}", time);
 
-        Wolfves.SetText("|| Wolfs: {0}", 0);
+        Wolves.SetText("|| Wolfs: {0}", 0);
         Bears.SetText("|| Bears: {0}", 0);
         Moose.SetText("|| Moose: {0}", 0);
         Plants.SetText("|| Plants: {0}", 0);
@@ -53,7 +57,9 @@ public class SimulationUI : MonoBehaviour
         PreyDeaths.SetText("|| Prey Deaths: {0}", 0);
         PredatorDeaths.SetText("|| Predator Deaths: {0}", 0);
 
-        matings.SetText("|| Matings: {0}", 0);
+        wolfMatings.SetText("|| Wolf Matings: {0}", 0);
+        bearMatings.SetText("|| Bear Matings: {0}", 0);
+        mooseMatings.SetText("|| Moose Matings: {0}", 0);
     }
 
 
@@ -70,7 +76,7 @@ public class SimulationUI : MonoBehaviour
 
     void UpdateWolves()
     {
-        Wolfves.SetText("|| Wolfs: {0}", CountWolves());
+        Wolves.SetText("|| Wolfs: {0}", CountWolves());
     }
 
     void UpdateBears()
@@ -113,10 +119,23 @@ public class SimulationUI : MonoBehaviour
         Plants.SetText("|| Plants: {0}", CountPlants());
     }
 
-    void UpdateMatingCount()
+    void UpdateMatingCount(string species)
     {
-        matingCount++;
-        matings.SetText("|| Matings: {0}", matingCount);
+        switch (species)
+        {
+            case "wolf":
+                wolfMatingCount++;
+                wolfMatings.SetText("|| Wolf Matings: {0}", wolfMatingCount);
+                break;
+            case "bear":
+                bearMatingCount++;
+                bearMatings.SetText("|| Bear Matings: {0}", bearMatingCount);
+                break;
+            case "moose":
+                mooseMatingCount++;
+                mooseMatings.SetText("|| Moose Matings: {0}", mooseMatingCount);
+                break;
+        }
     }
 
     void UpdatePreyDeaths()

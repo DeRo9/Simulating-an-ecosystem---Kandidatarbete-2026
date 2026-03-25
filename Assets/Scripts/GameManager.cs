@@ -52,6 +52,9 @@ public class GameManager : MonoBehaviour
     [Header("information UI")]
     public InformationUI informationUI;
 
+    [Header("Simulation UI")]
+    public SimulationUI simulationUI;
+
     public float spawnRadius = 1000f;
 
     private void Start()
@@ -59,7 +62,7 @@ public class GameManager : MonoBehaviour
         simulationLengthSlider.value = 60f;
         cameraMovement.enabled = false;
         Time.timeScale = 1f;
-
+        simulationUI.gameObject.SetActive(false);
     }
 
     public float recordInterval = 5f;
@@ -109,6 +112,7 @@ public class GameManager : MonoBehaviour
         simulationRunning = true;
 
         startMenuPanel.SetActive(false);
+        simulationUI.gameObject.SetActive(true);
     }
 
     void SpawnAnimals(GameObject animalPrefab, AnimalSetupPanel setup, Transform parentFolder)
@@ -123,10 +127,11 @@ public class GameManager : MonoBehaviour
 
             if (animal != null)
             {
-                animal.speed = setup.updatedSpeed;
-                animal.size = setup.updatedSize;
-                animal.sightRange = setup.updatedSight;
-                animal.hearingRange = setup.updatedHearing;
+                animal.age = (float)System.Math.Round(UnityEngine.Random.Range(0f, animal.startingMaxAge), 2);                
+                animal.speed = (float)System.Math.Round(UnityEngine.Random.Range(setup.updatedSpeed - 0.5f, setup.updatedSpeed + 0.5f), 2);
+                animal.size = (float)System.Math.Round(UnityEngine.Random.Range(setup.updatedSize - 0.2f, setup.updatedSize + 0.2f), 2);
+                animal.sightRange = (float)System.Math.Round(UnityEngine.Random.Range(setup.updatedSight - 5f, setup.updatedSight + 5f), 2);
+                animal.hearingRange = (float)System.Math.Round(UnityEngine.Random.Range(setup.updatedHearing - 5f, setup.updatedHearing + 5f), 2);
             }
         }
     }
