@@ -38,5 +38,9 @@ public class Aging : MonoBehaviour
             float currentScale = Mathf.Lerp(childScale, adultScale, growthPercent);
             transform.localScale = Vector3.one * currentScale * animal.size;
         }
+        if (age > grownUp)
+        {
+            transform.localScale = Vector3.one * adultScale * animal.size;
+        }
     }
 }

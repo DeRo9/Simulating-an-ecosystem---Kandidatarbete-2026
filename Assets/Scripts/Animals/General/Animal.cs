@@ -17,6 +17,8 @@ public class Animal : MonoBehaviour
     public float age = 0f;
     public float agingSpeed = 0.1f;
 
+    public float startingMaxAge = 15f;
+
     [Header("Life Stages")]
     public float grownUpAge = 10f;
     public float oldAge = 20f;

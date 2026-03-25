@@ -102,15 +102,16 @@ public class Mating : MonoBehaviour
         if (animalPrefab == null || heartPrefab == null)
             return;
 
+
         Vector3 spawnPosition = (transform.position + partner.transform.position) / 2f;
 
         GameObject baby = Instantiate(animalPrefab, spawnPosition, Quaternion.identity, transform.parent);
-
-        Animal babyAge = baby.GetComponent<Animal>();
-        if (babyAge != null)
-        {
-            babyAge.age = 0f;
-        }
+        baby.GetComponent<Animal>().age = 0f;
+        baby.GetComponent<Animal>().size = (animal.size + partner.GetComponent<Animal>().size) / 2f;
+        baby.GetComponent<Animal>().speed = (animal.speed + partner.GetComponent<Animal>().speed) / 2f;
+        baby.GetComponent<Animal>().sightRange = (animal.sightRange + partner.GetComponent<Animal>().sightRange) / 2f;
+        baby.GetComponent<Animal>().hearingRange = (animal.hearingRange + partner.GetComponent<Animal>().hearingRange) / 2f;
+        
         Instantiate(heartPrefab, transform.position + Vector3.up * heartHeight, Quaternion.identity);
         Instantiate(heartPrefab, partner.transform.position + Vector3.up * heartHeight, Quaternion.identity);
 
