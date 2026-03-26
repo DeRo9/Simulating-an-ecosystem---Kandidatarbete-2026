@@ -58,6 +58,15 @@ public class GameManager : MonoBehaviour
 
     [Header("Weather")]
     public GameObject raining;
+    public Toggle rainToggle;
+
+    public GameObject snowing;
+    public Toggle snowToggle;
+
+    [Header("Terrain")]
+    public Terrain terrain;
+    public TerrainLayer grassLayer;
+    public TerrainLayer snowLayer;
 
     private void Start()
     {
@@ -65,6 +74,10 @@ public class GameManager : MonoBehaviour
         cameraMovement.enabled = false;
         Time.timeScale = 1f;
         simulationUI.gameObject.SetActive(false);
+        RenderSettings.skybox.SetFloat("_Exposure", 1f);
+        RenderSettings.skybox.SetColor("_Tint", Color.white);
+        terrain.terrainData.terrainLayers = new TerrainLayer[] {grassLayer};
+
     }
 
     public float recordInterval = 5f;
@@ -207,6 +220,48 @@ public class GameManager : MonoBehaviour
 
     public void toggleRain()
     {
+        if (snowing.activeSelf)
+        {
+            snowToggle.isOn = false;
+            snowing.SetActive(false);
+            RenderSettings.skybox.SetFloat("_Exposure", 1f);
+            RenderSettings.skybox.SetColor("_Tint", Color.white);
+            RenderSettings.fogDensity = 0.01f;
+        }
         raining.SetActive(!raining.activeSelf);
+        RenderSettings.skybox.SetFloat("_Exposure", raining.activeSelf ? 0.5f : 1f);
+        RenderSettings.skybox.SetColor("_Tint", raining.activeSelf ? new Color(0.48f, 0.49f, 0.54f) : Color.white);
+        RenderSettings.fogDensity = raining.activeSelf ? 0.02f : 0.01f;
+        SetTerrainLayer(snowing.activeSelf);
     }
+
+    public void toggleSnow()
+    {
+        if (raining.activeSelf)
+        {
+            rainToggle.isOn = false;
+            raining.SetActive(false);
+            RenderSettings.skybox.SetFloat("_Exposure", 1f);
+            RenderSettings.skybox.SetColor("_Tint", Color.white);
+            RenderSettings.fogDensity = 0.01f;
+        }
+        snowing.SetActive(!snowing.activeSelf);
+        RenderSettings.skybox.SetFloat("_Exposure", snowing.activeSelf ? 0.8f : 1f);
+        RenderSettings.skybox.SetColor("_Tint", snowing.activeSelf ? new Color(0.75f, 0.78f, 0.85f) : Color.white);
+        RenderSettings.fogDensity = snowing.activeSelf ? 0.015f : 0.01f;
+        SetTerrainLayer(snowing.activeSelf);
+
+    }
+
+    void SetTerrainLayer(bool snow)
+{
+    if (snow)
+    {
+        terrain.terrainData.terrainLayers = new TerrainLayer[] { snowLayer };
+    }
+    else
+    {
+        terrain.terrainData.terrainLayers = new TerrainLayer[] { grassLayer };
+    }
+}
 }
