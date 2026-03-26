@@ -15578,7 +15578,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SimulationUI
   FPS: {fileID: 33992911}
   SimTime: {fileID: 1587626916}
-  Wolves: {fileID: 0}
+  Wolves: {fileID: 1328583814}
   Bears: {fileID: 1710867812}
   Moose: {fileID: 1256379178}
   Plants: {fileID: 275787296}
