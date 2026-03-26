@@ -56,6 +56,9 @@ public class GameManager : MonoBehaviour
 
     public float spawnRadius = 1000f;
 
+    [Header("Weather")]
+    public GameObject raining;
+
     private void Start()
     {
         simulationLengthSlider.value = 60f;
@@ -202,4 +205,8 @@ public class GameManager : MonoBehaviour
         return simulationRunning;
     }
 
+    public void toggleRain()
+    {
+        raining.SetActive(!raining.activeSelf);
+    }
 }
