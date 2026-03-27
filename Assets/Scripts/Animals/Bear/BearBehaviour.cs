@@ -185,6 +185,7 @@ public class BearBehaviour : AnimalBehaviour
         if (closestPrey != null)
         {
             preyTarget = closestPrey;
+            StatisticsTableManager.instance.BearhuntAttemptsCount++;
 
             MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
             if (moose != null)
@@ -324,7 +325,7 @@ public class BearBehaviour : AnimalBehaviour
 
     void LostPrey()
     {
-        //StopAttack(); // Stop attacking if the prey is lost
+        StatisticsTableManager.instance.BearhuntFailuresCount++;
 
         if (preyTarget != null)
         {

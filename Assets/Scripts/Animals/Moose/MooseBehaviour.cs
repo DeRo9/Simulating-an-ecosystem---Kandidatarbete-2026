@@ -331,6 +331,8 @@ public class MooseBehaviour : AnimalBehaviour
     {
         if(enemy == predator)
         {
+            StatisticsTableManager.instance.MooseSuccessfulEscapeCount++;
+
             enemy = null;
             agent.speed = animal.speed; // Reset speed to normal
             if (CurrentState == State.Fleeing)
@@ -349,24 +351,36 @@ public class MooseBehaviour : AnimalBehaviour
     {
         base.OnDeath();
 
+        bool wolfKill = false; // If wolf was the one who killed the moose
         WolfBehaviour[] wolves = FindObjectsByType<WolfBehaviour>(FindObjectsSortMode.None); // All wolves hunting the moose
         foreach (WolfBehaviour wolf in wolves)
         {
             if(wolf.CurrentTarget == gameObject)
             {
+                wolfKill = true;
                 wolf.notifyDeath();
             }
         }
 
+        // If wolf killed the moose, then increase counter in the statistics table
+        if (wolfKill)
+            StatisticsTableManager.instance.WolfSuccessfulHuntsCount++;
+
+
+        bool bearKill = false; // if bear was the one who killed the moose
         BearBehaviour[] bears = FindObjectsByType <BearBehaviour> (FindObjectsSortMode.None);
         foreach(BearBehaviour bear in bears)
         {
             if (bear.CurrentTarget == gameObject)
             {
+                bearKill = true;
                 bear.notifyDeath();
             }
         }
 
+        // If bear killed the moose, then increase counter in the statistics table
+        if (bearKill) 
+            StatisticsTableManager.instance.BearSuccessfulHuntsCount++;
     }
 
     Vector2Int DecideFoodTargetChunk()

@@ -236,6 +236,7 @@ public class WolfBehaviour : AnimalBehaviour
         if (closestPrey != null)
         {
             preyTarget = closestPrey;
+            StatisticsTableManager.instance.WolfhuntAttemptsCount++;
 
             MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
             if (moose != null)
@@ -341,8 +342,9 @@ public class WolfBehaviour : AnimalBehaviour
 
     public void OnBeingHunted(GameObject predator)
     {
-        if(CurrentState == State.Hunt)
+        if(CurrentState == State.Hunt) // Lose prey if being hunted by a bear
         {
+            StatisticsTableManager.instance.BearInterferenceCount++;
             LostPrey();
         }
         enemy = predator;
@@ -459,7 +461,7 @@ public class WolfBehaviour : AnimalBehaviour
 
     void LostPrey()
     {
-        //StopAttack(); // Stop attacking if the prey is lost
+        StatisticsTableManager.instance.WolfhuntFailuresCount++;
 
         if (preyTarget != null)
         {
