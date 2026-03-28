@@ -1542,6 +1542,58 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 417242066}
   m_CullTransparentMesh: 1
+--- !u!1 &448226401
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 448226403}
+  - component: {fileID: 448226402}
+  m_Layer: 0
+  m_Name: TableManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &448226402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 448226401}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48278ebdc9899db4db496446ede12c11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StatisticsTableManager
+  WolfhuntAttemptsCount: 0
+  WolfhuntFailuresCount: 0
+  WolfSuccessfulHuntsCount: 0
+  BearInterferenceCount: 0
+  BearhuntAttemptsCount: 0
+  BearhuntFailuresCount: 0
+  BearSuccessfulHuntsCount: 0
+  MooseSuccessfulEscapeCount: 0
+--- !u!4 &448226403
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 448226401}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 15.89603, y: -0, z: 19.47302}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &678103346
 GameObject:
   m_ObjectHideFlags: 0
@@ -4707,5 +4759,6 @@ SceneRoots:
   - {fileID: 1853879992}
   - {fileID: 390981052}
   - {fileID: 1672866897}
+  - {fileID: 448226403}
   - {fileID: 1297731612}
   - {fileID: 1100193015}
