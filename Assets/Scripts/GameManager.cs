@@ -77,7 +77,6 @@ public class GameManager : MonoBehaviour
         RenderSettings.skybox.SetFloat("_Exposure", 1f);
         RenderSettings.skybox.SetColor("_Tint", Color.white);
         terrain.terrainData.terrainLayers = new TerrainLayer[] {grassLayer};
-
     }
 
     public float recordInterval = 5f;

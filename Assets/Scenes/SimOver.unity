@@ -4363,27 +4363,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 951936660}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48278ebdc9899db4db496446ede12c11, type: 3}
+  m_Script: {fileID: 11500000, guid: e6792c4db1a10674386ceedbfc546663, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StatisticsTableManager
+  m_EditorClassIdentifier: Assembly-CSharp::StatisticsUI
   WolfHuntAttempts: {fileID: 1893045128}
   WolfHuntFailures: {fileID: 1842270843}
-  WolfSuccessfulHunts: {fileID: 0}
+  WolfSuccessfulHunts: {fileID: 1241938001}
   WolfHuntSuccessRate: {fileID: 888862228}
-  WolfhuntAttemptsCount: 0
-  WolfhuntFailuresCount: 0
-  WolfSuccessfulHuntsCount: 0
   BearInterference: {fileID: 1572302956}
   BearHuntAttempts: {fileID: 2110262505}
   BearHuntFailures: {fileID: 732382393}
   BearSuccesfulHunts: {fileID: 56390183}
   BearHuntSuccessRate: {fileID: 752600037}
-  BearInterferenceCount: 0
-  BearhuntAttemptsCount: 0
-  BearhuntFailuresCount: 0
-  BearSuccessfulHuntsCount: 0
   MooseSuccessfulEscape: {fileID: 251634489}
-  MooseSuccessfulEscapeCount: 0
 --- !u!1 &992695675
 GameObject:
   m_ObjectHideFlags: 0
