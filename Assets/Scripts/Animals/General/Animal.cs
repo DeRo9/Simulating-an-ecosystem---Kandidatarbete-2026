@@ -6,7 +6,6 @@ public enum Species
     bear,
     moose
 }
-    
 
 public class Animal : MonoBehaviour
 {
