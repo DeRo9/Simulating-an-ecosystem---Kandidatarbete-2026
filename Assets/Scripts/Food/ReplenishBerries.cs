@@ -18,6 +18,11 @@ public class ReplenishBerries : MonoBehaviour
 
     IEnumerator RespawnBerries()
     {
+        if (SeasonManager.Instance.IsWinter)
+        {
+            respawnDelay *= 2;
+        }
+        
         yield return new WaitForSeconds(respawnDelay);
         Instantiate(berryBunchPrefab, transform.position, Quaternion.identity, transform);
     }

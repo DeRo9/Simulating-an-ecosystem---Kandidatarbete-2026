@@ -48,19 +48,21 @@ public class AnimalNeeds : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isDead) return; // If dead, then we don't need to update anything anymore
+        if (isDead) return; 
 
-        // Decrease hunger level over time
         hungerLevel -= hungerDecreaseRate * Time.deltaTime; 
-        hungerLevel = Mathf.Clamp(hungerLevel, 0f, maxHunger); // Ensure it stays within bounds
+        hungerLevel = Mathf.Clamp(hungerLevel, 0f, maxHunger);
 
-        // Decrease thirst level over time
-        thirstLevel -= thirstDecreaseRate * Time.deltaTime;
-        thirstLevel = Mathf.Clamp(thirstLevel, 0f, maxThirst); // Ensure it stays within bounds
+        if (!SeasonManager.Instance.isRaining)
+        {
+            thirstLevel -= thirstDecreaseRate * Time.deltaTime;
+        }
+
+        thirstLevel = Mathf.Clamp(thirstLevel, 0f, maxThirst);
 
         survivalDamage();
 
-        if(staminaLevel <= 0.1f) // Spare a little bit of stamina
+        if(staminaLevel <= 0.1f)
         {
             noMoreStamina = true;
         }
