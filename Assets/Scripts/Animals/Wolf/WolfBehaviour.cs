@@ -188,12 +188,25 @@ public class WolfBehaviour : AnimalBehaviour
                 }
             }
 
-            if (IsHungry() && huntCooldownTimer <= 0 && !needs.isTired) 
+            if (IsHungry() && huntCooldownTimer <= 0 && !needs.isTired)
             {
                 if (FindPrey())
                     ChangeState(State.Hunt);
                 else if (FindCarcass())
                     ChangeState(State.Eat);
+                else
+                {
+                    Vector2Int bestChunk = DecideFoodTargetChunk();
+                    if (bestChunk.x != -1)
+                    {
+                        agent.SetDestination(memory.GetRandomPointInChunk(bestChunk));
+                        ChangeState(State.Wander);
+                    }
+                    else
+                    {
+                        ChangeState(State.Wander);
+                    }
+                }
             }
         }
 
@@ -239,6 +252,10 @@ public class WolfBehaviour : AnimalBehaviour
         if (closestPrey != null)
         {
             preyTarget = closestPrey;
+            if (memory != null)
+            {
+                memory.RememberPrey(closestPrey.transform.position);
+            }
             StatisticsTableManager.instance.WolfhuntAttemptsCount++;
 
             MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
@@ -616,6 +633,10 @@ public class WolfBehaviour : AnimalBehaviour
         if (closestFood != null)
         {
             foodTarget = closestFood;
+            if (memory != null)
+            {
+                memory.RememberFood(closestFood.transform.position);
+            }
             return true;
         }
 
@@ -634,6 +655,49 @@ public class WolfBehaviour : AnimalBehaviour
             t = t.parent;
         }
         return obj;
+    }
+
+    Vector2Int DecideFoodTargetChunk()
+    {
+        if (memory == null) return new Vector2Int(-1, -1);
+
+        float hunger = 1f - needs.howHungryInPercent;
+        Vector2Int bestChunk = new Vector2Int(-1, -1);
+        float bestScore = float.MinValue;
+        Vector2Int currentChunk = memory.GetChunk(transform.position);
+
+        float dangerWeight = Mathf.Lerp(3f, 0.3f, hunger);
+
+        for (int x = 0; x < memory.GetGridSizeX(); x++)
+        {
+            for (int z = 0; z < memory.GetGridSizeZ(); z++)
+            {
+                float prey = memory.GetPreyValue(x, z);
+                float food = memory.GetFoodValue(x, z); // Carcass locations
+                float danger = memory.GetDangerValue(x, z);
+
+                if (prey <= 0f && food <= 0f)
+                    continue;
+
+                float distance = Vector2.Distance(
+                    new Vector2(x, z),
+                    new Vector2(currentChunk.x, currentChunk.y)
+                );
+
+                float reward = prey + food;
+                float risk = danger * dangerWeight;
+                float effort = distance * 0.3f;
+                float score = reward - risk - effort;
+
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    bestChunk = new Vector2Int(x, z);
+                }
+            }
+        }
+
+        return bestChunk;
     }
 
 }
