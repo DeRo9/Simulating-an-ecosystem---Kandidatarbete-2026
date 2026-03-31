@@ -37,6 +37,9 @@ public class MooseBehaviour : AnimalBehaviour
 
     protected override void Update()
     {
+
+        if (!agent.isOnNavMesh)
+            return;
         
 
         base.Update();
@@ -118,8 +121,14 @@ public class MooseBehaviour : AnimalBehaviour
                     if (targetChunk.x != -1)
                     {
                         Vector3 targetPos = memory.GetRandomPointInChunk(targetChunk);
-                        agent.SetDestination(targetPos);
-                        ChangeState(State.Wander);
+
+                        if (agent.isOnNavMesh)
+                        {
+                            agent.SetDestination(targetPos);
+                            ChangeState(State.Wander);
+                        }
+                        //agent.SetDestination(targetPos);
+                        //ChangeState(State.Wander);
                         Debug.Log("Moose waling to food from memory");
                     }
                     else
@@ -193,7 +202,7 @@ public class MooseBehaviour : AnimalBehaviour
 
     protected override void EatStateForSpecificAnimal()
     {
-        if (foodTarget != null)
+        if (foodTarget != null && agent.isOnNavMesh) //added && agent.isOnNavMesh
         {
             agent.isStopped = false;
             agent.SetDestination(foodTarget.transform.position);
@@ -274,7 +283,12 @@ public class MooseBehaviour : AnimalBehaviour
         if (fleeRepathTimer >= fleeRepathInterval)
         {
             Vector3 fleePoint = CalculateFleePath();
-            agent.SetDestination(fleePoint);
+
+            if (agent.isOnNavMesh)
+            {
+                agent.SetDestination(fleePoint);
+            }
+            //agent.SetDestination(fleePoint);
             fleeRepathTimer = 0f;
         }
     }
