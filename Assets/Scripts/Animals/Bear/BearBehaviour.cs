@@ -54,6 +54,9 @@ public class BearBehaviour : AnimalBehaviour
         if (isDead)
             return;
 
+        if (CurrentState == State.Pregnant)
+            return;
+
         // Update animation based on movement
         anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude <= 3.2f); // "isWalking" är en bool i animator
         anim.SetBool("isRunning", agent.velocity.magnitude > 3.5f); // "isRunning" är en bool i animator
