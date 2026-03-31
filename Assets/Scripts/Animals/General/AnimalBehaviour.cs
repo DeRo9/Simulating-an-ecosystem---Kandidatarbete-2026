@@ -69,7 +69,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
     // Checks if the moose has reached its destination
     protected bool hasArrived()
     {
-        if(!agent.enabled) return false;
+        if (agent == null || !agent.isActiveAndEnabled || !agent.isOnNavMesh) return false;
         return !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance;
     }
 
