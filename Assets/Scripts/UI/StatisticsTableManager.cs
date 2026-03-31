@@ -34,6 +34,11 @@ public class StatisticsTableManager : MonoBehaviour
 
     void Start()
     {
+
+    }
+
+    public void ResetStats()
+    {
         WolfhuntAttemptsCount = 0;
         WolfhuntFailuresCount = 0;
         WolfSuccessfulHuntsCount = 0;

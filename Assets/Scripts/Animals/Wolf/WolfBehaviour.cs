@@ -375,7 +375,7 @@ public class WolfBehaviour : AnimalBehaviour
     protected override void UpdateHunt()
     {
 
-        if (preyTarget == null)
+        if (preyTarget == null || huntCooldownTimer > 0)
         {
             ChangeState(State.Wander);
             return; // If the wolf has no prey, switch to wandering
@@ -466,6 +466,8 @@ public class WolfBehaviour : AnimalBehaviour
     void LostPrey()
     {
         if (preyTarget == null) return;
+
+        if (huntCooldownTimer > 0) return;
 
         StatisticsTableManager.instance.WolfhuntFailuresCount++;
 

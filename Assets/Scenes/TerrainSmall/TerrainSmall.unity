@@ -369,7 +369,6 @@ MonoBehaviour:
   informationUI: {fileID: 2108928193}
   simulationUI: {fileID: 1646297639}
   spawnRadius: 100
-  seasonManager: {fileID: 1261316110}
   summerToggle: {fileID: 1050397844}
   winterToggle: {fileID: 1372752597}
   percipitationToggle: {fileID: 1342007192}
@@ -2666,12 +2665,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 293048945}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 31.19196, y: 7.54875, z: 70.66}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 523027185}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &293048947
 MonoBehaviour:
@@ -2685,23 +2684,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48278ebdc9899db4db496446ede12c11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StatisticsTableManager
-  WolfHuntAttempts: {fileID: 0}
-  WolfHuntFailures: {fileID: 0}
-  WolfSuccessfulHunts: {fileID: 0}
-  WolfHuntSuccessRate: {fileID: 0}
   WolfhuntAttemptsCount: 0
   WolfhuntFailuresCount: 0
   WolfSuccessfulHuntsCount: 0
-  BearInterference: {fileID: 0}
-  BearHuntAttempts: {fileID: 0}
-  BearHuntFailures: {fileID: 0}
-  BearSuccesfulHunts: {fileID: 0}
-  BearHuntSuccessRate: {fileID: 0}
   BearInterferenceCount: 0
   BearhuntAttemptsCount: 0
   BearhuntFailuresCount: 0
   BearSuccessfulHuntsCount: 0
-  MooseSuccessfulEscape: {fileID: 0}
   MooseSuccessfulEscapeCount: 0
 --- !u!1 &309311107
 GameObject:
@@ -4553,7 +4542,6 @@ Transform:
   m_Children:
   - {fileID: 1823245901}
   - {fileID: 18864593}
-  - {fileID: 293048946}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &564284121
@@ -21012,4 +21000,5 @@ SceneRoots:
   - {fileID: 685258621}
   - {fileID: 143992875}
   - {fileID: 523027185}
+  - {fileID: 293048946}
   - {fileID: 1261316111}

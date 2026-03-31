@@ -102,6 +102,8 @@ public class GameManager : MonoBehaviour
 
     public void StartSimulation()
     {
+        if(StatisticsTableManager.instance != null) StatisticsTableManager.instance.ResetStats();
+
         cameraMovement.enabled = true;
 
         SpawnAnimals(moosePrefab, mooseSetup, herbivoresFolder);

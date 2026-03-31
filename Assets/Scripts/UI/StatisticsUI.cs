@@ -36,7 +36,7 @@ public class StatisticsUI : MonoBehaviour
         WolfSuccessfulHunts.SetText("{0}", StatisticsTableManager.instance.WolfSuccessfulHuntsCount);
 
         float WolfSuccessRate = StatisticsTableManager.instance.WolfhuntAttemptsCount > 0
-                              ? Mathf.Round((float)StatisticsTableManager.instance.WolfSuccessfulHuntsCount / StatisticsTableManager.instance.WolfSuccessfulHuntsCount)
+                              ? Mathf.Round(((float)StatisticsTableManager.instance.WolfSuccessfulHuntsCount / StatisticsTableManager.instance.WolfhuntAttemptsCount) * 100f)
                               : 0f;
         WolfHuntSuccessRate.SetText("{0}%", WolfSuccessRate);
     }
@@ -49,9 +49,10 @@ public class StatisticsUI : MonoBehaviour
         BearSuccesfulHunts.SetText("{0}", StatisticsTableManager.instance.BearSuccessfulHuntsCount);
 
         float BearSuccessRate = StatisticsTableManager.instance.BearhuntAttemptsCount > 0
-                      ? Mathf.Round((float)StatisticsTableManager.instance.BearSuccessfulHuntsCount / StatisticsTableManager.instance.BearSuccessfulHuntsCount)
+                      ? Mathf.Round(((float)StatisticsTableManager.instance.BearSuccessfulHuntsCount / StatisticsTableManager.instance.BearhuntAttemptsCount) * 100f)
                       : 0f;
-        WolfHuntSuccessRate.SetText("{0}%", BearSuccessRate);
+
+        BearHuntSuccessRate.SetText("{0}%", BearSuccessRate);
     }
 
     void UpdateMooseInfo()
