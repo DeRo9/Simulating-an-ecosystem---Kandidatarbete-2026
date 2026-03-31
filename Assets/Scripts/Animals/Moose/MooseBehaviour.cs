@@ -41,6 +41,9 @@ public class MooseBehaviour : AnimalBehaviour
 
         base.Update();
 
+        if (isDead)
+            return;
+
         // Update animation based on movement
         anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f); // "isWalking" Ã¤r en bool i animator
         anim.SetBool("isRunning", agent.velocity.magnitude > 3f); // "isRunning" Ã¤r en bool i animator
@@ -54,7 +57,7 @@ public class MooseBehaviour : AnimalBehaviour
                 Debug.Log("Moose remember a dangerous chunk");
 
                 WolfBehaviour wolf = heard.GetComponent<WolfBehaviour>(); // Wolf heard
-                if(animal != null && wolf.CurrentTarget == gameObject)
+                if(wolf != null && wolf.CurrentTarget == gameObject)
                 {
                     Debug.Log("Moose heard a wolf");
                     enemy = heard.gameObject;
@@ -63,7 +66,7 @@ public class MooseBehaviour : AnimalBehaviour
                 }
 
                 BearBehaviour bear = heard.GetComponent<BearBehaviour>(); // Bear heard
-                if (animal != null && bear.CurrentTarget == gameObject)
+                if (bear != null && bear.CurrentTarget == gameObject)
                 {
                     Debug.Log("Moose heard a bear");
                     enemy = heard.gameObject;
@@ -331,6 +334,8 @@ public class MooseBehaviour : AnimalBehaviour
     {
         if(enemy == predator)
         {
+            StatisticsTableManager.instance.MooseSuccessfulEscapeCount++;
+
             enemy = null;
             agent.speed = animal.speed; // Reset speed to normal
             if (CurrentState == State.Fleeing)
@@ -347,26 +352,40 @@ public class MooseBehaviour : AnimalBehaviour
 
     public override void OnDeath()
     {
-        base.OnDeath();
+        
 
+        bool wolfKill = false; // If wolf was the one who killed the moose
         WolfBehaviour[] wolves = FindObjectsByType<WolfBehaviour>(FindObjectsSortMode.None); // All wolves hunting the moose
         foreach (WolfBehaviour wolf in wolves)
         {
             if(wolf.CurrentTarget == gameObject)
             {
+                wolfKill = true;
                 wolf.notifyDeath();
             }
         }
 
+        // If wolf killed the moose, then increase counter in the statistics table
+        if (wolfKill)
+            StatisticsTableManager.instance.WolfSuccessfulHuntsCount++;
+
+
+        bool bearKill = false; // if bear was the one who killed the moose
         BearBehaviour[] bears = FindObjectsByType <BearBehaviour> (FindObjectsSortMode.None);
         foreach(BearBehaviour bear in bears)
         {
             if (bear.CurrentTarget == gameObject)
             {
+                bearKill = true;
                 bear.notifyDeath();
             }
         }
 
+        // If bear killed the moose, then increase counter in the statistics table
+        if (bearKill) 
+            StatisticsTableManager.instance.BearSuccessfulHuntsCount++;
+
+        base.OnDeath();
     }
 
     Vector2Int DecideFoodTargetChunk()

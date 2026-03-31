@@ -138,6 +138,9 @@ public class WolfBehaviour : AnimalBehaviour
 
         base.Update();
 
+        if (isDead)
+            return;
+
         // Update animation based on movement
         anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f); // "isWalking" är en bool i animator
         anim.SetBool("isRunning", agent.velocity.magnitude > 3f); // "isRunning" är en bool i animator
@@ -236,6 +239,7 @@ public class WolfBehaviour : AnimalBehaviour
         if (closestPrey != null)
         {
             preyTarget = closestPrey;
+            StatisticsTableManager.instance.WolfhuntAttemptsCount++;
 
             MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
             if (moose != null)
@@ -341,8 +345,9 @@ public class WolfBehaviour : AnimalBehaviour
 
     public void OnBeingHunted(GameObject predator)
     {
-        if(CurrentState == State.Hunt)
+        if(CurrentState == State.Hunt) // Lose prey if being hunted by a bear
         {
+            StatisticsTableManager.instance.BearInterferenceCount++;
             LostPrey();
         }
         enemy = predator;
@@ -459,7 +464,7 @@ public class WolfBehaviour : AnimalBehaviour
 
     void LostPrey()
     {
-        //StopAttack(); // Stop attacking if the prey is lost
+        StatisticsTableManager.instance.WolfhuntFailuresCount++;
 
         if (preyTarget != null)
         {
@@ -513,6 +518,7 @@ public class WolfBehaviour : AnimalBehaviour
 
                 if (carcass.IsEmpty)
                 {
+                    Destroy(foodTarget.transform.root.gameObject);
                     foodTarget = null;
                     ChangeState(State.Wander);
                     return;
@@ -559,7 +565,7 @@ public class WolfBehaviour : AnimalBehaviour
 
     public void notifyDeath()
     {
-        pendingCarcass = preyTarget;
+        pendingCarcass = preyTarget.transform.root.gameObject;
         preyTarget = null;
         agent.isStopped = true;
         waitingForDeathAnimation = true;

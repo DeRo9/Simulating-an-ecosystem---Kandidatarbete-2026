@@ -69,6 +69,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
     // Checks if the moose has reached its destination
     protected bool hasArrived()
     {
+        if(!agent.enabled) return false;
         return !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance;
     }
 
@@ -76,6 +77,10 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected void ChangeState(State newState)
     {
         CurrentState = newState;
+
+        if (!agent.enabled) // If the animal is dead
+            return;
+
         agent.ResetPath();
 
         switch (CurrentState)
@@ -234,6 +239,9 @@ public abstract class AnimalBehaviour : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
+        agent.isStopped = true;
+        agent.enabled = false;
+
         if(animal.species == Species.moose)
         {
             OnPreyDeath?.Invoke();   
@@ -261,7 +269,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         }
         
         ChangeState(State.Dead);
-        agent.isStopped = true;
+
     }
     protected virtual bool IsHungry() 
     {

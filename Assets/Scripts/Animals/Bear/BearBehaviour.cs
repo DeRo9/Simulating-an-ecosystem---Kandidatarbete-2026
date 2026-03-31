@@ -51,6 +51,9 @@ public class BearBehaviour : AnimalBehaviour
     {
         base.Update();
 
+        if (isDead)
+            return;
+
         // Update animation based on movement
         anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude <= 3.2f); // "isWalking" är en bool i animator
         anim.SetBool("isRunning", agent.velocity.magnitude > 3.5f); // "isRunning" är en bool i animator
@@ -185,6 +188,7 @@ public class BearBehaviour : AnimalBehaviour
         if (closestPrey != null)
         {
             preyTarget = closestPrey;
+            StatisticsTableManager.instance.BearhuntAttemptsCount++;
 
             MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
             if (moose != null)
@@ -324,7 +328,7 @@ public class BearBehaviour : AnimalBehaviour
 
     void LostPrey()
     {
-        //StopAttack(); // Stop attacking if the prey is lost
+        StatisticsTableManager.instance.BearhuntFailuresCount++;
 
         if (preyTarget != null)
         {
