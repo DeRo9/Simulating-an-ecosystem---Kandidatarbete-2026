@@ -403,13 +403,12 @@ public class BearBehaviour : AnimalBehaviour
 
                 if (carcass.IsEmpty)
                 {
-                    Destroy(foodTarget.transform.root.gameObject);
                     foodTarget = null;
                     ChangeState(State.Wander);
                     return;
                 }
             }
-            else
+            else if(foodTarget.CompareTag("Plant"))
             {
                 needs.Eat(100);
                 Destroy(foodTarget);
@@ -434,7 +433,9 @@ public class BearBehaviour : AnimalBehaviour
 
     public void notifyDeath()
     {
-        pendingCarcass = preyTarget.transform.root.gameObject;
+        if (preyTarget == null) return;
+
+        pendingCarcass = preyTarget.GetComponentInParent<AnimalBehaviour>().gameObject;
         preyTarget = null;
         agent.isStopped = true;
         waitingForDeathAnimation = true;
@@ -493,16 +494,15 @@ public class BearBehaviour : AnimalBehaviour
 
     GameObject GetCarcassRoot(GameObject obj)
     {
-        Transform t = obj.transform;
-        while (t != null)
+        Carcass carcass = obj.GetComponentInParent<Carcass>();
+
+        if (carcass != null)
         {
-            if (t.CompareTag("carcass"))
-            {
-                return t.gameObject;
-            }
-            t = t.parent;
+            return carcass.gameObject;
         }
+
         return obj;
+
     }
 
 

@@ -385,6 +385,7 @@ public class WolfBehaviour : AnimalBehaviour
         if (moose != null && moose.isDead)
         {
             notifyDeath();
+            return;
         }
 
         if (preyTarget != null)
@@ -464,6 +465,8 @@ public class WolfBehaviour : AnimalBehaviour
 
     void LostPrey()
     {
+        if (preyTarget == null) return;
+
         StatisticsTableManager.instance.WolfhuntFailuresCount++;
 
         if (preyTarget != null)
@@ -518,7 +521,6 @@ public class WolfBehaviour : AnimalBehaviour
 
                 if (carcass.IsEmpty)
                 {
-                    Destroy(foodTarget.transform.root.gameObject);
                     foodTarget = null;
                     ChangeState(State.Wander);
                     return;
@@ -526,8 +528,6 @@ public class WolfBehaviour : AnimalBehaviour
             }
             else
             {
-                needs.Eat(100);
-                Destroy(foodTarget);
                 foodTarget = null;
                 ChangeState(State.Wander);
                 return;
@@ -565,7 +565,9 @@ public class WolfBehaviour : AnimalBehaviour
 
     public void notifyDeath()
     {
-        pendingCarcass = preyTarget.transform.root.gameObject;
+        if (preyTarget == null) return;
+
+        pendingCarcass = preyTarget.GetComponentInParent<AnimalBehaviour>().gameObject;
         preyTarget = null;
         agent.isStopped = true;
         waitingForDeathAnimation = true;
@@ -624,16 +626,15 @@ public class WolfBehaviour : AnimalBehaviour
 
     GameObject GetCarcassRoot(GameObject obj)
     {
-        Transform t = obj.transform;
-        while(t != null)
+        Carcass carcass = obj.GetComponentInParent<Carcass>();
+
+        if(carcass != null)
         {
-            if (t.CompareTag("carcass"))
-            {
-                return t.gameObject;
-            }
-            t = t.parent;
+            return carcass.gameObject;
         }
+
         return obj;
+
     }
 
 }
