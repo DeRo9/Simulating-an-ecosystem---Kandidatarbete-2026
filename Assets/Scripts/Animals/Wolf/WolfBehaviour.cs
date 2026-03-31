@@ -532,7 +532,7 @@ public class WolfBehaviour : AnimalBehaviour
                 ChangeState(State.Wander);
                 return;
             }
-        }
+        } 
 
         if (!needs.isHungry)
         {
