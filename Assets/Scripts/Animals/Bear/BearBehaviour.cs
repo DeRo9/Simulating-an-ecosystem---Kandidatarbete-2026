@@ -45,7 +45,7 @@ public class BearBehaviour : AnimalBehaviour
         base.Start();
         hearing = GetComponent<BearHearing>();
         fov = GetComponent<BearFOV>();
-        memory = GetComponent<BearMemory>();
+        memory = GetComponent<AnimalMemory>();
     }
 
     protected override void Update()
@@ -94,6 +94,21 @@ public class BearBehaviour : AnimalBehaviour
                     ChangeState(State.Eat);
                 else if (FindFood())
                     ChangeState(State.Eat);
+                else
+                {
+                    Vector2Int bestChunk = DecideFoodTargetChunk();
+                    if (bestChunk.x != -1)
+                    {
+                        Debug.Log("Bear heading to remembered food area");
+                        agent.SetDestination(memory.GetRandomPointInChunk(bestChunk));
+                        ChangeState(State.Wander);
+                    }
+                    else
+                    {
+                        Debug.Log("Bear has no food memory, wandering randomly");
+                        ChangeState(State.Wander);
+                    }
+                }
             }
         }
 
@@ -131,7 +146,7 @@ public class BearBehaviour : AnimalBehaviour
         if (closestFood != null)
         {
             foodTarget = closestFood;
-            memory = RememberFood(closestFood.transform.position);
+            memory.RememberFood(closestFood.transform.position);
             return true;
         }
 

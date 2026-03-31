@@ -33,6 +33,7 @@ public class AnimalMemory : MonoBehaviour
     // Example, foodMemory[2,1] = 5f means chunk (2,1) is remembered to have food (5)
     float[,] foodMemory; 
     float[,] dangerMemory;
+    float[,] preyMemory;
 
 
     int gridSizeX;
@@ -44,7 +45,7 @@ public class AnimalMemory : MonoBehaviour
     Vector3 terrainOrigin;
     Vector3 terrainSize;
 
-    void Start()
+    protected virtual void Start()
     {
         // Get current terrain
         Terrain terrain = Terrain.activeTerrain;
@@ -62,7 +63,7 @@ public class AnimalMemory : MonoBehaviour
         dangerMemory = new float[gridSizeX, gridSizeZ];
     }
 
-    void Update()
+    protected virtual void Update()
     {
         // Go through all chunks
         for(int x = 0; x < gridSizeX; x++)
@@ -121,7 +122,11 @@ public class AnimalMemory : MonoBehaviour
         dangerMemory[chunkpos.x,chunkpos.y] += 7f;  // Danger is remembered longer than food
     }
 
-
+    public void RememberPrey (Vector3 pos)
+    {
+        var chunkpos = GetChunk(pos);
+        preyMemory[chunkpos.x, chunkpos.y] += 5f;
+    }
     // Returns best food chunk
     public Vector2Int GetBestFoodChunk()
     {
@@ -141,6 +146,21 @@ public class AnimalMemory : MonoBehaviour
         }   
 
         return bestChunk;
+    }
+
+    void GetBestPreyChunk()
+    {
+        float bestvalue = 0f;
+        Vector2Int bestchunk = new Vector2Int(-1, -1);
+        for (int x = 0; x < gridSizeX; x++)
+        for (int z = 0;z < gridSizeZ; z++)
+            {
+                if (preyMemory[x, z] > bestvalue)
+                {
+                    bestvalue = preyMemory[x, z];
+                    bestchunk = new Vector2Int(x, z);
+                }
+            }
     }
 
 
@@ -177,6 +197,10 @@ public class AnimalMemory : MonoBehaviour
         return dangerMemory[x, z];
     }
 
+    public float GetPreyValue(int x, int z)
+    {
+        return preyMemory[x, z];
+    }
     public int GetGridSizeX() => gridSizeX;
     public int GetGridSizeZ() => gridSizeZ;
 
