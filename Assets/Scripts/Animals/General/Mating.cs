@@ -26,7 +26,7 @@ public class Mating : MonoBehaviour
 
     [Header("Pregnancy")]
     public bool usePregnancySystem = true;
-    public float gestationDuration = 50f;
+    public float gestationDuration = 30f;
     public float pregnancyHungerDrainPerSecond = 0.35f;
     public float pregnancyThirstDrainPerSecond = 0.45f;
     public float pregnancyStaminaDrainPerSecond = 0.25f;
@@ -138,7 +138,8 @@ public class Mating : MonoBehaviour
         Mating motherMating = animal.IsMale ? partnerMating : this;
         Animal fatherAnimal = animal.IsMale ? animal : partnerAnimal;
 
-        if (usePregnancySystem)
+        // Always use the mother's pregnancy settings for gestation behavior.
+        if (motherMating.usePregnancySystem)
         {
             if (!motherMating.TryStartPregnancy(fatherAnimal))
                 return;
