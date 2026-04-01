@@ -24,6 +24,7 @@ public class BearBehaviour : AnimalBehaviour
     float foodSearchingCooldown;
 
     float deathWaitTimer = 0f;
+    float memoryDecisionCooldown = 0f;
     float deathWaitDuration = 2f; // Timer to wait before eating, otherwise the moose will instantly be eaten (Not leting the animation finish).
     bool waitingForDeathAnimation = false;
 
@@ -80,7 +81,7 @@ public class BearBehaviour : AnimalBehaviour
         }
         if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt && CurrentState != State.Fleeing)
         {
-
+            memoryDecisionCooldown -= Time.deltaTime;
             // If the bear is more thirsty than hungry, switch to drink state, if more hungry than thirsty, switch to eat state
             if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
             {
@@ -93,12 +94,39 @@ public class BearBehaviour : AnimalBehaviour
 
             if (IsHungry() && huntCooldownTimer <= 0 && !needs.isTired)
             {
+                
                 if (FindPrey())
                     ChangeState(State.Hunt);
                 else if (FindCarcass())
                     ChangeState(State.Eat);
                 else if (FindFood())
                     ChangeState(State.Eat);
+                else if (memoryDecisionCooldown <=0)
+                {
+                    memoryDecisionCooldown = 2f;
+
+                    if (UnityEngine.Random.value < 0.2f)
+                    {
+                        Debug.Log("Bear explores instead of using memory");
+                        ChangeState(State.Wander);
+                        return;
+                    }
+
+                    Vector2Int bestChunk = DecideFoodTargetChunk();
+                    if (bestChunk.x != -1)
+                    {
+                        if (agent.isOnNavMesh)
+                        {
+                            agent.SetDestination(memory.GetRandomPointInChunk(bestChunk));
+                            ChangeState(State.Wander);
+                        }
+                        Debug.Log("Bear heading to remembered food area");
+                    }
+                    else
+                    {
+                        ChangeState(State.Wander);
+                    }
+                }
             }
         }
 
@@ -135,6 +163,10 @@ public class BearBehaviour : AnimalBehaviour
 
         if (closestFood != null)
         {
+            if (memory != null)
+            {
+                memory.RememberFood(closestFood.transform.position);
+            }
             foodTarget = closestFood;
             return true;
         }
@@ -191,6 +223,10 @@ public class BearBehaviour : AnimalBehaviour
         if (closestPrey != null)
         {
             preyTarget = closestPrey;
+            if (memory != null)
+            {
+                memory.RememberPrey(closestPrey.transform.position);
+            }
             StatisticsTableManager.instance.BearhuntAttemptsCount++;
 
             MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
@@ -200,7 +236,7 @@ public class BearBehaviour : AnimalBehaviour
             }
 
             WolfBehaviour wolf = preyTarget.GetComponentInParent<WolfBehaviour>();
-            if(wolf != null)
+            if (wolf != null)
             {
                 wolf.OnBeingHunted(gameObject); // Notify the wolf that it is being hunted
             }
@@ -411,7 +447,7 @@ public class BearBehaviour : AnimalBehaviour
                     return;
                 }
             }
-            else if(foodTarget.CompareTag("Plant"))
+            else if (foodTarget.CompareTag("Plant"))
             {
                 needs.Eat(100);
                 Destroy(foodTarget);
@@ -489,6 +525,10 @@ public class BearBehaviour : AnimalBehaviour
         if (closestFood != null)
         {
             foodTarget = closestFood;
+            if (memory != null)
+            {
+                memory.RememberFood(closestFood.transform.position);
+            }
             return true;
         }
 
@@ -506,6 +546,57 @@ public class BearBehaviour : AnimalBehaviour
 
         return obj;
 
+    }
+
+    Vector2Int DecideFoodTargetChunk()
+    {
+        // 0 = full, 1 = starving
+        float hunger = 1f - needs.howHungryInPercent;
+
+        Vector2Int bestChunk = new Vector2Int(-1, -1);
+
+        float bestScore = float.MinValue;
+
+        // World pos to chunk
+        Vector2Int currentChunk = memory.GetChunk(transform.position);
+
+        // Hunger affects risk tolerance
+        float dangerWeight = Mathf.Lerp(3f, 0.3f, hunger);
+        float preyWeight = Mathf.Lerp(0.5f, 0.3f, hunger);
+
+        for (int x = 0; x < memory.GetGridSizeX(); x++)
+        {
+            for (int z = 0; z < memory.GetGridSizeZ(); z++)
+            {
+                float food = memory.GetFoodValue(x, z);
+                float prey = memory.GetPreyValue(x, z);
+                float danger = memory.GetDangerValue(x, z);
+
+
+                // Skip empty memory?
+                if (food <= 0f && prey <= 0f)
+                    continue;
+
+                float distance = Vector2.Distance(
+                    new Vector2(x, z),
+                    new Vector2(currentChunk.x, currentChunk.y)
+                );
+
+                float reward = food + (prey * preyWeight);
+                float risk = danger * dangerWeight;
+                float effort = distance * 0.3f;
+
+                float score = reward - risk - effort;
+
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    bestChunk = new Vector2Int(x, z);
+                }
+            }
+        }
+
+        return bestChunk;
     }
 
 
