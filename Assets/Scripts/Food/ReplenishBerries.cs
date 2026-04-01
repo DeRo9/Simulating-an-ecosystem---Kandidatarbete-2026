@@ -20,10 +20,17 @@ public class ReplenishBerries : MonoBehaviour
     {
         if (SeasonManager.Instance.IsWinter)
         {
-            respawnDelay *= 2;
+            respawnDelay *= 5f;
+        }
+        else if (SeasonManager.Instance.IsRaining)
+        {
+            respawnDelay *= 0.7f;
         }
         
         yield return new WaitForSeconds(respawnDelay);
-        Instantiate(berryBunchPrefab, transform.position, Quaternion.identity, transform);
+        if (!SeasonManager.Instance.IsSnowing)
+        {
+            Instantiate(berryBunchPrefab, transform.position, Quaternion.identity, transform);
+        }
     }
 }

@@ -50,15 +50,26 @@ public class AnimalNeeds : MonoBehaviour
     {
         if (isDead) return; 
 
-        hungerLevel -= hungerDecreaseRate * Time.deltaTime; 
-        hungerLevel = Mathf.Clamp(hungerLevel, 0f, maxHunger);
-
-        if (!SeasonManager.Instance.isRaining)
+        float hungerMultiplier = 1f;
+        if (SeasonManager.Instance.IsWinter)
         {
-            thirstLevel -= thirstDecreaseRate * Time.deltaTime;
+            hungerMultiplier = 1.5f;
         }
 
-        thirstLevel = Mathf.Clamp(thirstLevel, 0f, maxThirst);
+        hungerLevel -= hungerDecreaseRate * Time.deltaTime * hungerMultiplier;
+        hungerLevel = Mathf.Clamp(hungerLevel, 0f, maxHunger);
+
+
+        float thirstMultiplier = 1f;
+
+        if (SeasonManager.Instance.IsSummer)
+        {
+            thirstMultiplier = 1.5f;
+        }
+        if (SeasonManager.Instance.IsRaining)
+        {
+            thirstMultiplier = 0.5f;
+        }
 
         survivalDamage();
 
@@ -71,6 +82,11 @@ public class AnimalNeeds : MonoBehaviour
         {
             noMoreStamina = false;
         }
+
+        thirstLevel -= thirstDecreaseRate * Time.deltaTime * thirstMultiplier;
+        thirstLevel = Mathf.Clamp(thirstLevel, 0f, maxThirst);
+
+
     }
 
     private void survivalDamage()
@@ -78,6 +94,13 @@ public class AnimalNeeds : MonoBehaviour
         if(IsStarving || IsDehydrated)
         {
             healthLevel -= 0.5f * Time.deltaTime;
+            healthLevel = Mathf.Clamp(healthLevel, 0f, maxHealth);
+
+        }
+
+        if ((IsStarving || IsDehydrated) && SeasonManager.Instance.IsWinter)
+        {
+            healthLevel -= 1f * Time.deltaTime;
             healthLevel = Mathf.Clamp(healthLevel, 0f, maxHealth);
         }
         
@@ -109,7 +132,14 @@ public class AnimalNeeds : MonoBehaviour
 
     public void DrainStamina()
     {
-        staminaLevel -= staminaDecreaseRate * Time.deltaTime;
+
+        float staminaMultiplier = 1f;
+        if (SeasonManager.Instance.IsSnowing)
+        {
+            staminaMultiplier = 1.5f;
+        }
+        
+        staminaLevel -= staminaDecreaseRate * Time.deltaTime * staminaMultiplier;
         staminaLevel = Mathf.Clamp(staminaLevel, 0f, maxStamina);
     }
 
