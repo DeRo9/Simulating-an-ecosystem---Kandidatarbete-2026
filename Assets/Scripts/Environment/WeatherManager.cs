@@ -15,10 +15,6 @@ public class WeatherManager : MonoBehaviour
 
     public GameObject snowing;
 
-    [Header("Terrain")]
-    public Terrain terrain;
-    public TerrainLayer grassLayer;
-    public TerrainLayer snowLayer;
 
     private void Start()
     {
@@ -59,20 +55,6 @@ public class WeatherManager : MonoBehaviour
             RenderSettings.skybox.SetFloat("_Exposure", 1f);
             RenderSettings.skybox.SetColor("_Tint", Color.white);
             RenderSettings.fogDensity = 0.01f;
-        }
-
-        SetTerrainLayer(snowing.activeSelf);
-    }
-
-    private void SetTerrainLayer(bool snow)
-    {
-        if (snow)
-        {
-            terrain.terrainData.terrainLayers = new TerrainLayer[] { snowLayer };
-        }
-        else
-        {
-            terrain.terrainData.terrainLayers = new TerrainLayer[] { grassLayer };
         }
     }
 }

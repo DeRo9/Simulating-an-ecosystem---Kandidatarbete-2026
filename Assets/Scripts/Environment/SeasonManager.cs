@@ -18,8 +18,14 @@ public class SeasonManager : MonoBehaviour
     public bool IsSummer => currentSeason == Season.summer;
     public bool IsWinter => currentSeason == Season.winter;
 
-    public bool isRaining => percipitation && currentSeason == Season.summer;
-    public bool isSnowing => percipitation && currentSeason == Season.winter;
+    public bool IsRaining => percipitation && currentSeason == Season.summer;
+    public bool IsSnowing => percipitation && currentSeason == Season.winter;
+
+
+    [Header("Terrain")]
+    public Terrain terrain;
+    public TerrainLayer grassLayer;
+    public TerrainLayer snowLayer;
 
     private void Awake()
     {
@@ -44,6 +50,8 @@ public class SeasonManager : MonoBehaviour
         if (isOn)
         {
             currentSeason = Season.summer;
+            SetTerrainLayer();
+
         }
     }
 
@@ -52,6 +60,8 @@ public class SeasonManager : MonoBehaviour
         if (isOn)
         {
             currentSeason = Season.winter;
+            SetTerrainLayer();
+
         }
     }
 
@@ -73,6 +83,18 @@ public class SeasonManager : MonoBehaviour
         else if (currentSeason == Season.winter)
         {
             weatherManager.ChangeWeather(WeatherManager.Weather.snowy);
+        }
+    }
+
+    private void SetTerrainLayer()
+    {
+        if (currentSeason == Season.winter)
+        {
+            terrain.terrainData.terrainLayers = new TerrainLayer[] { snowLayer };
+        }
+        else
+        {
+            terrain.terrainData.terrainLayers = new TerrainLayer[] { grassLayer };
         }
     }
 }

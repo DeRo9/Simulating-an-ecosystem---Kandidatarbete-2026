@@ -69,6 +69,9 @@ public class Mating : MonoBehaviour
         if (!HasEnoughNeeds(needs))
             return;
 
+        if (SeasonManager.Instance.IsWinter && (animal.species == Species.bear || animal.species == Species.moose))
+            return;
+
         TryFindMate();
     }
 

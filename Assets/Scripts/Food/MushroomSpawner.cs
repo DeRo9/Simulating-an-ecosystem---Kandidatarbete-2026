@@ -35,7 +35,11 @@ public class MushroomSpawner : MonoBehaviour
         
         if (SeasonManager.Instance.IsWinter)
         {
-            maxMushrooms = mushroomMaxInitialization / 6;
+            maxMushrooms = mushroomMaxInitialization / 20;
+        }
+        else if (SeasonManager.Instance.IsSummer)
+        {
+            maxMushrooms = mushroomMaxInitialization;
         }
 
         int initialAmount = Mathf.Min(maxMushrooms / 2, mushroomMapLimit);
@@ -63,6 +67,17 @@ public class MushroomSpawner : MonoBehaviour
     {
         mushrooms.RemoveAll(item => item == null);
         List<GameObject> current = new List<GameObject>(mushrooms);
+
+        float baseChance;
+
+        if (SeasonManager.Instance.IsWinter)
+        {
+            baseChance = 0.05f;
+        }
+        else if (SeasonManager.Instance.IsSummer)
+            baseChance = 0.6f;
+        else if (SeasonManager.Instance.IsRaining)
+            baseChance = 0.8f;
 
         foreach (GameObject mushroom in current)
         {
