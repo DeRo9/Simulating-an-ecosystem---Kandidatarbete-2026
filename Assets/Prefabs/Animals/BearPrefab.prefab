@@ -1688,6 +1688,11 @@ MonoBehaviour:
   hungerCostOnMating: 6
   thirstCostOnMating: 5
   staminaCostOnMating: 10
+  usePregnancySystem: 1
+  gestationDuration: 30
+  pregnancyHungerDrainPerSecond: 0.35
+  pregnancyThirstDrainPerSecond: 0.45
+  pregnancyStaminaDrainPerSecond: 0.25
 --- !u!114 &-6116638918593094840
 MonoBehaviour:
   m_ObjectHideFlags: 0
