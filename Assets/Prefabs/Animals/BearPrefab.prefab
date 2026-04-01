@@ -1619,13 +1619,13 @@ MonoBehaviour:
   huntCooldownTimer: 0
   foodLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1024
   carcassLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   PreyLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 320
 --- !u!114 &5642719112376538877
 MonoBehaviour:
   m_ObjectHideFlags: 0

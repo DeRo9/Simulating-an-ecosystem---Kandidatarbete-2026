@@ -5,7 +5,7 @@ public class BearBehaviour : AnimalBehaviour
 {
     GameObject foodTarget;
     BearHearing hearing;
-    BearFOV fov;
+    AnimalFOV fov;
     GameObject preyTarget;
     public GameObject CurrentTarget => preyTarget;
     float attackRange = 3.5f; // Range within which the wolf can attack prey
@@ -44,7 +44,7 @@ public class BearBehaviour : AnimalBehaviour
     {
         base.Start();
         hearing = GetComponent<BearHearing>();
-        fov = GetComponent<BearFOV>();
+        fov = GetComponent<AnimalFOV>();
     }
 
     protected override void Update()
@@ -78,7 +78,7 @@ public class BearBehaviour : AnimalBehaviour
         {
             Debug.Log("Bear heard: " + hearing.HeardAnimal.name);
         }
-        if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt)
+        if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt && CurrentState != State.Fleeing)
         {
 
             // If the bear is more thirsty than hungry, switch to drink state, if more hungry than thirsty, switch to eat state
@@ -407,12 +407,11 @@ public class BearBehaviour : AnimalBehaviour
                 if (carcass.IsEmpty)
                 {
                     foodTarget = null;
-                    Debug.Log("Bear finished carcass.");
                     ChangeState(State.Wander);
                     return;
                 }
             }
-            else
+            else if(foodTarget.CompareTag("Plant"))
             {
                 needs.Eat(100);
                 Destroy(foodTarget);
@@ -422,10 +421,6 @@ public class BearBehaviour : AnimalBehaviour
                 return;
             }
         }
-        else
-        {
-            agent.isStopped = false;
-        }
 
         // If the Bear is no longer hungry, stop eating and switch back to wandering
         if (!needs.isHungry)
@@ -433,11 +428,17 @@ public class BearBehaviour : AnimalBehaviour
             foodTarget = null;
             ChangeState(State.Wander);
         }
+        else
+        {
+            agent.isStopped = false;
+        }
     }
 
     public void notifyDeath()
     {
-        pendingCarcass = preyTarget;
+        if (preyTarget == null) return;
+
+        pendingCarcass = preyTarget.GetComponentInParent<AnimalBehaviour>().gameObject;
         preyTarget = null;
         agent.isStopped = true;
         waitingForDeathAnimation = true;
@@ -470,14 +471,15 @@ public class BearBehaviour : AnimalBehaviour
                 continue; // Skip if not in FOV
             }
 
-            Debug.Log("Bear found carcass.");
+
             if (hit.CompareTag("carcass"))
             {
+                Debug.Log("Bear found carcass.");
                 float distance = Vector3.Distance(transform.position, hit.transform.position);
                 if (distance < closestDistance)
                 {
                     closestDistance = distance;
-                    closestFood = hit.gameObject;
+                    closestFood = GetCarcassRoot(hit.gameObject);
                 }
 
             }
@@ -492,6 +494,20 @@ public class BearBehaviour : AnimalBehaviour
 
         return false;
     }
+
+    GameObject GetCarcassRoot(GameObject obj)
+    {
+        Carcass carcass = obj.GetComponentInParent<Carcass>();
+
+        if (carcass != null)
+        {
+            return carcass.gameObject;
+        }
+
+        return obj;
+
+    }
+
 
 }
 

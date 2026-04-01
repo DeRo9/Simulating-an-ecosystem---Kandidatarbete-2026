@@ -57,16 +57,11 @@ public class GameManager : MonoBehaviour
     public float spawnRadius = 1000f;
 
     [Header("Weather")]
-    public GameObject raining;
-    public Toggle rainToggle;
-
-    public GameObject snowing;
-    public Toggle snowToggle;
-
-    [Header("Terrain")]
-    public Terrain terrain;
-    public TerrainLayer grassLayer;
-    public TerrainLayer snowLayer;
+    
+    [Header("Season")]
+    public Toggle summerToggle;
+    public Toggle winterToggle;
+    public Toggle percipitationToggle; // set >0 for precipitation active (rain/snow based on season)
 
     private void Start()
     {
@@ -76,7 +71,8 @@ public class GameManager : MonoBehaviour
         simulationUI.gameObject.SetActive(false);
         RenderSettings.skybox.SetFloat("_Exposure", 1f);
         RenderSettings.skybox.SetColor("_Tint", Color.white);
-        terrain.terrainData.terrainLayers = new TerrainLayer[] {grassLayer};
+        summerToggle.isOn = true;
+
     }
 
     public float recordInterval = 5f;
@@ -106,6 +102,8 @@ public class GameManager : MonoBehaviour
 
     public void StartSimulation()
     {
+        if(StatisticsTableManager.instance != null) StatisticsTableManager.instance.ResetStats();
+
         cameraMovement.enabled = true;
 
         SpawnAnimals(moosePrefab, mooseSetup, herbivoresFolder);
@@ -180,15 +178,6 @@ public class GameManager : MonoBehaviour
     {
         simulationRunning = false;
 
-        /*SimulationResults.initialBearsAmount = bearSetup.amount;
-        SimulationResults.finalBearsAmount = omnivoreFolder.childCount;
-
-        SimulationResults.initialWolvesAmount = wolfSetup.amount;
-        SimulationResults.finalWolvesAmount = carnivoreFolder.childCount;
-
-        SimulationResults.initialMooseAmount = mooseSetup.amount;
-        SimulationResults.finalMooseAmount = herbivoresFolder.childCount;*/
-
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
@@ -217,50 +206,18 @@ public class GameManager : MonoBehaviour
         return simulationRunning;
     }
 
-    public void toggleRain()
+    public void toggleSummer()
     {
-        if (snowing.activeSelf)
-        {
-            snowToggle.isOn = false;
-            snowing.SetActive(false);
-            RenderSettings.skybox.SetFloat("_Exposure", 1f);
-            RenderSettings.skybox.SetColor("_Tint", Color.white);
-            RenderSettings.fogDensity = 0.01f;
-        }
-        raining.SetActive(!raining.activeSelf);
-        RenderSettings.skybox.SetFloat("_Exposure", raining.activeSelf ? 0.5f : 1f);
-        RenderSettings.skybox.SetColor("_Tint", raining.activeSelf ? new Color(0.48f, 0.49f, 0.54f) : Color.white);
-        RenderSettings.fogDensity = raining.activeSelf ? 0.02f : 0.01f;
-        SetTerrainLayer(snowing.activeSelf);
+        SeasonManager.Instance.SetSummer(summerToggle.isOn);
     }
 
-    public void toggleSnow()
+    public void toggleWinter()
     {
-        if (raining.activeSelf)
-        {
-            rainToggle.isOn = false;
-            raining.SetActive(false);
-            RenderSettings.skybox.SetFloat("_Exposure", 1f);
-            RenderSettings.skybox.SetColor("_Tint", Color.white);
-            RenderSettings.fogDensity = 0.01f;
-        }
-        snowing.SetActive(!snowing.activeSelf);
-        RenderSettings.skybox.SetFloat("_Exposure", snowing.activeSelf ? 0.8f : 1f);
-        RenderSettings.skybox.SetColor("_Tint", snowing.activeSelf ? new Color(0.75f, 0.78f, 0.85f) : Color.white);
-        RenderSettings.fogDensity = snowing.activeSelf ? 0.015f : 0.01f;
-        SetTerrainLayer(snowing.activeSelf);
-
+        SeasonManager.Instance.SetWinter(winterToggle.isOn);
     }
 
-    void SetTerrainLayer(bool snow)
-{
-    if (snow)
+    public void togglePrecipitation()
     {
-        terrain.terrainData.terrainLayers = new TerrainLayer[] { snowLayer };
+        SeasonManager.Instance.SetPercipitation(percipitationToggle.isOn);
     }
-    else
-    {
-        terrain.terrainData.terrainLayers = new TerrainLayer[] { grassLayer };
-    }
-}
 }

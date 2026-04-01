@@ -13,7 +13,7 @@ public class MushroomSpawner : MonoBehaviour
 
     [SerializeField] private float SpawnRadius = 100f;
     [SerializeField] private float reproduceRadius = 10f;
-    [SerializeField] private float timeInterval = 8760f; // 1 second = 1 hour
+    [SerializeField] private float timeInterval = 10f; // 1 second = 1 hour
 
     private float timer;
     private bool isSimulationRunning = false;
@@ -32,7 +32,12 @@ public class MushroomSpawner : MonoBehaviour
     {
         isSimulationRunning = true;
 
-        // Spawn half initially, then let reproduction handle growth.
+        
+        if (SeasonManager.Instance.IsWinter)
+        {
+            maxMushrooms = mushroomMaxInitialization / 6;
+        }
+
         int initialAmount = Mathf.Min(maxMushrooms / 2, mushroomMapLimit);
         for (int i = 0; i < initialAmount; i++)
         {

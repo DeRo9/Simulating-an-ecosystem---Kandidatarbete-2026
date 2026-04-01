@@ -32,7 +32,7 @@ public class Carcass : MonoBehaviour
 
         if (remainingFeeds <= 0)
         {
-            Destroy(transform.root.gameObject);
+            Destroy(gameObject);
         }
 
         return nutrition;
