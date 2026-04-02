@@ -366,6 +366,8 @@ MonoBehaviour:
   berryBushPrefab: {fileID: 8586240158754271358, guid: c3040d7ed5a212f45a05efa69587ba80, type: 3}
   simulationLengthSlider: {fileID: 1872523684}
   simulationTimeText: {fileID: 725938547}
+  useFixedSeed: 0
+  simulationSeed: 12345
   informationUI: {fileID: 2108928193}
   simulationUI: {fileID: 1646297639}
   spawnRadius: 100

@@ -8,7 +8,7 @@ public class WolfBehaviour : AnimalBehaviour
 
     AnimalFOV fov;
     WolfHearing hearing;
-    float huntCooldown = 5f; // Time the wolf must wait after giving up on a hunt before it can hunt again
+    float huntCooldown = 6f; // Time the wolf must wait after giving up on a hunt before it can hunt again
     [Header("Hunting")]
     [SerializeField]
     float huntCooldownTimer = 0;
@@ -116,7 +116,12 @@ public class WolfBehaviour : AnimalBehaviour
             if (member != wolf) //Does not create this force upon itself
             {
                 float distance = Vector3.Distance(transform.position, member.transform.position);
-                if (distance < 2f)
+
+                if (distance < 2f && SeasonManager.Instance.IsSummer)
+                {
+                    separation += (transform.position - member.transform.position).normalized / distance;
+                }
+                else if (distance < 1f && SeasonManager.Instance.IsWinter)
                 {
                     separation += (transform.position - member.transform.position).normalized / distance;
                 }
@@ -137,6 +142,11 @@ public class WolfBehaviour : AnimalBehaviour
                 FollowLeader();
                 return; // Only return if we are actually in "follow mode"
             }
+        }
+
+        if (SeasonManager.Instance.IsWinter)
+        {
+            huntCooldown = huntCooldown * 0.5f;
         }
 
         base.Update();
@@ -692,6 +702,7 @@ public class WolfBehaviour : AnimalBehaviour
         float bestScore = float.MinValue;
         Vector2Int currentChunk = memory.GetChunk(transform.position);
 
+        float winterModifier = SeasonManager.Instance.IsWinter ? 0.5f : 1f; 
         float dangerWeight = Mathf.Lerp(3f, 0.3f, hunger);
 
         for (int x = 0; x < memory.GetGridSizeX(); x++)

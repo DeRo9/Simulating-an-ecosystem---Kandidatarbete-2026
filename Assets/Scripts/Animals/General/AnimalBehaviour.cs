@@ -17,6 +17,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         Hunt, // For animals that hunt, wolves and bears
         Fleeing, // For animals that flee (moose)
         Pregnant,
+        Hibernate,
         Dead,
     }
 
@@ -110,6 +111,9 @@ public abstract class AnimalBehaviour : MonoBehaviour
             case State.Pregnant:
                 PregnantState();
                 break;
+            case State.Hibernate:
+                HibernationState();
+                break;
             case State.Dead:
                 // Do nothing
                 break;
@@ -189,6 +193,9 @@ public abstract class AnimalBehaviour : MonoBehaviour
                 break;
             case State.Pregnant:
                 UpdatePregnant();
+                break;
+            case State.Hibernate:
+                HibernationState();
                 break;
             case State.Dead:
                 // Do nothing i guess? 
@@ -351,6 +358,8 @@ public abstract class AnimalBehaviour : MonoBehaviour
         if (agent != null && agent.enabled)
             agent.isStopped = true;
     }
+
+    protected virtual void HibernationState() { return; }
     protected virtual void UpdatePregnant() { return; }
 
 }
