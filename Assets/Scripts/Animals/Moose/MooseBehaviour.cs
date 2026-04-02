@@ -418,7 +418,13 @@ public class MooseBehaviour : AnimalBehaviour
     Vector2Int currentChunk = memory.GetChunk(transform.position);
 
     // Hunger affects risk tolerance
+
     float dangerWeight = Mathf.Lerp(3f, 0.3f, hunger);
+
+    if (SeasonManager.Instance.IsWinter)
+    {
+        dangerWeight *= 1.5f;
+    }
 
     for (int x = 0; x < memory.GetGridSizeX(); x++)
     {

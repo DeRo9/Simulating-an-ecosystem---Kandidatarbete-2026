@@ -55,8 +55,24 @@ public class BearBehaviour : AnimalBehaviour
         if (isDead)
             return;
 
-        if (CurrentState == State.Pregnant)
+        // Check for hibernation
+        if (SeasonManager.Instance.IsWinter && CurrentState != State.Hibernate)
+        {
+            ChangeState(State.Hibernate);
+            needs.hibernationMultiplier = 0.1f;
             return;
+        }
+        else if (!SeasonManager.Instance.IsWinter && CurrentState == State.Hibernate)
+        {
+            needs.hibernationMultiplier = 1f;
+            anim.SetBool("isSleeping", false);
+            ChangeState(State.Wander);
+            return;
+        }
+
+        if (CurrentState == State.Pregnant || CurrentState == State.Hibernate)
+            return;
+
 
         // Update animation based on movement
         anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude <= 3.2f); // "isWalking" är en bool i animator
@@ -597,6 +613,14 @@ public class BearBehaviour : AnimalBehaviour
         }
 
         return bestChunk;
+    }
+
+    protected override void HibernationState()
+    {
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+        anim.SetBool("isSleeping", true);
+
     }
 
 
