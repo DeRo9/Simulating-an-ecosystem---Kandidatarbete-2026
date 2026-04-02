@@ -48,6 +48,13 @@ public class GameManager : MonoBehaviour
     private float timer;
     private static bool simulationRunning;
 
+    [Header("Reproducibility")]
+
+    // Option to use a fixed seed for reproducibility of results.
+    //  If false, a random seed will be used based on current time.
+    public bool useFixedSeed = false;
+    public int simulationSeed = 12345;
+
     [Header("information UI")]
     public InformationUI informationUI;
 
@@ -103,6 +110,11 @@ public class GameManager : MonoBehaviour
     public void StartSimulation()
     {
         if(StatisticsTableManager.instance != null) StatisticsTableManager.instance.ResetStats();
+
+        if (useFixedSeed)
+        {
+            UnityEngine.Random.InitState(simulationSeed);
+        }
 
         cameraMovement.enabled = true;
 

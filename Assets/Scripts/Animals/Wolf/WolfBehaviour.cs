@@ -25,6 +25,9 @@ public class WolfBehaviour : AnimalBehaviour
 
     float deathWaitTimer = 0f;
     float deathWaitDuration = 2f; // Timer to wait before eating, otherwise the moose will instantly be eaten (Not leting the animation finish).
+
+    float memoryDecisionCooldown = 0f;
+
     bool waitingForDeathAnimation = false;
 
     GameObject foodTarget;
@@ -55,7 +58,7 @@ public class WolfBehaviour : AnimalBehaviour
         base.Start();
         fov = GetComponent<AnimalFOV>();
         hearing = GetComponent<WolfHearing>();
-        
+
         wolf = GetComponent<Wolf>();
         if (wolf != null)
             pack = wolf.pack;
@@ -113,14 +116,14 @@ public class WolfBehaviour : AnimalBehaviour
             if (member != wolf) //Does not create this force upon itself
             {
                 float distance = Vector3.Distance(transform.position, member.transform.position);
-                if (distance < 2f) 
+                if (distance < 2f)
                 {
                     separation += (transform.position - member.transform.position).normalized / distance;
                 }
             }
         }
 
-        agent.Move(separation * Time.deltaTime); 
+        agent.Move(separation * Time.deltaTime);
     }
 
 
@@ -141,6 +144,9 @@ public class WolfBehaviour : AnimalBehaviour
         if (isDead)
             return;
 
+        if (CurrentState == State.Pregnant)
+            return;
+
         // Update animation based on movement
         anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f); // "isWalking" är en bool i animator
         anim.SetBool("isRunning", agent.velocity.magnitude > 3f); // "isRunning" är en bool i animator
@@ -148,7 +154,7 @@ public class WolfBehaviour : AnimalBehaviour
         if (waitingForDeathAnimation)
         {
             deathWaitTimer -= Time.deltaTime;
-            if(deathWaitTimer <= 0f)
+            if (deathWaitTimer <= 0f)
             {
                 waitingForDeathAnimation = false;
                 foodTarget = pendingCarcass;
@@ -188,18 +194,44 @@ public class WolfBehaviour : AnimalBehaviour
                 }
             }
 
-            if (IsHungry() && huntCooldownTimer <= 0 && !needs.isTired) 
+            if (IsHungry() && huntCooldownTimer <= 0 && !needs.isTired)
             {
                 if (FindPrey())
                     ChangeState(State.Hunt);
                 else if (FindCarcass())
                     ChangeState(State.Eat);
+                else if (memoryDecisionCooldown <= 0f)
+                {
+                    memoryDecisionCooldown = 2f;
+
+                    if (UnityEngine.Random.value < 0.2f)
+                    {
+                        Debug.Log("Wolf explores instead of using memory");
+                        ChangeState(State.Wander);
+                        return;
+                    }
+
+                    Vector2Int bestChunk = DecideFoodTargetChunk();
+                    if (bestChunk.x != -1)
+                    {
+                        if (agent.isOnNavMesh)
+                        {
+                            agent.SetDestination(memory.GetRandomPointInChunk(bestChunk));
+                            ChangeState(State.Wander);
+                        }
+                        Debug.Log("Wolf heading to remembered prey area");
+                    }
+                    else
+                    {
+                        ChangeState(State.Wander);
+                    }
+                }
             }
         }
 
-        if(huntCooldownTimer > 0)
+        if (huntCooldownTimer > 0)
             huntCooldownTimer -= Time.deltaTime;
-        
+
     }
 
     bool FindPrey()
@@ -239,6 +271,10 @@ public class WolfBehaviour : AnimalBehaviour
         if (closestPrey != null)
         {
             preyTarget = closestPrey;
+            if (memory != null)
+            {
+                memory.RememberPrey(closestPrey.transform.position);
+            }
             StatisticsTableManager.instance.WolfhuntAttemptsCount++;
 
             MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
@@ -345,7 +381,11 @@ public class WolfBehaviour : AnimalBehaviour
 
     public void OnBeingHunted(GameObject predator)
     {
-        if(CurrentState == State.Hunt) // Lose prey if being hunted by a bear
+        if (memory != null)
+        {
+            memory.RememberDanger(transform.position);
+        }
+        if (CurrentState == State.Hunt) // Lose prey if being hunted by a bear
         {
             StatisticsTableManager.instance.BearInterferenceCount++;
             LostPrey();
@@ -428,7 +468,7 @@ public class WolfBehaviour : AnimalBehaviour
         }
 
         if (needs.noMoreStamina)
-        {   
+        {
             LostPrey(); // If the wolf has no more stamina to run after, give up
             return;
         }
@@ -534,7 +574,7 @@ public class WolfBehaviour : AnimalBehaviour
                 ChangeState(State.Wander);
                 return;
             }
-        } 
+        }
 
         if (!needs.isHungry)
         {
@@ -602,7 +642,7 @@ public class WolfBehaviour : AnimalBehaviour
                 continue; // Skip if not in FOV
             }
 
-            
+
             if (hit.CompareTag("carcass"))
             {
                 Debug.Log("Wolf found carcass.");
@@ -620,6 +660,10 @@ public class WolfBehaviour : AnimalBehaviour
         if (closestFood != null)
         {
             foodTarget = closestFood;
+            if (memory != null)
+            {
+                memory.RememberFood(closestFood.transform.position);
+            }
             return true;
         }
 
@@ -630,13 +674,56 @@ public class WolfBehaviour : AnimalBehaviour
     {
         Carcass carcass = obj.GetComponentInParent<Carcass>();
 
-        if(carcass != null)
+        if (carcass != null)
         {
             return carcass.gameObject;
         }
 
         return obj;
 
+    }
+
+    Vector2Int DecideFoodTargetChunk()
+    {
+        if (memory == null) return new Vector2Int(-1, -1);
+
+        float hunger = 1f - needs.howHungryInPercent;
+        Vector2Int bestChunk = new Vector2Int(-1, -1);
+        float bestScore = float.MinValue;
+        Vector2Int currentChunk = memory.GetChunk(transform.position);
+
+        float dangerWeight = Mathf.Lerp(3f, 0.3f, hunger);
+
+        for (int x = 0; x < memory.GetGridSizeX(); x++)
+        {
+            for (int z = 0; z < memory.GetGridSizeZ(); z++)
+            {
+                float prey = memory.GetPreyValue(x, z);
+                float food = memory.GetFoodValue(x, z); // Carcass locations
+                float danger = memory.GetDangerValue(x, z);
+
+                if (prey <= 0f && food <= 0f)
+                    continue;
+
+                float distance = Vector2.Distance(
+                    new Vector2(x, z),
+                    new Vector2(currentChunk.x, currentChunk.y)
+                );
+
+                float reward = prey + food;
+                float risk = danger * dangerWeight;
+                float effort = distance * 0.3f;
+                float score = reward - risk - effort;
+
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    bestChunk = new Vector2Int(x, z);
+                }
+            }
+        }
+
+        return bestChunk;
     }
 
 }
