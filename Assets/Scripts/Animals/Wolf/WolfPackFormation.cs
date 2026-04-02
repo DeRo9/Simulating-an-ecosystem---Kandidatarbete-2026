@@ -22,7 +22,7 @@ public class WolfPackFormation : MonoBehaviour
 
     private void Update()
     {
-        if (needs.hungerLevel < 0.2f)
+        if (needs.hungerLevel < 0.2f && !SeasonManager.Instance.IsWinter)
         {
             LeavePack();
         }
@@ -107,7 +107,7 @@ public class WolfPackFormation : MonoBehaviour
 
     private void JoinPack(WolfPackManager existingPack)
     {
-        if (existingPack.members.Count >= WolfPackManager.MaxMembers) return;
+        if (existingPack.members.Count >= existingPack.GetMaxPackSize()) return;
 
         existingPack.members.Add(wolf);
         wolf.pack = existingPack;

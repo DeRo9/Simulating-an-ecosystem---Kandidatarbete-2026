@@ -16,6 +16,8 @@ public abstract class AnimalBehaviour : MonoBehaviour
         Drink, // General
         Hunt, // For animals that hunt, wolves and bears
         Fleeing, // For animals that flee (moose)
+        Pregnant,
+        Hibernate,
         Dead,
     }
 
@@ -43,6 +45,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected GameObject waterTarget;
 
     public bool isDead;
+    public bool IsPregnant => CurrentState == State.Pregnant;
 
     [Header("Water Layer")]
     [SerializeField]
@@ -69,6 +72,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
     // Checks if the moose has reached its destination
     protected bool hasArrived()
     {
+        if (agent == null || !agent.isActiveAndEnabled || !agent.isOnNavMesh) return false;
         return !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance;
     }
 
@@ -76,6 +80,10 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected void ChangeState(State newState)
     {
         CurrentState = newState;
+
+        if (!agent.enabled) // If the animal is dead
+            return;
+
         agent.ResetPath();
 
         switch (CurrentState)
@@ -99,6 +107,12 @@ public abstract class AnimalBehaviour : MonoBehaviour
                 break;
             case State.Fleeing:
                 FleeState();
+                break;
+            case State.Pregnant:
+                PregnantState();
+                break;
+            case State.Hibernate:
+                HibernationState();
                 break;
             case State.Dead:
                 // Do nothing
@@ -177,10 +191,28 @@ public abstract class AnimalBehaviour : MonoBehaviour
             case State.Fleeing:
                 UpdateFlee();
                 break;
+            case State.Pregnant:
+                UpdatePregnant();
+                break;
+            case State.Hibernate:
+                HibernationState();
+                break;
             case State.Dead:
                 // Do nothing i guess? 
                 break;
         }
+    }
+
+    public virtual void EnterPregnantState()
+    {
+        if (!isDead)
+            ChangeState(State.Pregnant);
+    }
+
+    public virtual void ExitPregnantState()
+    {
+        if (CurrentState == State.Pregnant)
+            ChangeState(State.Wander);
     }
 
     public bool FindWater()
@@ -234,6 +266,9 @@ public abstract class AnimalBehaviour : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
+        agent.isStopped = true;
+        agent.enabled = false;
+
         if(animal.species == Species.moose)
         {
             OnPreyDeath?.Invoke();   
@@ -261,7 +296,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         }
         
         ChangeState(State.Dead);
-        agent.isStopped = true;
+
     }
     protected virtual bool IsHungry() 
     {
@@ -318,5 +353,13 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected virtual void UpdateFlee() { return; }
     protected virtual void HuntState() { return; }
     protected virtual void FleeState() { return; }
+    protected virtual void PregnantState()
+    {
+        if (agent != null && agent.enabled)
+            agent.isStopped = true;
+    }
+
+    protected virtual void HibernationState() { return; }
+    protected virtual void UpdatePregnant() { return; }
 
 }

@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem.Android;
 
+
 public class MooseBehaviour : AnimalBehaviour
 {
 
@@ -19,6 +20,8 @@ public class MooseBehaviour : AnimalBehaviour
 
     float fleeRepathTimer = 0f;
     float fleeRepathInterval = 2f; // Time interval for recalculating path to prey
+
+    float memoryDecisionCooldown = 0f;
 
     [Header("Layers")]
     [SerializeField]
@@ -34,9 +37,18 @@ public class MooseBehaviour : AnimalBehaviour
 
     protected override void Update()
     {
+
+        if (!agent.isOnNavMesh)
+            return;
         
 
         base.Update();
+
+        if (isDead)
+            return;
+
+        if (CurrentState == State.Pregnant)
+            return;
 
         // Update animation based on movement
         anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f); // "isWalking" Ã¤r en bool i animator
@@ -51,7 +63,7 @@ public class MooseBehaviour : AnimalBehaviour
                 Debug.Log("Moose remember a dangerous chunk");
 
                 WolfBehaviour wolf = heard.GetComponent<WolfBehaviour>(); // Wolf heard
-                if(animal != null && wolf.CurrentTarget == gameObject)
+                if(wolf != null && wolf.CurrentTarget == gameObject)
                 {
                     Debug.Log("Moose heard a wolf");
                     enemy = heard.gameObject;
@@ -60,7 +72,7 @@ public class MooseBehaviour : AnimalBehaviour
                 }
 
                 BearBehaviour bear = heard.GetComponent<BearBehaviour>(); // Bear heard
-                if (animal != null && bear.CurrentTarget == gameObject)
+                if (bear != null && bear.CurrentTarget == gameObject)
                 {
                     Debug.Log("Moose heard a bear");
                     enemy = heard.gameObject;
@@ -88,20 +100,49 @@ public class MooseBehaviour : AnimalBehaviour
 
             if (IsHungry())
             {
+                memoryDecisionCooldown -= Time.deltaTime;
+
                 if (FindFood())
                 {
                     ChangeState(State.Eat);
                     return;
                 }
 
-            // TODO (AnimalMemory)
-            // Implement some way to decide wheter to go to another place
-            // from memory. 
-            // Could be risky to go to a certain chunk, should it then go to a lower
-            // food chunk, or go around the dangrous chunks to reach the best food
-            // chunk, or should it just stay or explore new areas and try to find food?
+                if (memoryDecisionCooldown <= 0f)
+                {
+                    memoryDecisionCooldown = 2f; // decide every 2 sec
+
+                    if (UnityEngine.Random.value < 0.2f) // 20% chance for exploration instead of memory
+                    {
+                        Debug.Log("Moose explores instead of using memory");
+                        ChangeState(State.Wander);
+                        return;
+                    }
+
+                    Vector2Int targetChunk = DecideFoodTargetChunk();
+
+                    if (targetChunk.x != -1)
+                    {
+                        Vector3 targetPos = memory.GetRandomPointInChunk(targetChunk);
+
+                        if (agent.isOnNavMesh)
+                        {
+                            agent.SetDestination(targetPos);
+                            ChangeState(State.Wander);
+                        }
+                        //agent.SetDestination(targetPos);
+                        //ChangeState(State.Wander);
+                        Debug.Log("Moose waling to food from memory");
+                    }
+                    else
+                    {
+                        // if invalid chunk returned Vector2Int(-1, -1)
+                        ChangeState(State.Wander); 
+                    }
+                }
+
             }
-        }
+        }   
 
     }
 
@@ -148,6 +189,7 @@ public class MooseBehaviour : AnimalBehaviour
             }
 
         }
+    
 
         if(closestFood != null)
         {
@@ -157,11 +199,13 @@ public class MooseBehaviour : AnimalBehaviour
 
         return false;
     }
+        
+    
 
 
     protected override void EatStateForSpecificAnimal()
     {
-        if (foodTarget != null)
+        if (foodTarget != null && agent.isOnNavMesh) //added && agent.isOnNavMesh
         {
             agent.isStopped = false;
             agent.SetDestination(foodTarget.transform.position);
@@ -242,7 +286,12 @@ public class MooseBehaviour : AnimalBehaviour
         if (fleeRepathTimer >= fleeRepathInterval)
         {
             Vector3 fleePoint = CalculateFleePath();
-            agent.SetDestination(fleePoint);
+
+            if (agent.isOnNavMesh)
+            {
+                agent.SetDestination(fleePoint);
+            }
+            //agent.SetDestination(fleePoint);
             fleeRepathTimer = 0f;
         }
     }
@@ -302,6 +351,8 @@ public class MooseBehaviour : AnimalBehaviour
     {
         if(enemy == predator)
         {
+            StatisticsTableManager.instance.MooseSuccessfulEscapeCount++;
+
             enemy = null;
             agent.speed = animal.speed; // Reset speed to normal
             if (CurrentState == State.Fleeing)
@@ -318,30 +369,44 @@ public class MooseBehaviour : AnimalBehaviour
 
     public override void OnDeath()
     {
-        base.OnDeath();
+        
 
+        bool wolfKill = false; // If wolf was the one who killed the moose
         WolfBehaviour[] wolves = FindObjectsByType<WolfBehaviour>(FindObjectsSortMode.None); // All wolves hunting the moose
         foreach (WolfBehaviour wolf in wolves)
         {
             if(wolf.CurrentTarget == gameObject)
             {
+                wolfKill = true;
                 wolf.notifyDeath();
             }
         }
 
+        // If wolf killed the moose, then increase counter in the statistics table
+        if (wolfKill)
+            StatisticsTableManager.instance.WolfSuccessfulHuntsCount++;
+
+
+        bool bearKill = false; // if bear was the one who killed the moose
         BearBehaviour[] bears = FindObjectsByType <BearBehaviour> (FindObjectsSortMode.None);
         foreach(BearBehaviour bear in bears)
         {
             if (bear.CurrentTarget == gameObject)
             {
+                bearKill = true;
                 bear.notifyDeath();
             }
         }
 
+        // If bear killed the moose, then increase counter in the statistics table
+        if (bearKill) 
+            StatisticsTableManager.instance.BearSuccessfulHuntsCount++;
+
+        base.OnDeath();
     }
 
     Vector2Int DecideFoodTargetChunk()
-{
+    {
     // 0 = full, 1 = starving
     float hunger = 1f - needs.howHungryInPercent;
 
@@ -353,7 +418,13 @@ public class MooseBehaviour : AnimalBehaviour
     Vector2Int currentChunk = memory.GetChunk(transform.position);
 
     // Hunger affects risk tolerance
+
     float dangerWeight = Mathf.Lerp(3f, 0.3f, hunger);
+
+    if (SeasonManager.Instance.IsWinter)
+    {
+        dangerWeight *= 1.5f;
+    }
 
     for (int x = 0; x < memory.GetGridSizeX(); x++)
     {
@@ -362,9 +433,10 @@ public class MooseBehaviour : AnimalBehaviour
             float food = memory.GetFoodValue(x, z);
             float danger = memory.GetDangerValue(x, z);
 
-            // Skip empty memory?
+            /*
             if (food <= 0f)
                 continue;
+            */
 
             float distance = Vector2.Distance(
                 new Vector2(x, z),
@@ -375,67 +447,29 @@ public class MooseBehaviour : AnimalBehaviour
             float risk = danger * dangerWeight;
             float effort = distance * 0.3f;
 
-            float score = reward - risk - effort;
+            // more random when not so hungry, less random when hungry
+            float randomness = UnityEngine.Random.Range(-1f, 1f) * (1f - hunger);
+            //float randomness = UnityEngine.Random.Range(-0.2f, 0.2f);  // old
+
+            float score = reward - risk - effort + randomness;
 
             if (score > bestScore)
             {
                 bestScore = score;
                 bestChunk = new Vector2Int(x, z);
             }
+
+
         }
+    }
+
+    if (bestScore < 1f)
+    {
+        return new Vector2Int(-1, -1); // force exploration
     }
 
     return bestChunk;
 }
-
-
-/*
-    Vector2Int DecideFoodTargetChunk()
-    {
-
-    // 0 = full, 1 = starving
-    float hunger = 1f - needs.howHungryInPercent; 
-
-    Vector2Int bestChunk = new Vector2Int(-1, -1);
-
-    float bestScore = float.MinValue;
-
-    // World pos to chunk
-    Vector2Int currentChunk = memory.GetChunk(transform.position);
-
-
-    for (int x = 0; x < memory.GetGridSizeX(); x++) // limit search (performance!)
-    {
-        for (int z = 0; memory.GetGridSizeZ() < 20; z++)
-        {
-            float food = memory.GetFoodValue(x, z);
-            float danger = memory.GetDangerValue(x, z);
-
-            // bigger number = further away
-            float distance = Vector2.Distance(new Vector2(x,z), new Vector2(currentChunk.x, currentChunk.y));
-
-            float dangerWeight;
-
-            if (hunger < 0.3f)        // not very hungry
-                dangerWeight = 3f;    // avoid danger strongly
-            else if (hunger < 0.7f)   // medium hunger
-                dangerWeight = 1.5f;
-            else                      // starving
-                dangerWeight = 0.3f;  // ignore danger
-
-            float score = food - (danger * dangerWeight) - (distance * 0.5f);
-
-            if (score > bestScore)
-            {
-                bestScore = score;
-                bestChunk = new Vector2Int(x, z);
-            }
-        }
-    }
-
-    return bestChunk;
-}
-*/
 
 
 

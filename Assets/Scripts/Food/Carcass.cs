@@ -8,9 +8,23 @@ public class Carcass : MonoBehaviour
 
     public int remainingFeeds;
 
+    public float expireTime = 30f;
+
     void Awake()
     {
         remainingFeeds = maxFeeds;
+    }
+
+    void Update()
+    {
+        if (SeasonManager.Instance.IsSummer)
+        {
+            expireTime -= Time.deltaTime;
+            if (expireTime <= 0f)
+            {
+                Destroy(gameObject);
+            }
+        }
     }
 
     public void Initialize(Species species, int maxFeeds, float nutritionPerFeed)

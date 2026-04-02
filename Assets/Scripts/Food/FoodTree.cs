@@ -5,12 +5,6 @@ public class FoodTree : MonoBehaviour
     [SerializeField]
     private float nutritionValue = 100f; // The amount of nutrition this food provides
 
-
-    void Start()
-    {
-    
-    }
-
     void OnTriggerEnter(Collider other)
     {
         bool canEatFood = other.CompareTag("Moose");

@@ -22,6 +22,8 @@ public class AnimalNeeds : MonoBehaviour
     [SerializeField] private float staminaDecreaseRate = 1f;
     [SerializeField] private float staminaIncreaseRate = 1.5f;
 
+    public float hibernationMultiplier = 1f;
+
     public bool isHungry => hungerLevel < maxHunger * 0.8f;
     public bool isHungryBearH => hungerLevel < maxHunger * 0.5f; 
     public bool isThirsty => thirstLevel < maxThirst * 0.5f;
@@ -48,19 +50,32 @@ public class AnimalNeeds : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isDead) return; // If dead, then we don't need to update anything anymore
+        if (isDead) return; 
 
-        // Decrease hunger level over time
-        hungerLevel -= hungerDecreaseRate * Time.deltaTime; 
-        hungerLevel = Mathf.Clamp(hungerLevel, 0f, maxHunger); // Ensure it stays within bounds
+        float hungerMultiplier = 1f;
+        if (SeasonManager.Instance.IsWinter)
+        {
+            hungerMultiplier = 1.5f;
+        }
 
-        // Decrease thirst level over time
-        thirstLevel -= thirstDecreaseRate * Time.deltaTime;
-        thirstLevel = Mathf.Clamp(thirstLevel, 0f, maxThirst); // Ensure it stays within bounds
+        hungerLevel -= hungerDecreaseRate * Time.deltaTime * hungerMultiplier * hibernationMultiplier;
+        hungerLevel = Mathf.Clamp(hungerLevel, 0f, maxHunger);
+
+
+        float thirstMultiplier = 1f;
+
+        if (SeasonManager.Instance.IsSummer)
+        {
+            thirstMultiplier = 1.5f;
+        }
+        if (SeasonManager.Instance.IsRaining)
+        {
+            thirstMultiplier = 0.5f;
+        }
 
         survivalDamage();
 
-        if(staminaLevel <= 0.1f) // Spare a little bit of stamina
+        if(staminaLevel <= 0.1f)
         {
             noMoreStamina = true;
         }
@@ -69,6 +84,11 @@ public class AnimalNeeds : MonoBehaviour
         {
             noMoreStamina = false;
         }
+
+        thirstLevel -= thirstDecreaseRate * Time.deltaTime * thirstMultiplier * hibernationMultiplier;
+        thirstLevel = Mathf.Clamp(thirstLevel, 0f, maxThirst);
+
+
     }
 
     private void survivalDamage()
@@ -76,6 +96,13 @@ public class AnimalNeeds : MonoBehaviour
         if(IsStarving || IsDehydrated)
         {
             healthLevel -= 0.5f * Time.deltaTime;
+            healthLevel = Mathf.Clamp(healthLevel, 0f, maxHealth);
+
+        }
+
+        if ((IsStarving || IsDehydrated) && SeasonManager.Instance.IsWinter)
+        {
+            healthLevel -= 1f * Time.deltaTime;
             healthLevel = Mathf.Clamp(healthLevel, 0f, maxHealth);
         }
         
@@ -107,7 +134,14 @@ public class AnimalNeeds : MonoBehaviour
 
     public void DrainStamina()
     {
-        staminaLevel -= staminaDecreaseRate * Time.deltaTime;
+
+        float staminaMultiplier = 1f;
+        if (SeasonManager.Instance.IsSnowing)
+        {
+            staminaMultiplier = 1.5f;
+        }
+        
+        staminaLevel -= staminaDecreaseRate * Time.deltaTime * staminaMultiplier;
         staminaLevel = Mathf.Clamp(staminaLevel, 0f, maxStamina);
     }
 

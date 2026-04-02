@@ -48,6 +48,13 @@ public class GameManager : MonoBehaviour
     private float timer;
     private static bool simulationRunning;
 
+    [Header("Reproducibility")]
+
+    // Option to use a fixed seed for reproducibility of results.
+    //  If false, a random seed will be used based on current time.
+    public bool useFixedSeed = false;
+    public int simulationSeed = 12345;
+
     [Header("information UI")]
     public InformationUI informationUI;
 
@@ -56,12 +63,23 @@ public class GameManager : MonoBehaviour
 
     public float spawnRadius = 1000f;
 
+    [Header("Weather")]
+    
+    [Header("Season")]
+    public Toggle summerToggle;
+    public Toggle winterToggle;
+    public Toggle percipitationToggle; // set >0 for precipitation active (rain/snow based on season)
+
     private void Start()
     {
         simulationLengthSlider.value = 60f;
         cameraMovement.enabled = false;
         Time.timeScale = 1f;
         simulationUI.gameObject.SetActive(false);
+        RenderSettings.skybox.SetFloat("_Exposure", 1f);
+        RenderSettings.skybox.SetColor("_Tint", Color.white);
+        summerToggle.isOn = true;
+
     }
 
     public float recordInterval = 5f;
@@ -91,6 +109,13 @@ public class GameManager : MonoBehaviour
 
     public void StartSimulation()
     {
+        if(StatisticsTableManager.instance != null) StatisticsTableManager.instance.ResetStats();
+
+        if (useFixedSeed)
+        {
+            UnityEngine.Random.InitState(simulationSeed);
+        }
+
         cameraMovement.enabled = true;
 
         SpawnAnimals(moosePrefab, mooseSetup, herbivoresFolder);
@@ -165,15 +190,6 @@ public class GameManager : MonoBehaviour
     {
         simulationRunning = false;
 
-        /*SimulationResults.initialBearsAmount = bearSetup.amount;
-        SimulationResults.finalBearsAmount = omnivoreFolder.childCount;
-
-        SimulationResults.initialWolvesAmount = wolfSetup.amount;
-        SimulationResults.finalWolvesAmount = carnivoreFolder.childCount;
-
-        SimulationResults.initialMooseAmount = mooseSetup.amount;
-        SimulationResults.finalMooseAmount = herbivoresFolder.childCount;*/
-
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
@@ -202,4 +218,18 @@ public class GameManager : MonoBehaviour
         return simulationRunning;
     }
 
+    public void toggleSummer()
+    {
+        SeasonManager.Instance.SetSummer(summerToggle.isOn);
+    }
+
+    public void toggleWinter()
+    {
+        SeasonManager.Instance.SetWinter(winterToggle.isOn);
+    }
+
+    public void togglePrecipitation()
+    {
+        SeasonManager.Instance.SetPercipitation(percipitationToggle.isOn);
+    }
 }
