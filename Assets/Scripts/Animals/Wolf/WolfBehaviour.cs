@@ -1,7 +1,6 @@
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.InputSystem.Android;
 
 public class WolfBehaviour : AnimalBehaviour
 {

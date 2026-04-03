@@ -1,10 +1,8 @@
 using System;
 using System.IO.Pipes;
 using Unity.VisualScripting;
-using UnityEditor.AdaptivePerformance.Editor;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.InputSystem.Android;
 
 
 public class MooseBehaviour : AnimalBehaviour
