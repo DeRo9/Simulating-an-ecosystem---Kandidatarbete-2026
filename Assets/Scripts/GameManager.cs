@@ -4,6 +4,8 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 
 public class GameManager : MonoBehaviour
@@ -70,6 +72,21 @@ public class GameManager : MonoBehaviour
     public Toggle winterToggle;
     public Toggle percipitationToggle; // set >0 for precipitation active (rain/snow based on season)
 
+    // Performance optimization: precomputed spawn points
+    private List<Vector3> recordedSpawnPoints = new List<Vector3>();
+    private const int recordedSpawnPointsCount = 1000;
+    public float recordInterval = 5f;
+    private Coroutine recordingCoroutine;
+
+    private void Awake()
+    {
+        for (int i = 0; i < recordedSpawnPointsCount; i++)
+        {
+            Vector3 point = GetRandomNavMeshPoint();
+            recordedSpawnPoints.Add(point);
+        }
+    }
+
     private void Start()
     {
         simulationLengthSlider.value = 60f;
@@ -82,9 +99,6 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public float recordInterval = 5f;
-    private float recordTimer = 0f;
-
     void Update() 
     {
         if (!simulationRunning) 
@@ -93,13 +107,6 @@ public class GameManager : MonoBehaviour
         }
 
         timer += Time.deltaTime;
-        recordTimer += Time.deltaTime;
-
-        if(recordTimer >= recordInterval)
-        {
-            RecordPopulation();
-            recordTimer = 0f;
-        }
 
         if (timer >= simulationTime)
         {
@@ -135,6 +142,13 @@ public class GameManager : MonoBehaviour
 
         startMenuPanel.SetActive(false);
         simulationUI.gameObject.SetActive(true);
+
+        // Start population recording coroutine instead of using Update timer
+        if (recordingCoroutine != null)
+        {
+            StopCoroutine(recordingCoroutine);
+        }
+        recordingCoroutine = StartCoroutine(RecordPopulationCoroutine());
     }
 
     void SpawnAnimals(GameObject animalPrefab, AnimalSetupPanel setup, Transform parentFolder)
@@ -142,7 +156,7 @@ public class GameManager : MonoBehaviour
         
         for (int i = 0; i < setup.amount; i++)
         {
-            Vector3 randomPoint = GetRandomNavMeshPoint();
+            Vector3 randomPoint = GetPrecomputedSpawnPoint();
             GameObject animalObj = Instantiate(animalPrefab, randomPoint, Quaternion.identity, parentFolder);
             Animal animal = animalObj.GetComponent<Animal>();
 
@@ -162,9 +176,19 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < count; i++)
         {
-            Vector3 randomPoint = GetRandomNavMeshPoint();
+            Vector3 randomPoint = GetPrecomputedSpawnPoint();
             Instantiate(berryBushPrefab, randomPoint, Quaternion.identity, parentFolder);
         }
+    }
+
+    Vector3 GetPrecomputedSpawnPoint()
+    {
+        if (recordedSpawnPoints.Count == 0)
+        {
+            Debug.LogWarning("Recorded spawn points not initialized, falling back to NavMesh sampling");
+            return GetRandomNavMeshPoint();
+        }
+        return recordedSpawnPoints[UnityEngine.Random.Range(0, recordedSpawnPoints.Count)];
     }
 
     Vector3 GetRandomNavMeshPoint()
@@ -190,6 +214,13 @@ public class GameManager : MonoBehaviour
     {
         simulationRunning = false;
 
+        // Stop recording coroutine when simulation ends
+        if (recordingCoroutine != null)
+        {
+            StopCoroutine(recordingCoroutine);
+            recordingCoroutine = null;
+        }
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
@@ -210,7 +241,19 @@ public class GameManager : MonoBehaviour
         SimulationResults.bearsHistory.Add(omnivoreFolder.childCount);
         SimulationResults.wolvesHistory.Add(carnivoreFolder.childCount);
         SimulationResults.mooseHistory.Add(herbivoresFolder.childCount);
+    }
 
+    private IEnumerator RecordPopulationCoroutine()
+    {
+        // Records population at intervals without per-frame polling
+        while (simulationRunning)
+        {
+            yield return new WaitForSeconds(recordInterval);
+            if (simulationRunning)  // Double-check in case sim ended
+            {
+                RecordPopulation();
+            }
+        }
     }
 
     public static bool GetSimulationStatus()
