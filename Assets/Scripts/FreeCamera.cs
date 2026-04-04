@@ -23,6 +23,8 @@ public class FreeCamera : MonoBehaviour
     private float currentSpeed;
     private Camera cam;
     private float targetFOV;
+    private float screenEdgeRight;
+    private float screenEdgeTop;
 
     // Bug where the raycaster is ghost hovering, causing glitches. So
     // then we disable whenever we are rightclicking to prevent this.
@@ -41,6 +43,8 @@ public class FreeCamera : MonoBehaviour
     {
         cam = GetComponent<Camera>();
         targetFOV = cam.fieldOfView;
+        screenEdgeRight = Screen.width - screenEdgeC;
+        screenEdgeTop = Screen.height - screenEdgeC;
 
         raycaster = GetComponent<PhysicsRaycaster>();
 
@@ -102,12 +106,12 @@ public class FreeCamera : MonoBehaviour
         {
             Vector2 mousePosition = Mouse.current?.position.ReadValue() ?? Vector2.zero;
             if (mousePosition.x <= screenEdgeC) { rotationInput.y = -1f; }
-            else if (mousePosition.x >= Screen.width - screenEdgeC)
+            else if (mousePosition.x >= screenEdgeRight)
             {
                 rotationInput.y = 1f;
             }
             if (mousePosition.y <= screenEdgeC) { rotationInput.x = 1f; }
-            else if (mousePosition.y >= Screen.height - screenEdgeC)
+            else if (mousePosition.y >= screenEdgeTop)
             {
                 rotationInput.x = -1f;
             }
@@ -149,7 +153,10 @@ public class FreeCamera : MonoBehaviour
     private void ZeroRoll()
     {
         Vector3 euler = transform.rotation.eulerAngles;
-        transform.rotation = Quaternion.Euler(euler.x, euler.y, 0);
+        if (euler.z != 0f)
+        {
+            transform.rotation = Quaternion.Euler(euler.x, euler.y, 0);
+        }
     }
 
 }

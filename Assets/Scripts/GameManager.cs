@@ -74,18 +74,13 @@ public class GameManager : MonoBehaviour
 
     // Performance optimization: precomputed spawn points
     private List<Vector3> recordedSpawnPoints = new List<Vector3>();
-    private const int recordedSpawnPointsCount = 1000;
+    private const int recordedSpawnPointsCount = 5000;
     public float recordInterval = 5f;
+    public float spawnSpacing = 5f;
+    
     private Coroutine recordingCoroutine;
+    private bool spawnPointsInitialized = false;
 
-    private void Awake()
-    {
-        for (int i = 0; i < recordedSpawnPointsCount; i++)
-        {
-            Vector3 point = GetRandomNavMeshPoint();
-            recordedSpawnPoints.Add(point);
-        }
-    }
 
     private void Start()
     {
@@ -97,6 +92,50 @@ public class GameManager : MonoBehaviour
         RenderSettings.skybox.SetColor("_Tint", Color.white);
         summerToggle.isOn = true;
 
+        // Initialize spawn points after NavMesh is ready
+        InitializeSpawnPoints();
+    }
+
+    private void InitializeSpawnPoints()
+    {
+        if (spawnPointsInitialized) return;
+        
+        HashSet<Vector3> uniquePoints = new HashSet<Vector3>();
+        int attempts = 0;
+        int maxAttempts = recordedSpawnPointsCount * 3; // Try 3x to get enough unique points
+        
+        while (uniquePoints.Count < recordedSpawnPointsCount && attempts < maxAttempts)
+        {
+            Vector3 point = GetRandomNavMeshPoint();
+            
+            // Only add if it's not the fallback position and not a duplicate
+            if (point != transform.position && !IsPointTooClose(point, uniquePoints))
+            {
+                uniquePoints.Add(point);
+            }
+            attempts++;
+        }
+        
+        recordedSpawnPoints.AddRange(uniquePoints);
+        
+        if (recordedSpawnPoints.Count < recordedSpawnPointsCount)
+        {
+            Debug.LogWarning($"Only generated {recordedSpawnPoints.Count} unique spawn points out of {recordedSpawnPointsCount} requested. Consider expanding spawnRadius or checking NavMesh coverage.");
+        }
+        
+        spawnPointsInitialized = true;
+    }
+
+    private bool IsPointTooClose(Vector3 point, HashSet<Vector3> existingPoints)
+    {
+        foreach (Vector3 existing in existingPoints)
+        {
+            if (Vector3.Distance(point, existing) < 5f)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     void Update() 
@@ -125,9 +164,9 @@ public class GameManager : MonoBehaviour
 
         cameraMovement.enabled = true;
 
-        SpawnAnimals(moosePrefab, mooseSetup, herbivoresFolder);
-        SpawnAnimals(wolfPrefab, wolfSetup, carnivoreFolder);
-        SpawnAnimals(bearPrefab, bearSetup, omnivoreFolder);
+        StartCoroutine(SpawnAnimalsStaggered(moosePrefab, mooseSetup, herbivoresFolder));
+        StartCoroutine(SpawnAnimalsStaggered(wolfPrefab, wolfSetup, carnivoreFolder));
+        StartCoroutine(SpawnAnimalsStaggered(bearPrefab, bearSetup, omnivoreFolder));
         SpawnFood(berryBushPrefab, berryBushSetup.amount, berryBushFolder);
         
         mushroomSpawner.SetMaxMushrooms(mushroomSetup.amount);
@@ -151,15 +190,15 @@ public class GameManager : MonoBehaviour
         recordingCoroutine = StartCoroutine(RecordPopulationCoroutine());
     }
 
-    void SpawnAnimals(GameObject animalPrefab, AnimalSetupPanel setup, Transform parentFolder)
+    private IEnumerator SpawnAnimalsStaggered(GameObject animalPrefab, AnimalSetupPanel setup, Transform parentFolder)
     {
-        
         for (int i = 0; i < setup.amount; i++)
         {
             Vector3 randomPoint = GetPrecomputedSpawnPoint();
+            randomPoint += new Vector3(UnityEngine.Random.Range(-spawnSpacing, spawnSpacing), 2f, UnityEngine.Random.Range(-spawnSpacing, spawnSpacing));
+            
             GameObject animalObj = Instantiate(animalPrefab, randomPoint, Quaternion.identity, parentFolder);
             Animal animal = animalObj.GetComponent<Animal>();
-
 
             if (animal != null)
             {
@@ -169,6 +208,8 @@ public class GameManager : MonoBehaviour
                 animal.sightRange = (float)System.Math.Round(UnityEngine.Random.Range(setup.updatedSight - 5f, setup.updatedSight + 5f), 2);
                 animal.hearingRange = (float)System.Math.Round(UnityEngine.Random.Range(setup.updatedHearing - 5f, setup.updatedHearing + 5f), 2);
             }
+
+            yield return new WaitForEndOfFrame();
         }
     }
 
@@ -177,7 +218,7 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             Vector3 randomPoint = GetPrecomputedSpawnPoint();
-            Instantiate(berryBushPrefab, randomPoint, Quaternion.identity, parentFolder);
+            Instantiate(foodPrefab, randomPoint, Quaternion.identity, parentFolder);
         }
     }
 
@@ -196,17 +237,18 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < 100; i++)
         {
             Vector2 randomCircle = UnityEngine.Random.insideUnitCircle * spawnRadius;
-
-            Vector3 randomPoint = transform.position + 
-                                new Vector3(randomCircle.x, 500f, randomCircle.y);
+            
+            Vector3 randomPoint = transform.position + new Vector3(randomCircle.x, 1000f, randomCircle.y);
 
             NavMeshHit hit;
-            if (NavMesh.SamplePosition(randomPoint, out hit, 1000f, NavMesh.AllAreas))
+            // Search downward with reasonable distance to find the surface
+            if (NavMesh.SamplePosition(randomPoint, out hit, 2000f, NavMesh.AllAreas))
             {
                 return hit.position;
             }
         }
-        Debug.LogWarning("Failed to find NavMesh point");
+        
+        Debug.LogWarning("Failed to find a valid NavMesh point after 100 attempts");
         return transform.position;
     }
 
