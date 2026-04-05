@@ -22,10 +22,12 @@ public class GameManager : MonoBehaviour
     [Header("UI")]
     public GameObject startMenuPanel;
 
+    
     [Header("Animal Setup Panels")]
     public AnimalSetupPanel mooseSetup;
     public AnimalSetupPanel wolfSetup;
     public AnimalSetupPanel bearSetup;
+    
 
     [Header("Food Setup Panel")]
     public FoodSetupPanel berryBushSetup;
@@ -164,9 +166,16 @@ public class GameManager : MonoBehaviour
 
         cameraMovement.enabled = true;
 
+        /*
         StartCoroutine(SpawnAnimalsStaggered(moosePrefab, mooseSetup, herbivoresFolder));
         StartCoroutine(SpawnAnimalsStaggered(wolfPrefab, wolfSetup, carnivoreFolder));
         StartCoroutine(SpawnAnimalsStaggered(bearPrefab, bearSetup, omnivoreFolder));
+        */
+
+        StartCoroutine(SpawnAnimalsStaggered(moosePrefab, mooseSetup.amount, herbivoresFolder));
+        StartCoroutine(SpawnAnimalsStaggered(wolfPrefab, wolfSetup.amount, carnivoreFolder));
+        StartCoroutine(SpawnAnimalsStaggered(bearPrefab, bearSetup.amount, omnivoreFolder));
+
         SpawnFood(berryBushPrefab, berryBushSetup.amount, berryBushFolder);
         
         mushroomSpawner.SetMaxMushrooms(mushroomSetup.amount);
@@ -190,9 +199,10 @@ public class GameManager : MonoBehaviour
         recordingCoroutine = StartCoroutine(RecordPopulationCoroutine());
     }
 
-    private IEnumerator SpawnAnimalsStaggered(GameObject animalPrefab, AnimalSetupPanel setup, Transform parentFolder)
+    //private IEnumerator SpawnAnimalsStaggered(GameObject animalPrefab, AnimalSetupPanel setup, Transform parentFolder)
+    private IEnumerator SpawnAnimalsStaggered(GameObject animalPrefab, int amount, Transform parentFolder)
     {
-        for (int i = 0; i < setup.amount; i++)
+        for (int i = 0; i < amount; i++)
         {
             Vector3 randomPoint = GetPrecomputedSpawnPoint();
             randomPoint += new Vector3(UnityEngine.Random.Range(-spawnSpacing, spawnSpacing), 2f, UnityEngine.Random.Range(-spawnSpacing, spawnSpacing));
@@ -202,11 +212,36 @@ public class GameManager : MonoBehaviour
 
             if (animal != null)
             {
+                /*
                 animal.age = (float)System.Math.Round(UnityEngine.Random.Range(0f, animal.startingMaxAge), 2);                
                 animal.speed = (float)System.Math.Round(UnityEngine.Random.Range(setup.updatedSpeed - 0.5f, setup.updatedSpeed + 0.5f), 2);
                 animal.size = (float)System.Math.Round(UnityEngine.Random.Range(setup.updatedSize - 0.2f, setup.updatedSize + 0.2f), 2);
                 animal.sightRange = (float)System.Math.Round(UnityEngine.Random.Range(setup.updatedSight - 5f, setup.updatedSight + 5f), 2);
                 animal.hearingRange = (float)System.Math.Round(UnityEngine.Random.Range(setup.updatedHearing - 5f, setup.updatedHearing + 5f), 2);
+                //animal.strength = Random.Range(animal.minStrength, animal.maxStrength);
+                */
+
+                animal.age = (float)System.Math.Round(UnityEngine.Random.Range(0f, animal.startingMaxAge), 2);               
+
+                // Randomize stats from species ranges
+                animal.speed = UnityEngine.Random.Range(animal.minSpeed, animal.maxSpeed);
+                //animal.size = (float)System.Math.Round(UnityEngine.Random.Range(setup.updatedSize - 0.2f, setup.updatedSize + 0.2f), 2);
+
+                float variation = 0.2f;
+                animal.size *= UnityEngine.Random.Range(1f - variation, 1f + variation);
+            
+                animal.runningSpeed = animal.speed * 2f; //??
+                animal.sightRange = UnityEngine.Random.Range(animal.minSight, animal.maxSight);
+                animal.hearingRange = UnityEngine.Random.Range(animal.minHearing, animal.maxHearing);
+
+                // Strength
+                animal.strength = UnityEngine.Random.Range(animal.minStrength, animal.maxStrength);
+
+                // Attack damage depends on strength
+                animal.CalculateAttackDamage();
+                //animal.attackDamage = animal.strength * UnityEngine.Random.Range(1.5f, 2.5f);
+
+
             }
 
             yield return new WaitForEndOfFrame();

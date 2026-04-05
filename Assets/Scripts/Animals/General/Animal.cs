@@ -9,8 +9,29 @@ public enum Species
 
 public class Animal : MonoBehaviour
 {
+
+    /*
+    public float minSpeed;
+    public float maxSpeed;
+
+    public float minSize;
+    public float maxSize;
+
+    public float minSight;
+    public float maxSight;
+
+    public float minHearing;
+    public float maxHearing;
+    */
+
+
+
     [Header("Species")]
     public Species species;
+
+    [Header("Combat")]
+    public bool canAttack = true;
+    public float attackDamage;  
 
     [Header("Aging")]
     public float age = 0f;
@@ -26,15 +47,51 @@ public class Animal : MonoBehaviour
     public bool IsMale;
 
     [Header("Senses")]
+    public float sightRange;
+    public float hearingRange;
+
+    /*
+    [Header("Senses")]
     public float sightRange = 40f;
     public float hearingRange = 10f;
 
+    [Header("Stat Ranges")]
+    */
+
+    // Speed
+    public float minSpeed;
+    public float maxSpeed;
+
+    // Sight
+    public float minSight;
+    public float maxSight;
+
+    // Hearing
+    public float minHearing;
+    public float maxHearing;
+
+    // Strength
+    public float minStrength;
+    public float maxStrength;
+
+    //public float attackDamage;
+    
+
+    /*
     [Header("Forces")]
     public float speed = 2f;
     public float runningSpeed = 4f;
-    public float size = 1f; //I guess this well be equivalent to hp in the future... right now scale
+    //public float size = 1f; //I guess this well be equivalent to hp in the future... right now scale
     public float strength = 1f;
     public float attackDamage = 20f;
+    */
+
+    [Header("Forces")]
+    public float speed;
+    public float runningSpeed; //= animal.speed * 2f 
+    public float size = 1f;
+    public float strength;
+   
 
     [Header("Hearing")]
     public bool isMoving{get;private set;}
@@ -54,12 +111,22 @@ public class Animal : MonoBehaviour
         age += Time.deltaTime * agingSpeed;
     }
 
+    /*
+    
     public virtual void GetStats(out float speed, out float size, out float sight, out float hearing)
     {
         speed = this.speed;
         size = this.size;
         sight = this.sightRange;
         hearing = this.hearingRange;
+    }
+    */
+
+    public virtual void GetStats(out float speed, out float sight, out float hearing)
+    {
+    speed = this.speed;
+    sight = this.sightRange;
+    hearing = this.hearingRange;
     }
 
     public virtual void SetMovementState(bool moving, float speed){
@@ -71,4 +138,16 @@ public class Animal : MonoBehaviour
     {
         return needs.healthLevel;
     }
+
+    public virtual void CalculateAttackDamage()
+    {
+        if (!canAttack)
+        {
+            attackDamage = 0f;
+            return;
+        }
+
+        attackDamage = strength * UnityEngine.Random.Range(1.5f, 2.5f);
+    }
+
 }

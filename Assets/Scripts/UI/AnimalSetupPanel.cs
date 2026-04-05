@@ -4,6 +4,11 @@ using TMPro;
 
 public class AnimalSetupPanel : MonoBehaviour
 {
+    public Slider amountSlider;
+    public int amount => (int)amountSlider.value;
+
+
+    /*
 
     public Animal animal; 
     [Header("Info")]
@@ -92,4 +97,5 @@ public class AnimalSetupPanel : MonoBehaviour
     {
         hearingText.text = $"Hearing: {hearingSlider.value}";
     }
+    */
 }
