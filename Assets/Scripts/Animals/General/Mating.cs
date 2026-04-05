@@ -236,6 +236,8 @@ public class Mating : MonoBehaviour
         babyAnimal.speed = pendingBabySpeed;
         babyAnimal.sightRange = pendingBabySight;
         babyAnimal.hearingRange = pendingBabyHearing; 
+
+        SetupCub(baby);
     }
 
     private void SpawnBabyNow(Animal partnerAnimal)
@@ -251,6 +253,8 @@ public class Mating : MonoBehaviour
         babyAnimal.speed = (animal.speed + partnerAnimal.speed) / 2f;
         babyAnimal.sightRange = (animal.sightRange + partnerAnimal.sightRange) / 2f;
         babyAnimal.hearingRange = (animal.hearingRange + partnerAnimal.hearingRange) / 2f;
+
+        SetupCub(baby);
     }
 
     private bool HasEnoughNeeds(AnimalNeeds targetNeeds)
@@ -274,6 +278,38 @@ public class Mating : MonoBehaviour
             0f,
             targetNeeds.maxStamina
         );
+    }
+
+    private void SetupCub(GameObject baby)
+    {
+        AnimalBehaviour adultBehaviour = baby.GetComponent<AnimalBehaviour>();
+        if(adultBehaviour != null)
+        {
+            adultBehaviour.enabled = false;
+        }
+
+        AnimalBehaviour motherBehaviour = animal.IsMale
+        ? null
+        : GetComponent<AnimalBehaviour>();
+
+        CubBehaviour cub = null;
+        switch (animal.species)
+        {
+             case Species.bear:
+            cub = baby.AddComponent<BearCubBehaviour>();
+            break;
+        case Species.wolf:
+            cub = baby.AddComponent<WolfCubBehaviour>();
+            break;
+        case Species.moose:
+            cub = baby.AddComponent<MooseCubBehaviour>();
+            break;
+        }
+        if (cub != null && motherBehaviour != null)
+        {
+            cub.mother = motherBehaviour;
+        }
+
     }
 
 

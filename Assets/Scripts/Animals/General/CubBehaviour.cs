@@ -23,6 +23,7 @@ public class CubBehaviour : MonoBehaviour
         anim = GetComponent<Animator>();
         animalData = GetComponent<Animal>();
 
+        Debug.Log(animalData.species + " cub spawned, following mother: " + (mother != null ? mother.gameObject.name : "NONE"));
         agent.speed = animalData.speed * 0.6f;
         transform.localScale = Vector3.one * animalData.size * 0.4f;
     }
@@ -37,12 +38,14 @@ public class CubBehaviour : MonoBehaviour
 
         if(age >= animalData.grownUpAge)
         {
+            Debug.Log(animalData.species + " cub becoming adult!");
             BecomeAdult();
             return;
         }
 
         if (mother.isDead || mother == null)
         {
+            Debug.Log(animalData.species + " cub lost mother, becoming adult early!");
             BecomeAdult();
             return;
         }
