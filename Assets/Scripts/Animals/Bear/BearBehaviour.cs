@@ -95,7 +95,7 @@ public class BearBehaviour : AnimalBehaviour
         {
             Debug.Log("Bear heard: " + hearing.HeardAnimal.name);
         }
-        if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt && CurrentState != State.Fleeing)
+        if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt)
         {
             memoryDecisionCooldown -= Time.deltaTime;
             // If the bear is more thirsty than hungry, switch to drink state, if more hungry than thirsty, switch to eat state
