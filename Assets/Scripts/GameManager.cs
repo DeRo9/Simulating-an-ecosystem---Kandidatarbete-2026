@@ -195,7 +195,14 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < setup.amount; i++)
         {
             Vector3 randomPoint = GetPrecomputedSpawnPoint();
-            randomPoint += new Vector3(UnityEngine.Random.Range(-spawnSpacing, spawnSpacing), 2f, UnityEngine.Random.Range(-spawnSpacing, spawnSpacing));
+            randomPoint += new Vector3(UnityEngine.Random.Range(-spawnSpacing, spawnSpacing), 0f, UnityEngine.Random.Range(-spawnSpacing, spawnSpacing));
+
+            NavMeshHit hit;
+            if(NavMesh.SamplePosition(randomPoint, out hit, 10f, NavMesh.AllAreas)) // Ensure the point is on the NavMesh and adjust height,
+                                                                                    // otherwise might spawn outside of the terrain
+            {
+                randomPoint = hit.position + Vector3.up * 2f;
+            }
             
             GameObject animalObj = Instantiate(animalPrefab, randomPoint, Quaternion.identity, parentFolder);
             Animal animal = animalObj.GetComponent<Animal>();
