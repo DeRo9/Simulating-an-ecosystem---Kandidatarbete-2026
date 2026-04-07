@@ -22,8 +22,9 @@ public class MooseBehaviour : AnimalBehaviour
     float memoryDecisionCooldown = 0f;
 
     [Header("Layers")]
-    [SerializeField]
-    LayerMask foodLayer;
+    [SerializeField] LayerMask foodLayer;
+
+
 
     protected override void Start()
     {
@@ -145,49 +146,44 @@ public class MooseBehaviour : AnimalBehaviour
     }
 
 
-
-
     // Finds the closest food item within the detection radius and sets it as the target
+
+    private Collider[] hits = new Collider[10];
     bool FindFood()
     {
-
         if(foodSearchingCooldown > 0f)
         {
             foodSearchingCooldown -= Time.deltaTime;
             return foodTarget != null;
         }
-        foodSearchingCooldown = 0.5f;
 
-        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange, foodLayer);
+        foodSearchingCooldown = 1.5f;
+
+        int hitCount = Physics.OverlapSphereNonAlloc(transform.position, animal.sightRange, hits, foodLayer);
 
         float closestDistance = Mathf.Infinity;
         GameObject closestFood = null;
 
-        foreach (Collider hit in hits)
+        for (int i = 0; i < hitCount; i++)
         {
+            Collider hit = hits[i];
 
-
+            if (hit == null)
+                continue;
+            if (!hit.CompareTag("Plant"))
+                continue;
             if (!fov.IsInFOV(hit.transform))
+                continue;
+            
+            memory.RememberFood(hit.transform.position);
+
+            float distance = Vector3.Distance(transform.position, hit.transform.position);
+            if (distance < closestDistance)
             {
-                continue; // Skip if not in FOV
+                closestDistance = distance;
+                closestFood = hit.gameObject;
             }
-
-            Debug.Log("Moose found plant.");
-            if (hit.CompareTag("Plant"))
-            {
-                memory.RememberFood(hit.transform.position); //AnimalMemory Food
-                Debug.Log("Moose remembered food");
-                float distance = Vector3.Distance(transform.position, hit.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestFood = hit.gameObject;
-                }
-
-            }
-
         }
-    
 
         if(closestFood != null)
         {

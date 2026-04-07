@@ -113,8 +113,6 @@ public class BearBehaviour : AnimalBehaviour
                 
                 if (FindPrey())
                     ChangeState(State.Hunt);
-                else if (FindCarcass())
-                    ChangeState(State.Eat);
                 else if (FindFood())
                     ChangeState(State.Eat);
                 else if (memoryDecisionCooldown <=0)
@@ -152,37 +150,47 @@ public class BearBehaviour : AnimalBehaviour
     }
 
     // Finds the closest food item within the detection radius and sets it as the target
+    private Collider[] hits = new Collider[10];
+
     bool FindFood()
     {
 
-        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange, foodLayer);
+        if(foodSearchingCooldown > 0f)
+        {
+            foodSearchingCooldown -= Time.deltaTime;
+            return foodTarget != null;
+        }
+
+        foodSearchingCooldown = 1.5f;
+
+        int hitCount = Physics.OverlapSphereNonAlloc(transform.position, animal.sightRange, hits, foodLayer);
 
         float closestDistance = Mathf.Infinity;
         GameObject closestFood = null;
 
-        foreach (Collider hit in hits)
+        for (int i = 0; i < hitCount; i++)
         {
+            Collider hit = hits[i];
 
-            Debug.Log("Bear found plant.");
-            if (hit.CompareTag("Plant"))
+            if (hit == null)
+                continue;
+            if (!hit.CompareTag("Plant") && !hit.CompareTag("carcass"))
+                continue;
+            if (!fov.IsInFOV(hit.transform))
+                continue;
+            
+            memory.RememberFood(hit.transform.position);
+
+            float distance = Vector3.Distance(transform.position, hit.transform.position);
+            if (distance < closestDistance)
             {
-                float distance = Vector3.Distance(transform.position, hit.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestFood = hit.gameObject;
-                }
-
+                closestDistance = distance;
+                closestFood = hit.gameObject;
             }
-
         }
 
         if (closestFood != null)
         {
-            if (memory != null)
-            {
-                memory.RememberFood(closestFood.transform.position);
-            }
             foodTarget = closestFood;
             return true;
         }
@@ -496,59 +504,6 @@ public class BearBehaviour : AnimalBehaviour
         waitingForDeathAnimation = true;
         deathWaitTimer = deathWaitDuration;
 
-    }
-
-    // Finds the closest food item within the detection radius and sets it as the target
-    bool FindCarcass()
-    {
-
-        if (foodSearchingCooldown > 0f)
-        {
-            foodSearchingCooldown -= Time.deltaTime;
-            return foodTarget != null;
-        }
-        foodSearchingCooldown = 0.5f;
-
-        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange, carcassLayer);
-
-        float closestDistance = Mathf.Infinity;
-        GameObject closestFood = null;
-
-        foreach (Collider hit in hits)
-        {
-
-
-            if (!fov.IsInFOV(hit.transform))
-            {
-                continue; // Skip if not in FOV
-            }
-
-
-            if (hit.CompareTag("carcass"))
-            {
-                Debug.Log("Bear found carcass.");
-                float distance = Vector3.Distance(transform.position, hit.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestFood = GetCarcassRoot(hit.gameObject);
-                }
-
-            }
-
-        }
-
-        if (closestFood != null)
-        {
-            foodTarget = closestFood;
-            if (memory != null)
-            {
-                memory.RememberFood(closestFood.transform.position);
-            }
-            return true;
-        }
-
-        return false;
     }
 
     GameObject GetCarcassRoot(GameObject obj)
