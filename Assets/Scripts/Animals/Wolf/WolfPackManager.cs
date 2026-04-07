@@ -6,6 +6,12 @@ public class WolfPackManager : MonoBehaviour
 {
     public Wolf leader;
     public List<Wolf> members = new List<Wolf>();
+    public int DebugCurrentPackSize;
+
+    private void Update()
+    {
+        DebugCurrentPackSize = countCurrentPackSize();
+    }
 
     public int GetMaxPackSize()
     {
@@ -22,6 +28,18 @@ public class WolfPackManager : MonoBehaviour
     public Vector3 GetPackDirection()
     {
         return leader.transform.forward;
+    }
+
+    public int countCurrentPackSize()
+    {
+        if (leader != null)
+        {
+            return members.Count + 1; // Include leader
+        }
+        else
+        {
+            return members.Count; // No leader, just count members
+        }
     }
 
 }
