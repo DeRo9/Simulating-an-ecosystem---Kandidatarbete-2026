@@ -12,11 +12,11 @@ public class Bear : Animal
         grownUpAge = 8f;
         oldAge = 16f;
 
-        size = 1.5f;
+        size = 1f;
 
         // Speed
         minSpeed = 2f;
-        maxSpeed = 3.5f;
+        maxSpeed = 3f;
 
         // Sight
         minSight = 50f;

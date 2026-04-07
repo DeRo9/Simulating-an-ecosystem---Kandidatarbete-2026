@@ -10,19 +10,7 @@ public enum Species
 public class Animal : MonoBehaviour
 {
 
-    /*
-    public float minSpeed;
-    public float maxSpeed;
 
-    public float minSize;
-    public float maxSize;
-
-    public float minSight;
-    public float maxSight;
-
-    public float minHearing;
-    public float maxHearing;
-    */
 
 
 
@@ -109,6 +97,8 @@ public class Animal : MonoBehaviour
     protected virtual void Update()
     {
         age += Time.deltaTime * agingSpeed;
+
+        //UpdateSize(); //??
     }
 
     /*
@@ -121,7 +111,7 @@ public class Animal : MonoBehaviour
         hearing = this.hearingRange;
     }
     */
-
+    
     public virtual void GetStats(out float speed, out float sight, out float hearing)
     {
     speed = this.speed;
@@ -147,7 +137,10 @@ public class Animal : MonoBehaviour
             return;
         }
 
-        attackDamage = strength * UnityEngine.Random.Range(1.5f, 2.5f);
+        attackDamage = strength * UnityEngine.Random.Range(1f, 2f);
     }
+
+
+
 
 }

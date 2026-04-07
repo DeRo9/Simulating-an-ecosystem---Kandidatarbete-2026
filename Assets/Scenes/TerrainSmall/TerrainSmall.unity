@@ -285,23 +285,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 578f66b386e65d843a23cc01a6b14d31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalAttributeSetup
-  animal: {fileID: 354103798133286141, guid: 78b0c3200397bff4c991a44661ad17cb, type: 3}
-  animalName: Bears
-  attributePanel: {fileID: 800691035}
+  animalName: Bear
   amountSlider: {fileID: 1532711113}
   amountText: {fileID: 614271282}
-  speedText: {fileID: 1944940096}
-  sizeText: {fileID: 515949738}
-  sightText: {fileID: 1375846943}
-  hearingText: {fileID: 885249827}
-  speedSlider: {fileID: 1426083433}
-  sizeSlider: {fileID: 564284123}
-  sightSlider: {fileID: 34181465}
-  hearingSlider: {fileID: 1147817253}
-  baseSpeed: 5
-  baseSize: 1
-  baseSight: 0
-  baseHearing: 0
 --- !u!1 &18864592
 GameObject:
   m_ObjectHideFlags: 0
@@ -7475,23 +7461,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 578f66b386e65d843a23cc01a6b14d31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalAttributeSetup
-  animal: {fileID: -8542277066833054746, guid: 9becdc219df951242a102e5c7b698b2d, type: 3}
-  animalName: Wolves
-  attributePanel: {fileID: 1029062169}
+  animalName: Wolf
   amountSlider: {fileID: 1277404427}
   amountText: {fileID: 568052822}
-  speedText: {fileID: 1085827010}
-  sizeText: {fileID: 745048815}
-  sightText: {fileID: 1071337874}
-  hearingText: {fileID: 1434431285}
-  speedSlider: {fileID: 1642834293}
-  sizeSlider: {fileID: 1525176368}
-  sightSlider: {fileID: 842782152}
-  hearingSlider: {fileID: 635293669}
-  baseSpeed: 5
-  baseSize: 1
-  baseSight: 0
-  baseHearing: 0
 --- !u!1 &762419328
 GameObject:
   m_ObjectHideFlags: 0
@@ -14476,23 +14448,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 578f66b386e65d843a23cc01a6b14d31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalAttributeSetup
-  animal: {fileID: 4130331568563197886, guid: 673d635672c542b44af2717b4c832882, type: 3}
   animalName: Moose
-  attributePanel: {fileID: 2009409993}
   amountSlider: {fileID: 77652750}
   amountText: {fileID: 1582591253}
-  speedText: {fileID: 1119735522}
-  sizeText: {fileID: 361105794}
-  sightText: {fileID: 1802351990}
-  hearingText: {fileID: 100410771}
-  speedSlider: {fileID: 1899563142}
-  sizeSlider: {fileID: 1184127865}
-  sightSlider: {fileID: 1288982747}
-  hearingSlider: {fileID: 410177370}
-  baseSpeed: 5
-  baseSize: 1
-  baseSight: 0
-  baseHearing: 0
 --- !u!1 &1492156989
 GameObject:
   m_ObjectHideFlags: 0

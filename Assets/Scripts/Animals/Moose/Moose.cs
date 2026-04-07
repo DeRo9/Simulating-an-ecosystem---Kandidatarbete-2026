@@ -16,7 +16,7 @@ public class Moose : Animal
 
         // Speed
         minSpeed = 1.5f;
-        maxSpeed = 3f;
+        maxSpeed = 2f;
 
         // Sight
         minSight = 40f;
