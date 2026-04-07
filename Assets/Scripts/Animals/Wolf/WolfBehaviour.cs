@@ -109,12 +109,16 @@ public class WolfBehaviour : AnimalBehaviour
 
     public void ApplySeperation()
     {
+        if(pack == null || pack.members == null) return; // null check to avoid errors if the wolf is not in a pack for some reason
+
         Vector3 separation = Vector3.zero;
         foreach (Wolf member in pack.members)
         {
-            if (member != wolf) //Does not create this force upon itself
+            if (member != null && member != wolf) // Does not create this force upon itself
             {
                 float distance = Vector3.Distance(transform.position, member.transform.position);
+
+                if (distance < 0.0001f) continue; // Avoid division by zero
 
                 if (distance < 2f && SeasonManager.Instance.IsSummer)
                 {
@@ -127,7 +131,8 @@ public class WolfBehaviour : AnimalBehaviour
             }
         }
 
-        agent.Move(separation * Time.deltaTime);
+        if(agent != null && agent.isOnNavMesh)
+            agent.Move(separation * Time.deltaTime);
     }
 
 

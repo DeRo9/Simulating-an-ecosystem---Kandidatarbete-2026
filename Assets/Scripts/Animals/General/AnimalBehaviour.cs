@@ -341,6 +341,9 @@ public abstract class AnimalBehaviour : MonoBehaviour
                 ChangeState(State.Wander);
                 return;
             }
+
+            DrinkState(); // If somehow the animal are at the water but still thirsty,
+                          // try to move to the water again (otherwise animal might get stuck in drinking state)
         }
 
         else
