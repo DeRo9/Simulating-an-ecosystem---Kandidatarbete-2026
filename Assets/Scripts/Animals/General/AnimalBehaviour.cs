@@ -48,11 +48,12 @@ public abstract class AnimalBehaviour : MonoBehaviour
     public bool IsPregnant => CurrentState == State.Pregnant;
 
     [Header("Water Layer")]
-    [SerializeField]
-    LayerMask waterLayer;
+    [SerializeField] LayerMask waterLayer;
 
     public static event Action OnPreyDeath;
     public static event Action OnPredatorDeath;
+
+    
     protected virtual void Start()
     {
         animal = GetComponent<Animal>();
