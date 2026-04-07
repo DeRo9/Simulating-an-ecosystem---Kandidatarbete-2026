@@ -9,6 +9,7 @@ public class InformationUI : MonoBehaviour
     public Slider thirstSlider;
     public Slider staminaSlider;
     public Slider healthSlider;
+    public Slider pregnancySlider;
 
     [Header("UI")]
     public TMP_Text animalType;
@@ -42,6 +43,10 @@ public class InformationUI : MonoBehaviour
             staminaSlider.maxValue = current.maxStamina;
             staminaSlider.value = current.staminaLevel;
 
+            float pregnancyValue = current.GetComponent<Mating>()?.GetPregnancyTimer() ?? 0f;
+            pregnancySlider.maxValue = 30f;
+            pregnancySlider.value = pregnancyValue;
+
         }
     }
 
@@ -63,7 +68,9 @@ public class InformationUI : MonoBehaviour
         current = animal.needs;
         animalType.text = animal.species.ToString();
         panel.SetActive(true);
+
         ShowGender(animal);
+        ShowPregnancy(animal);
     }
 
     public void ShowGender(Animal animal)
@@ -86,9 +93,16 @@ public class InformationUI : MonoBehaviour
         imageFemale.SetActive(false);
     }
 
-    public void ShowPregnancy()
+    public void ShowPregnancy(Animal animal)
     {
-
+        if (animal.IsMale)
+        {
+            pregnancySlider.gameObject.SetActive(false);
+        }
+        else
+        {
+            pregnancySlider.gameObject.SetActive(true);
+        }
     }
 
 
