@@ -308,7 +308,6 @@ private void FollowAnimal()
         return;
     }
 
-    // Calculate position using the orbit angle instead of the animal's forward
     Vector3 offset = Quaternion.Euler(0, orbitAngle, 0) * Vector3.back * followDistance;
     Vector3 targetPosition = followTarget.position + offset + Vector3.up * followHeight;
 
@@ -320,7 +319,6 @@ private void FollowAnimal()
         Vector2 delta = lookDeltaAction.ReadValue<Vector2>();
         followDistance = Mathf.Clamp(followDistance - delta.y * 0.1f, 3f, 30f);
         
-        // Update the orbit angle instead of rotating once
         orbitAngle += delta.x * sensitivity * Time.deltaTime * 50f;
     }
 }
