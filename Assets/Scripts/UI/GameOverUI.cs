@@ -11,6 +11,10 @@ public class GameOverUI : MonoBehaviour
 
     void Start()
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        Time.timeScale = 1f;
+
         bearsGraph.DrawGraph(SimulationResults.bearsHistory, SimulationResults.simulationLength);
         wolvesGraph.DrawGraph(SimulationResults.wolvesHistory, SimulationResults.simulationLength);
         mooseGraph.DrawGraph(SimulationResults.mooseHistory, SimulationResults.simulationLength);

@@ -1,3 +1,4 @@
+using System.Drawing;
 using UnityEngine;
 
 public class Bear : Animal
@@ -5,22 +6,38 @@ public class Bear : Animal
     protected override void Awake()
     {
         species = Species.bear;
-        speed = 3f;
+
+        canAttack = true;
+
         grownUpAge = 8f;
         oldAge = 16f;
-        size = 1.5f;
-        sightRange = 60f;
-        hearingRange = 50f;
-        attackDamage = 40f;
+
+        size = 1f;
+
+        minSpeed = 2f;
+        maxSpeed = 3f;
+
+        minSight = 50f;
+        maxSight = 70f;
+
+        minHearing = 45f;
+        maxHearing = 55f;
+
+        minStrength = 10f;
+        maxStrength = 18f;
+
+
 
         base.Awake();
-    }
+    }   
 
-    public override void GetStats(out float speed, out float size, out float sight, out float hearing)
+    public override void GetStats(out float speed, out float sight, out float hearing)
     {
         speed = this.speed;
-        size = this.size;
         sight = this.sightRange;
         hearing = this.hearingRange;
     }
+
+
+
 }

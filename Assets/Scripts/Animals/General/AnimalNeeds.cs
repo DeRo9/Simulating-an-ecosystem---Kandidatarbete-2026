@@ -22,6 +22,8 @@ public class AnimalNeeds : MonoBehaviour
     [SerializeField] private float staminaDecreaseRate = 1f;
     [SerializeField] private float staminaIncreaseRate = 1.5f;
 
+    public float hibernationMultiplier = 1f;
+
     public bool isHungry => hungerLevel < maxHunger * 0.8f;
     public bool isHungryBearH => hungerLevel < maxHunger * 0.5f; 
     public bool isThirsty => thirstLevel < maxThirst * 0.5f;
@@ -56,7 +58,7 @@ public class AnimalNeeds : MonoBehaviour
             hungerMultiplier = 1.5f;
         }
 
-        hungerLevel -= hungerDecreaseRate * Time.deltaTime * hungerMultiplier;
+        hungerLevel -= hungerDecreaseRate * Time.deltaTime * hungerMultiplier * hibernationMultiplier;
         hungerLevel = Mathf.Clamp(hungerLevel, 0f, maxHunger);
 
 
@@ -83,7 +85,7 @@ public class AnimalNeeds : MonoBehaviour
             noMoreStamina = false;
         }
 
-        thirstLevel -= thirstDecreaseRate * Time.deltaTime * thirstMultiplier;
+        thirstLevel -= thirstDecreaseRate * Time.deltaTime * thirstMultiplier * hibernationMultiplier;
         thirstLevel = Mathf.Clamp(thirstLevel, 0f, maxThirst);
 
 

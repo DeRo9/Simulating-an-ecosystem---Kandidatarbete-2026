@@ -2,7 +2,7 @@ using System;
 using System.Transactions;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.InputSystem.Android;
+
 
 
 public abstract class AnimalBehaviour : MonoBehaviour
@@ -17,7 +17,9 @@ public abstract class AnimalBehaviour : MonoBehaviour
         Hunt, // For animals that hunt, wolves and bears
         Fleeing, // For animals that flee (moose)
         Pregnant,
+        Hibernate,
         Dead,
+        Defend, // For wolfs to defend against bears
     }
 
     [Header("Other")]
@@ -47,11 +49,12 @@ public abstract class AnimalBehaviour : MonoBehaviour
     public bool IsPregnant => CurrentState == State.Pregnant;
 
     [Header("Water Layer")]
-    [SerializeField]
-    LayerMask waterLayer;
+    [SerializeField] LayerMask waterLayer;
 
     public static event Action OnPreyDeath;
     public static event Action OnPredatorDeath;
+
+    
     protected virtual void Start()
     {
         animal = GetComponent<Animal>();
@@ -110,6 +113,12 @@ public abstract class AnimalBehaviour : MonoBehaviour
             case State.Pregnant:
                 PregnantState();
                 break;
+            case State.Hibernate:
+                HibernationState();
+                break;
+            case State.Defend:
+                DefendState();
+                break;
             case State.Dead:
                 // Do nothing
                 break;
@@ -165,8 +174,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
             needs.RegenerateStamina();
         }
 
-
-        // State machine logic
         switch (CurrentState)
         {
             case State.Idle:
@@ -189,6 +196,12 @@ public abstract class AnimalBehaviour : MonoBehaviour
                 break;
             case State.Pregnant:
                 UpdatePregnant();
+                break;
+            case State.Hibernate:
+                HibernationState();
+                break;
+            case State.Defend:
+                UpdateDefend();
                 break;
             case State.Dead:
                 // Do nothing i guess? 
@@ -219,7 +232,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
         {
             if (hit.CompareTag("Water"))
             {
-                Debug.Log("Detected water collider");
                 float distance = Vector3.Distance(transform.position, hit.transform.position);
                 if (distance < closestDistance)
                 {
@@ -334,6 +346,9 @@ public abstract class AnimalBehaviour : MonoBehaviour
                 ChangeState(State.Wander);
                 return;
             }
+
+            DrinkState(); // If somehow the animal are at the water but still thirsty,
+                          // try to move to the water again (otherwise animal might get stuck in drinking state)
         }
 
         else
@@ -351,6 +366,11 @@ public abstract class AnimalBehaviour : MonoBehaviour
         if (agent != null && agent.enabled)
             agent.isStopped = true;
     }
+
+    protected virtual void HibernationState() { return; }
     protected virtual void UpdatePregnant() { return; }
+
+    protected virtual void DefendState() { return; }
+    protected virtual void UpdateDefend() { return; }
 
 }

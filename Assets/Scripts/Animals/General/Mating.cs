@@ -75,6 +75,10 @@ public class Mating : MonoBehaviour
         TryFindMate();
     }
 
+    public float GetPregnancyTimer()
+    {
+        return pregnancyTimer;
+    }
 
     private void TryFindMate()
     {
