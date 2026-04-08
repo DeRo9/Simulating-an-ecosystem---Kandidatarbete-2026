@@ -8,7 +8,7 @@ public class FreeCamera : MonoBehaviour
 {
 
     [Header("Default Camera")]
-    public Vector3 defaultPosition = new Vector3(0, 50, -50);
+    public Vector3 defaultPosition = new Vector3(0, 20, -50);
     public Vector3 defaultRotation = new Vector3(45, 0, 0);
 
     private Transform selectedAnimal; // Selected but not yet followed
@@ -349,10 +349,8 @@ private void FollowAnimal()
     private void ResetCamera()
 {
     StopFollowing();
-    transform.position = defaultPosition;
-    transform.rotation = Quaternion.Euler(defaultRotation);
-    targetFOV = 60f;
-    Debug.Log("Camera reset to default");
+    transform.position = new Vector3(transform.position.x, 20, transform.position.z);
+    Debug.Log("Camera height reset");
 }
 
 }
