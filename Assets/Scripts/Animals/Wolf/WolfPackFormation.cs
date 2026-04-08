@@ -105,7 +105,9 @@ public class WolfPackFormation : MonoBehaviour
 
     private void JoinPack(WolfPackManager existingPack)
     {
+        if (existingPack == null) return;
         if (existingPack.members.Count >= existingPack.GetMaxPackSize()) return;
+        
 
         existingPack.members.Add(wolf);
         wolf.pack = existingPack;

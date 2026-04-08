@@ -29,6 +29,8 @@ public class WolfBehaviour : AnimalBehaviour
 
     bool waitingForDeathAnimation = false;
 
+    const int DefendThreshold = 5; // If the pack has 5 or more members, they will choose to defend against bears instead of fleeing
+
     GameObject foodTarget;
     GameObject pendingCarcass;
 
@@ -109,7 +111,7 @@ public class WolfBehaviour : AnimalBehaviour
 
     public void ApplySeperation()
     {
-        if(pack == null || pack.members == null) return; // null check to avoid errors if the wolf is not in a pack for some reason
+        if (pack == null || pack.members == null) return; // null check to avoid errors if the wolf is not in a pack for some reason
 
         Vector3 separation = Vector3.zero;
         foreach (Wolf member in pack.members)
@@ -131,7 +133,7 @@ public class WolfBehaviour : AnimalBehaviour
             }
         }
 
-        if(agent != null && agent.isOnNavMesh)
+        if (agent != null && agent.isOnNavMesh)
             agent.Move(separation * Time.deltaTime);
     }
 
@@ -139,6 +141,12 @@ public class WolfBehaviour : AnimalBehaviour
     protected override void Update()
     {
         pack = wolf.pack;
+
+        base.Update();
+
+        if (isDead)
+            return;
+
         if (pack != null && wolf != null && !wolf.isLeader && pack.leader != null)
         {
             if (CurrentState != State.Hunt && CurrentState != State.Eat)
@@ -152,11 +160,6 @@ public class WolfBehaviour : AnimalBehaviour
         {
             huntCooldown = huntCooldown * 0.5f;
         }
-
-        base.Update();
-
-        if (isDead)
-            return;
 
         if (CurrentState == State.Pregnant)
             return;
@@ -190,7 +193,7 @@ public class WolfBehaviour : AnimalBehaviour
                 if (animal != null && bear.CurrentTarget == gameObject)
                 {
                     enemy = heard.gameObject;
-                    ChangeState(State.Fleeing);
+                    DecideFightOrFlee();
                 }
             }
         }
@@ -403,7 +406,7 @@ public class WolfBehaviour : AnimalBehaviour
             LostPrey();
         }
         enemy = predator;
-        ChangeState(State.Fleeing);
+        DecideFightOrFlee();
     }
 
     public void OnNoLongerHunted(GameObject predator)
@@ -647,7 +650,7 @@ public class WolfBehaviour : AnimalBehaviour
         foodSearchingCooldown = 1.5f;
 
         int hitCount = Physics.OverlapSphereNonAlloc(transform.position, animal.sightRange, hits, carcassLayer);
-        
+
         float closestDistance = Mathf.Infinity;
         GameObject closestFood = null;
 
@@ -704,7 +707,7 @@ public class WolfBehaviour : AnimalBehaviour
         float bestScore = float.MinValue;
         Vector2Int currentChunk = memory.GetChunk(transform.position);
 
-        float winterModifier = SeasonManager.Instance.IsWinter ? 0.5f : 1f; 
+        float winterModifier = SeasonManager.Instance.IsWinter ? 0.5f : 1f;
         float dangerWeight = Mathf.Lerp(3f, 0.3f, hunger);
 
         for (int x = 0; x < memory.GetGridSizeX(); x++)
@@ -737,6 +740,123 @@ public class WolfBehaviour : AnimalBehaviour
         }
 
         return bestChunk;
+    }
+
+
+    void DecideFightOrFlee()
+    {
+        if (pack == null || pack.countCurrentPackSize() < DefendThreshold)
+        {
+            ChangeState(State.Fleeing);
+            return;
+        }
+
+        AlertPackDefend();
+        ChangeState(State.Defend);
+    }
+
+    void AlertPackDefend()
+    {
+        if (pack == null) return;
+
+        foreach (Wolf member in pack.members)
+        {
+            if (member == null || member == wolf) continue;
+
+            WolfBehaviour wb = member.GetComponent<WolfBehaviour>();
+            if (wb != null)
+            {
+                wb.JoinDefendAgainst(enemy);
+            }
+        }
+    }
+
+    void JoinDefendAgainst(GameObject bear)
+    {
+        if (bear == null) return;
+        enemy = bear;
+        ChangeState(State.Defend);
+    }
+
+    protected override void DefendState()
+    {
+        agent.isStopped = false;
+        agent.speed = animal.runningSpeed;
+    }
+
+    protected override void UpdateDefend()
+    {
+        // If there is no enemy, switch back to wandering
+        if (enemy == null)
+        {
+            ChangeState(State.Wander);
+            return;
+        }
+
+        BearBehaviour bear = enemy.GetComponentInParent<BearBehaviour>();
+        if (bear != null && bear.isDead)
+        {
+            enemy = null;
+            agent.speed = animal.speed;
+            ChangeState(State.Wander);
+            return;
+        }
+
+        // If the pack is too small, switch to fleeing instead of defending
+        if (pack == null || pack.countCurrentPackSize() < DefendThreshold)
+        {
+            ChangeState(State.Fleeing);
+            return;
+        }
+
+        float distanceToBear = Vector3.Distance(transform.position, enemy.transform.position);
+
+        if (distanceToBear < attackRange)
+        {
+            agent.isStopped = true;
+            attackTimer += Time.deltaTime;
+
+            if (attackTimer >= attackInterval)
+            {
+                anim.SetTrigger("Attack");
+                DamageBear();
+                attackTimer = 0;
+            }
+        }
+        else
+        {
+            agent.isStopped = false;
+            agent.SetDestination(enemy.transform.position);
+        }
+
+    }
+
+    void DamageBear()
+    {
+        if (enemy != null)
+        {
+            BearBehaviour bear = enemy.GetComponentInParent<BearBehaviour>();
+            if (bear != null && !bear.isDead)
+            {
+                bear.InflictDamage(animal.attackDamage);
+            }
+        }
+    }
+
+    public override void OnDeath()
+    {
+        if(wolf.isLeader && pack != null)
+        {
+            pack.OnLeaderDeath();
+        } else if (pack != null)
+        {
+            pack.members.Remove(wolf);
+        }
+
+        wolf.pack = null;
+        wolf.isLeader = false;
+
+        base.OnDeath();
     }
 
 }
