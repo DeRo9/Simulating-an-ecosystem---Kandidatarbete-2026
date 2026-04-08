@@ -5,6 +5,36 @@ using TMPro;
 public class AnimalSetupPanel : MonoBehaviour
 {
 
+    public string animalName;
+
+    public Slider amountSlider;
+    public TextMeshProUGUI amountText;
+
+    public int amount => (int)amountSlider.value;
+
+    private void Start()
+    {
+        UpdateAmountText();
+
+        // Automatically update when slider changes
+        amountSlider.onValueChanged.AddListener(delegate { UpdateAmountText(); });
+    }
+
+    public void UpdateAmountText()
+    {
+        amountText.text = $"Amount of {animalName}: {amount}";
+    }
+
+
+    /*
+    public Slider amountSlider;
+    public int amount => (int)amountSlider.value;
+    */
+    
+
+
+    /*
+
     public Animal animal; 
     [Header("Info")]
     public string animalName;
@@ -92,4 +122,5 @@ public class AnimalSetupPanel : MonoBehaviour
     {
         hearingText.text = $"Hearing: {hearingSlider.value}";
     }
+    */
 }
