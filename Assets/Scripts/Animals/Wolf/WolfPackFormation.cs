@@ -101,8 +101,6 @@ public class WolfPackFormation : MonoBehaviour
 
         wolf.isLeader = true;
         memberWolf.isLeader = false;
-
-        Debug.Log("New pack formed with leader: " + wolf.name + " and member: " + memberWolf.name);
     }
 
     private void JoinPack(WolfPackManager existingPack)
@@ -112,8 +110,6 @@ public class WolfPackFormation : MonoBehaviour
         existingPack.members.Add(wolf);
         wolf.pack = existingPack;
         wolf.isLeader = false;
-
-        Debug.Log(wolf.name + " joined pack led by " + existingPack.leader.name);
     }
 
     private void LeavePack() 
@@ -128,7 +124,5 @@ public class WolfPackFormation : MonoBehaviour
         wolf.pack.members.Remove(wolf);
         wolf.pack = null;
         wolf.isLeader = false;
-
-        Debug.Log(wolf.name + " left the pack.");
     }
 }

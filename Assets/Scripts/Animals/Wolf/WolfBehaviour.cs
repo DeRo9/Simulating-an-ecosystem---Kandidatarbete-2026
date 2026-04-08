@@ -6,7 +6,7 @@ public class WolfBehaviour : AnimalBehaviour
 {
 
     AnimalFOV fov;
-    WolfHearing hearing;
+    AnimalHearing hearing;
     float huntCooldown = 6f; // Time the wolf must wait after giving up on a hunt before it can hunt again
     [Header("Hunting")]
     [SerializeField]
@@ -56,7 +56,7 @@ public class WolfBehaviour : AnimalBehaviour
     {
         base.Start();
         fov = GetComponent<AnimalFOV>();
-        hearing = GetComponent<WolfHearing>();
+        hearing = GetComponent<AnimalHearing>();
 
         wolf = GetComponent<Wolf>();
         if (wolf != null)
@@ -189,7 +189,6 @@ public class WolfBehaviour : AnimalBehaviour
                 BearBehaviour bear = heard.GetComponent<BearBehaviour>(); // bear 
                 if (animal != null && bear.CurrentTarget == gameObject)
                 {
-                    Debug.Log("Wolf heard a bear");
                     enemy = heard.gameObject;
                     ChangeState(State.Fleeing);
                 }
@@ -220,7 +219,6 @@ public class WolfBehaviour : AnimalBehaviour
 
                     if (UnityEngine.Random.value < 0.2f)
                     {
-                        Debug.Log("Wolf explores instead of using memory");
                         ChangeState(State.Wander);
                         return;
                     }
@@ -233,7 +231,6 @@ public class WolfBehaviour : AnimalBehaviour
                             agent.SetDestination(memory.GetRandomPointInChunk(bestChunk));
                             ChangeState(State.Wander);
                         }
-                        Debug.Log("Wolf heading to remembered prey area");
                     }
                     else
                     {
@@ -294,7 +291,8 @@ public class WolfBehaviour : AnimalBehaviour
             MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
             if (moose != null)
             {
-                moose.OnBeingHunted(gameObject); // Notify the moose that it is being hunted
+                moose.RegisterWolfAttacker(this); 
+                moose.OnBeingHunted(gameObject);
             }
 
             return true;
@@ -500,7 +498,6 @@ public class WolfBehaviour : AnimalBehaviour
                 agent.isStopped = true;
                 anim.SetTrigger("Attack");
                 attackTimer = 0f;
-                Debug.Log("Wolf attacked prey");
             }
         }
     }
@@ -530,6 +527,7 @@ public class WolfBehaviour : AnimalBehaviour
             MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
             if (moose != null)
             {
+                moose.UnregisterWolfAttacker(this);
                 moose.OnNoLongerHunted(gameObject); // Notify the moose that it is no longer being hunted
             }
         }
@@ -622,7 +620,11 @@ public class WolfBehaviour : AnimalBehaviour
     public void notifyDeath()
     {
         if (preyTarget == null) return;
-
+        MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
+        if (moose != null)
+        {
+            moose.UnregisterWolfAttacker(this);
+        }
         pendingCarcass = preyTarget.GetComponentInParent<AnimalBehaviour>().gameObject;
         preyTarget = null;
         agent.isStopped = true;

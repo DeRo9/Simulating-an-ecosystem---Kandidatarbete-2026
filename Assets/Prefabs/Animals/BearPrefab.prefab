@@ -1517,13 +1517,13 @@ GameObject:
   - component: {fileID: 5642719112376538877}
   - component: {fileID: 1391028911167729743}
   - component: {fileID: 6418187023096637690}
-  - component: {fileID: -6116638918593094840}
   - component: {fileID: -9080538929342593657}
   - component: {fileID: 1070128744223743822}
   - component: {fileID: 5138632922600550119}
   - component: {fileID: -8017201233929457047}
   - component: {fileID: 3228180883506121390}
   - component: {fileID: 6755423101185060674}
+  - component: {fileID: 9110168608035052604}
   m_Layer: 9
   m_Name: BearPrefab
   m_TagString: Bear
@@ -1583,6 +1583,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bear
   species: 1
+  canAttack: 1
+  attackDamage: 20
   age: 4
   agingSpeed: 0.1
   startingMaxAge: 15
@@ -1591,12 +1593,19 @@ MonoBehaviour:
   IsMale: 0
   sightRange: 18
   hearingRange: 30
+  minSpeed: 0
+  maxSpeed: 0
+  minSight: 0
+  maxSight: 0
+  minHearing: 0
+  maxHearing: 0
+  minStrength: 0
+  maxStrength: 0
   speed: 2
   runningSpeed: 4
   size: 1.5
   strength: 0
-  attackDamage: 20
-  needs: {fileID: 0}
+  needs: {fileID: 5642719112376538877}
 --- !u!114 &8115009223279749859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1695,22 +1704,6 @@ MonoBehaviour:
   pregnancyHungerDrainPerSecond: 0.35
   pregnancyThirstDrainPerSecond: 0.45
   pregnancyStaminaDrainPerSecond: 0.25
---- !u!114 &-6116638918593094840
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8565310438801436797}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4afa63622caa2ec46bae015df0700687, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BearFOV
-  viewAngle: 120
-  viewLayer:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!114 &-9080538929342593657
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1828,6 +1821,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalMemory
   chunkSize: 50
+--- !u!114 &9110168608035052604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8565310438801436797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7830fc1b68d5d5f49a60c2b79c1c012e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalFOV
+  viewAngle: 0
+  viewLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &8881512897072243634
 GameObject:
   m_ObjectHideFlags: 0

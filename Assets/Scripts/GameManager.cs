@@ -119,12 +119,6 @@ public class GameManager : MonoBehaviour
         }
         
         recordedSpawnPoints.AddRange(uniquePoints);
-        
-        if (recordedSpawnPoints.Count < recordedSpawnPointsCount)
-        {
-            Debug.LogWarning($"Only generated {recordedSpawnPoints.Count} unique spawn points out of {recordedSpawnPointsCount} requested. Consider expanding spawnRadius or checking NavMesh coverage.");
-        }
-        
         spawnPointsInitialized = true;
     }
 
