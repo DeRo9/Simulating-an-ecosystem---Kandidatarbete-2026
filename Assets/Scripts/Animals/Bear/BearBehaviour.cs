@@ -91,10 +91,6 @@ public class BearBehaviour : AnimalBehaviour
             }
             return;
         }
-        if (hearing != null && hearing.HeardSomething)
-        {
-            Debug.Log("Bear heard: " + hearing.HeardAnimal.name);
-        }
         if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt)
         {
             memoryDecisionCooldown -= Time.deltaTime;
@@ -121,7 +117,6 @@ public class BearBehaviour : AnimalBehaviour
 
                     if (UnityEngine.Random.value < 0.2f)
                     {
-                        Debug.Log("Bear explores instead of using memory");
                         ChangeState(State.Wander);
                         return;
                     }
@@ -134,7 +129,6 @@ public class BearBehaviour : AnimalBehaviour
                             agent.SetDestination(memory.GetRandomPointInChunk(bestChunk));
                             ChangeState(State.Wander);
                         }
-                        Debug.Log("Bear heading to remembered food area");
                     }
                     else
                     {
@@ -247,6 +241,13 @@ public class BearBehaviour : AnimalBehaviour
         if (closestPrey != null)
         {
             preyTarget = closestPrey;
+            MooseBehaviour moosePrey = preyTarget.GetComponentInParent<MooseBehaviour>();
+            if (moosePrey != null)
+            {
+                moosePrey.RegisterBearAttacker(this); 
+                moosePrey.OnBeingHunted(gameObject); // Notify the moose that it is being hunted
+            }
+
             if (memory != null)
             {
                 memory.RememberPrey(closestPrey.transform.position);
@@ -367,7 +368,6 @@ public class BearBehaviour : AnimalBehaviour
                 anim.SetTrigger("Attack");
                 DamageTarget();
                 attackTimer = 0f;
-                Debug.Log("Bear attacked prey");
             }
         }
     }
@@ -402,6 +402,15 @@ public class BearBehaviour : AnimalBehaviour
             }
         }
 
+        if (preyTarget != null)
+        {
+            MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
+            if (moose != null)
+            {
+                moose.UnregisterBearAttacker(this);
+                moose.OnNoLongerHunted(gameObject); // Notify the moose that it is no longer being hunted
+            }
+        }
         preyTarget = null; // Give up on the prey after hunting for too long
         huntCooldownTimer = huntCooldown; // Start cooldown timer
         agent.speed = animal.speed; // Reset speed to normal
@@ -476,7 +485,6 @@ public class BearBehaviour : AnimalBehaviour
                 needs.Eat(100);
                 Destroy(foodTarget);
                 foodTarget = null;
-                Debug.Log("Bear ate.");
                 ChangeState(State.Wander);
                 return;
             }
@@ -497,6 +505,11 @@ public class BearBehaviour : AnimalBehaviour
     public void notifyDeath()
     {
         if (preyTarget == null) return;
+        MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
+        if (moose != null)
+        {
+            moose.UnregisterBearAttacker(this);
+        }
 
         pendingCarcass = preyTarget.GetComponentInParent<AnimalBehaviour>().gameObject;
         preyTarget = null;

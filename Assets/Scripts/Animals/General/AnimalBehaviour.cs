@@ -174,8 +174,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
             needs.RegenerateStamina();
         }
 
-
-        // State machine logic
         switch (CurrentState)
         {
             case State.Idle:
@@ -234,7 +232,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
         {
             if (hit.CompareTag("Water"))
             {
-                Debug.Log("Detected water collider");
                 float distance = Vector3.Distance(transform.position, hit.transform.position);
                 if (distance < closestDistance)
                 {

@@ -39,11 +39,8 @@ public class AnimalHearing : MonoBehaviour
         animalsInRange.Remove(a);
 
     }
-    // Update is called once per frame
-    void Update()
-    {
-        DetectMovement();
-    }
+    
+    
     protected virtual void DetectMovement() //Checks which animal it heard and which one is the closest
     {
         HeardAnimal = null;
