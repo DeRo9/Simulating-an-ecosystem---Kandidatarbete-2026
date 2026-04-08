@@ -1,30 +1,57 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
+using static UnityEngine.Rendering.DebugUI;
 
 public class AnimalSetupPanel : MonoBehaviour
 {
 
     public string animalName;
 
-    public Slider amountSlider;
-    public TextMeshProUGUI amountText;
+    public TextMeshProUGUI animalText;
 
-    public int amount => (int)amountSlider.value;
+    public TMP_InputField amountInput;
+
+
+    private int minAmount = 0;
+    private int maxAmount = 50;
+    public int amount { get; private set; } = 0;
 
     private void Start()
     {
         UpdateAmountText();
-
-        // Automatically update when slider changes
-        amountSlider.onValueChanged.AddListener(delegate { UpdateAmountText(); });
+        amountInput.onEndEdit.AddListener(OnEditEnd);
     }
 
     public void UpdateAmountText()
     {
-        amountText.text = $"Amount of {animalName}: {amount}";
+        animalText.text = $"Amount of {animalName}:";
     }
 
+    public void Increment()
+    {
+        amount = Mathf.Clamp(amount + 1, minAmount, maxAmount);
+        amountInput.text = amount.ToString();
+    }
+
+    public void Decrement()
+    {
+        amount = Mathf.Clamp(amount - 1, minAmount, maxAmount);
+        amountInput.text = amount.ToString();
+    }
+
+    public void OnEditEnd(string value)
+    {
+        if (int.TryParse(value, out int parsed))
+        {
+            amount = Mathf.Clamp(parsed, minAmount, maxAmount);
+            amountInput.text = amount.ToString();
+        } else
+        {
+            amount = minAmount;
+            amountInput.text = amount.ToString();
+        }
+    }
 
     /*
     public Slider amountSlider;
