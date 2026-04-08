@@ -19,6 +19,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         Pregnant,
         Hibernate,
         Dead,
+        Defend, // For wolfs to defend against bears
     }
 
     [Header("Other")]
@@ -115,6 +116,9 @@ public abstract class AnimalBehaviour : MonoBehaviour
             case State.Hibernate:
                 HibernationState();
                 break;
+            case State.Defend:
+                DefendState();
+                break;
             case State.Dead:
                 // Do nothing
                 break;
@@ -197,6 +201,9 @@ public abstract class AnimalBehaviour : MonoBehaviour
                 break;
             case State.Hibernate:
                 HibernationState();
+                break;
+            case State.Defend:
+                UpdateDefend();
                 break;
             case State.Dead:
                 // Do nothing i guess? 
@@ -365,5 +372,8 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
     protected virtual void HibernationState() { return; }
     protected virtual void UpdatePregnant() { return; }
+
+    protected virtual void DefendState() { return; }
+    protected virtual void UpdateDefend() { return; }
 
 }

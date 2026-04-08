@@ -107,13 +107,16 @@ public class WolfPackFormation : MonoBehaviour
 
     private void JoinPack(WolfPackManager existingPack)
     {
+        if (existingPack == null) return;
         if (existingPack.members.Count >= existingPack.GetMaxPackSize()) return;
+        
 
         existingPack.members.Add(wolf);
         wolf.pack = existingPack;
         wolf.isLeader = false;
 
-        Debug.Log(wolf.name + " joined pack led by " + existingPack.leader.name);
+        string leaderName = existingPack.leader != null ? existingPack.leader.name : "Unknown";
+        Debug.Log(wolf.name + " joined pack led by " + leaderName);
     }
 
     private void LeavePack() 

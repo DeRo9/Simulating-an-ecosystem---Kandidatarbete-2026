@@ -377,13 +377,13 @@ public class BearBehaviour : AnimalBehaviour
         if (preyTarget == null) return;
 
         MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
-        if (moose != null)
+        if (moose != null && !moose.isDead)
         {
             moose?.InflictDamage(animal.attackDamage);
         }
 
         WolfBehaviour wolf = preyTarget.GetComponentInParent<WolfBehaviour>();
-        if (wolf != null)
+        if (wolf != null && !wolf.isDead)
         {
             wolf?.InflictDamage(animal.attackDamage);
         }
@@ -578,6 +578,10 @@ public class BearBehaviour : AnimalBehaviour
 
     }
 
+    public void InflictDamage(float damage)
+    {
+        needs.TakeDamage(damage);
+    }
 
 }
 
