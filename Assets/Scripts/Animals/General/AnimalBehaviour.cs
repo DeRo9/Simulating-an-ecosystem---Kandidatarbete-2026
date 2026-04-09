@@ -83,7 +83,10 @@ public abstract class AnimalBehaviour : MonoBehaviour
     {
         CurrentState = newState;
 
-        if (!agent.enabled) // If the animal is dead
+        if (agent == null)
+            agent = GetComponent<NavMeshAgent>();
+
+        if (agent == null || !agent.enabled) // If the animal has no agent or is dead
             return;
 
         agent.ResetPath();
@@ -218,6 +221,15 @@ public abstract class AnimalBehaviour : MonoBehaviour
     public virtual void ExitPregnantState()
     {
         if (CurrentState == State.Pregnant)
+            ChangeState(State.Wander);
+    }
+
+    public void StartWandering()
+    {
+        if (agent == null)
+            agent = GetComponent<NavMeshAgent>();
+
+        if (!isDead)
             ChangeState(State.Wander);
     }
 
@@ -364,11 +376,28 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected virtual void PregnantState()
     {
         if (agent != null && agent.enabled)
-            agent.isStopped = true;
+        {
+            agent.isStopped = false;
+            agent.speed = animal != null ? animal.speed : agent.speed;
+            if (!agent.hasPath || agent.remainingDistance <= agent.stoppingDistance)
+            {
+                agent.SetDestination(GetRandomPoints());
+            }
+        }
     }
 
     protected virtual void HibernationState() { return; }
-    protected virtual void UpdatePregnant() { return; }
+    protected virtual void UpdatePregnant()
+    {
+        PregnantState();
+        
+        // Update animations based on movement
+        if (anim != null && agent != null)
+        {
+            anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f);
+            anim.SetBool("isRunning", agent.velocity.magnitude > 3f);
+        }
+    }
 
     protected virtual void DefendState() { return; }
     protected virtual void UpdateDefend() { return; }
