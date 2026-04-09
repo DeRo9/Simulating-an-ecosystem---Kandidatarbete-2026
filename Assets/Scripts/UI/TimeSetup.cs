@@ -2,22 +2,21 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class FoodSetupPanel : MonoBehaviour
+public class TimeSetup : MonoBehaviour
 {
 
     [Header("Amount")]
     public TMP_InputField amountInput;
 
-    
+
     private int minAmount = 0;
-    private int maxAmount = 100;
+    private int maxAmount = 600;
     public int amount { get; private set; } = 0;
 
     private void Start()
     {
         amountInput.onEndEdit.AddListener(OnEditEnd);
     }
-
 
     public void Increment()
     {
@@ -43,6 +42,12 @@ public class FoodSetupPanel : MonoBehaviour
             amount = minAmount;
             amountInput.text = amount.ToString();
         }
+    }
+
+    public void SetAmount(int newAmount)
+    {
+        amount = Mathf.Clamp(newAmount, minAmount, maxAmount);
+        amountInput.text = amount.ToString();
     }
 
 }

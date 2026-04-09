@@ -20,19 +20,21 @@ public class GameManager : MonoBehaviour
     public Transform berryBushFolder;
 
     [Header("UI")]
-    public GameObject startMenuPanel;
+    public GameObject startMenu;
 
-    
+
+
     [Header("Animal Setup Panels")]
     public AnimalSetupPanel mooseSetup;
     public AnimalSetupPanel wolfSetup;
     public AnimalSetupPanel bearSetup;
-    
+
 
     [Header("Food Setup Panel")]
     public FoodSetupPanel berryBushSetup;
     public FoodSetupPanel mushroomSetup;
     public FoodSetupPanel nutrientTree; //??
+
 
     [Header("Food")]
     public MushroomSpawner mushroomSpawner;
@@ -46,8 +48,7 @@ public class GameManager : MonoBehaviour
     public GameObject berryBushPrefab;
 
     [Header("Simulation Length")]
-    public Slider simulationLengthSlider;
-    public TextMeshProUGUI simulationTimeText;
+    public TimeSetup timesetup;
     private float simulationTime;
     private float timer;
     private static bool simulationRunning;
@@ -86,15 +87,15 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        simulationLengthSlider.value = 60f;
+        timesetup.SetAmount(60);
         cameraMovement.enabled = false;
         Time.timeScale = 1f;
         simulationUI.gameObject.SetActive(false);
         RenderSettings.skybox.SetFloat("_Exposure", 1f);
         RenderSettings.skybox.SetColor("_Tint", Color.white);
         summerToggle.isOn = true;
+        SeasonManager.Instance.SetSummer(summerToggle.isOn);
 
-        // Initialize spawn points after NavMesh is ready
         InitializeSpawnPoints();
     }
 
@@ -160,12 +161,6 @@ public class GameManager : MonoBehaviour
 
         cameraMovement.enabled = true;
 
-        /*
-        StartCoroutine(SpawnAnimalsStaggered(moosePrefab, mooseSetup, herbivoresFolder));
-        StartCoroutine(SpawnAnimalsStaggered(wolfPrefab, wolfSetup, carnivoreFolder));
-        StartCoroutine(SpawnAnimalsStaggered(bearPrefab, bearSetup, omnivoreFolder));
-        */
-
         StartCoroutine(SpawnAnimalsStaggered(moosePrefab, mooseSetup.amount, herbivoresFolder));
         StartCoroutine(SpawnAnimalsStaggered(wolfPrefab, wolfSetup.amount, carnivoreFolder));
         StartCoroutine(SpawnAnimalsStaggered(bearPrefab, bearSetup.amount, omnivoreFolder));
@@ -178,11 +173,11 @@ public class GameManager : MonoBehaviour
         nutrientTreeSpawner.SetTreeAmount(nutrientTree.amount);
         nutrientTreeSpawner.InitializeSpawn();
 
-        simulationTime = simulationLengthSlider.value;
+        simulationTime = timesetup.amount;
         timer = 0f;
         simulationRunning = true;
 
-        startMenuPanel.SetActive(false);
+        startMenu.SetActive(false);
         simulationUI.gameObject.SetActive(true);
 
         // Start population recording coroutine instead of using Update timer
@@ -296,11 +291,6 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("SimOver");
     }
 
-    public void UpdateTimeText()
-    {
-        simulationTimeText.text = $"Simulation Length: {simulationLengthSlider.value} seconds";
-    }
-
     void RecordPopulation()
     {
         SimulationResults.bearsHistory.Add(omnivoreFolder.childCount);
@@ -326,18 +316,27 @@ public class GameManager : MonoBehaviour
         return simulationRunning;
     }
 
-    public void toggleSummer()
+    public void ToggleSummer()
     {
-        SeasonManager.Instance.SetSummer(summerToggle.isOn);
+        summerToggle.SetIsOnWithoutNotify(true);
+        winterToggle.SetIsOnWithoutNotify(false);
+        SeasonManager.Instance.SetSummer(true);
     }
 
-    public void toggleWinter()
+    public void ToggleWinter()
     {
-        SeasonManager.Instance.SetWinter(winterToggle.isOn);
+        winterToggle.SetIsOnWithoutNotify(true);
+        summerToggle.SetIsOnWithoutNotify(false);
+        SeasonManager.Instance.SetWinter(true);
     }
 
     public void togglePrecipitation()
     {
         SeasonManager.Instance.SetPercipitation(percipitationToggle.isOn);
+    }
+
+    public void UpdateAmountText(TextMeshProUGUI amountText, string animalName, float sliderValue)
+    {
+        amountText.text = $"Amount of {animalName}: {Mathf.RoundToInt(sliderValue)}";
     }
 }
