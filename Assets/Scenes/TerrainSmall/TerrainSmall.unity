@@ -1301,6 +1301,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 85269762}
+  - component: {fileID: 85269763}
   m_Layer: 5
   m_Name: MooseSetup
   m_TagString: Untagged
@@ -1331,6 +1332,19 @@ RectTransform:
   m_AnchoredPosition: {x: -17.7061, y: 107.56}
   m_SizeDelta: {x: 458.3879, y: 110.8778}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &85269763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 85269761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 578f66b386e65d843a23cc01a6b14d31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalSetupPanel
+  amountInput: {fileID: 38004970}
 --- !u!1 &99265617
 GameObject:
   m_ObjectHideFlags: 0
@@ -2357,6 +2371,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 225720306}
+  - component: {fileID: 225720307}
   m_Layer: 5
   m_Name: BearSetup
   m_TagString: Untagged
@@ -2387,6 +2402,19 @@ RectTransform:
   m_AnchoredPosition: {x: -17.7061, y: -168.9}
   m_SizeDelta: {x: 458.3879, y: 110.8778}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &225720307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 225720305}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 578f66b386e65d843a23cc01a6b14d31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalSetupPanel
+  amountInput: {fileID: 1110061362}
 --- !u!1 &242197148
 GameObject:
   m_ObjectHideFlags: 0
@@ -13845,6 +13873,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1826639797}
+  - component: {fileID: 1826639798}
   m_Layer: 5
   m_Name: WolfSetup
   m_TagString: Untagged
@@ -13875,6 +13904,19 @@ RectTransform:
   m_AnchoredPosition: {x: -17.7061, y: -30.2}
   m_SizeDelta: {x: 458.3879, y: 110.8778}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1826639798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1826639796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 578f66b386e65d843a23cc01a6b14d31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalSetupPanel
+  amountInput: {fileID: 1689318062}
 --- !u!1 &1832712198
 GameObject:
   m_ObjectHideFlags: 0
