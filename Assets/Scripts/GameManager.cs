@@ -20,19 +20,28 @@ public class GameManager : MonoBehaviour
     public Transform berryBushFolder;
 
     [Header("UI")]
-    public GameObject startMenuPanel;
+    public GameObject startMenu;
 
     
-    [Header("Animal Setup Panels")]
-    public AnimalSetupPanel mooseSetup;
-    public AnimalSetupPanel wolfSetup;
-    public AnimalSetupPanel bearSetup;
-    
+    [Header("Animal Setup Sliders")]
+    public Slider mooseSlider;
+    public Slider wolfSlider;
+    public Slider bearSlider;
 
-    [Header("Food Setup Panel")]
-    public FoodSetupPanel berryBushSetup;
-    public FoodSetupPanel mushroomSetup;
-    public FoodSetupPanel nutrientTree; //??
+    public TextMeshProUGUI mooseText;
+    public TextMeshProUGUI wolfText;
+
+    public TextMeshProUGUI bearText;
+
+    [Header("Food Setup Sliders")]
+    public Slider berrySlider;
+    public Slider mushroomSlider;
+    public Slider nutrientTreeSlider; 
+
+    public TextMeshProUGUI berryText;
+    public TextMeshProUGUI mushroomText;
+
+    public TextMeshProUGUI nutrientTreeText;
 
     [Header("Food")]
     public MushroomSpawner mushroomSpawner;
@@ -93,8 +102,16 @@ public class GameManager : MonoBehaviour
         RenderSettings.skybox.SetFloat("_Exposure", 1f);
         RenderSettings.skybox.SetColor("_Tint", Color.white);
         summerToggle.isOn = true;
+        SeasonManager.Instance.SetSummer(summerToggle.isOn);
 
-        // Initialize spawn points after NavMesh is ready
+        mooseSlider.onValueChanged.AddListener(delegate { UpdateAmountText(mooseText, "Moose", mooseSlider.value); });
+        wolfSlider.onValueChanged.AddListener(delegate { UpdateAmountText(wolfText, "Wolves", wolfSlider.value); });
+        bearSlider.onValueChanged.AddListener(delegate { UpdateAmountText(bearText, "Bears", bearSlider.value); });
+        berrySlider.onValueChanged.AddListener(delegate { UpdateAmountText(berryText, "Berry Bushes", berrySlider.value); });
+        mushroomSlider.onValueChanged.AddListener(delegate { UpdateAmountText(mushroomText, "Mushrooms", mushroomSlider.value); });
+        nutrientTreeSlider.onValueChanged.AddListener(delegate { UpdateAmountText(nutrientTreeText, "Nutrient Trees", nutrientTreeSlider.value); });
+        simulationLengthSlider.onValueChanged.AddListener(delegate { UpdateTimeText(); });
+
         InitializeSpawnPoints();
     }
 
@@ -160,29 +177,23 @@ public class GameManager : MonoBehaviour
 
         cameraMovement.enabled = true;
 
-        /*
-        StartCoroutine(SpawnAnimalsStaggered(moosePrefab, mooseSetup, herbivoresFolder));
-        StartCoroutine(SpawnAnimalsStaggered(wolfPrefab, wolfSetup, carnivoreFolder));
-        StartCoroutine(SpawnAnimalsStaggered(bearPrefab, bearSetup, omnivoreFolder));
-        */
+        StartCoroutine(SpawnAnimalsStaggered(moosePrefab, (int)mooseSlider.value, herbivoresFolder));
+        StartCoroutine(SpawnAnimalsStaggered(wolfPrefab, (int)wolfSlider.value, carnivoreFolder));
+        StartCoroutine(SpawnAnimalsStaggered(bearPrefab, (int)bearSlider.value, omnivoreFolder));
 
-        StartCoroutine(SpawnAnimalsStaggered(moosePrefab, mooseSetup.amount, herbivoresFolder));
-        StartCoroutine(SpawnAnimalsStaggered(wolfPrefab, wolfSetup.amount, carnivoreFolder));
-        StartCoroutine(SpawnAnimalsStaggered(bearPrefab, bearSetup.amount, omnivoreFolder));
-
-        SpawnFood(berryBushPrefab, berryBushSetup.amount, berryBushFolder);
+        SpawnFood(berryBushPrefab, (int)berrySlider.value, berryBushFolder);
         
-        mushroomSpawner.SetMaxMushrooms(mushroomSetup.amount);
+        mushroomSpawner.SetMaxMushrooms((int)mushroomSlider.value);
         mushroomSpawner.InitializeSpawn();
 
-        nutrientTreeSpawner.SetTreeAmount(nutrientTree.amount);
+        nutrientTreeSpawner.SetTreeAmount((int)nutrientTreeSlider.value);
         nutrientTreeSpawner.InitializeSpawn();
 
         simulationTime = simulationLengthSlider.value;
         timer = 0f;
         simulationRunning = true;
 
-        startMenuPanel.SetActive(false);
+        startMenu.SetActive(false);
         simulationUI.gameObject.SetActive(true);
 
         // Start population recording coroutine instead of using Update timer
@@ -296,11 +307,6 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("SimOver");
     }
 
-    public void UpdateTimeText()
-    {
-        simulationTimeText.text = $"Simulation Length: {simulationLengthSlider.value} seconds";
-    }
-
     void RecordPopulation()
     {
         SimulationResults.bearsHistory.Add(omnivoreFolder.childCount);
@@ -326,18 +332,32 @@ public class GameManager : MonoBehaviour
         return simulationRunning;
     }
 
-    public void toggleSummer()
+    public void ToggleSummer()
     {
-        SeasonManager.Instance.SetSummer(summerToggle.isOn);
+        summerToggle.SetIsOnWithoutNotify(true);
+        winterToggle.SetIsOnWithoutNotify(false);
+        SeasonManager.Instance.SetSummer(true);
     }
 
-    public void toggleWinter()
+    public void ToggleWinter()
     {
-        SeasonManager.Instance.SetWinter(winterToggle.isOn);
+        winterToggle.SetIsOnWithoutNotify(true);
+        summerToggle.SetIsOnWithoutNotify(false);
+        SeasonManager.Instance.SetWinter(true);
     }
 
     public void togglePrecipitation()
     {
         SeasonManager.Instance.SetPercipitation(percipitationToggle.isOn);
+    }
+
+    public void UpdateTimeText()
+    {
+        simulationTimeText.text = $"Simulation Length: {simulationLengthSlider.value} seconds";
+    }
+
+    public void UpdateAmountText(TextMeshProUGUI amountText, string animalName, float sliderValue)
+    {
+        amountText.text = $"Amount of {animalName}: {Mathf.RoundToInt(sliderValue)}";
     }
 }
