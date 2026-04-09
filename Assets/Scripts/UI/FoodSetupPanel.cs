@@ -4,12 +4,9 @@ using TMPro;
 
 public class FoodSetupPanel : MonoBehaviour
 {
-    [Header("Info")]
-    public string itemName = "Food";
 
     [Header("Amount")]
     public TMP_InputField amountInput;
-    public TextMeshProUGUI amountText;
 
     
     private int minAmount = 0;
@@ -18,15 +15,9 @@ public class FoodSetupPanel : MonoBehaviour
 
     private void Start()
     {
-        UpdateAmountText();
         amountInput.onEndEdit.AddListener(OnEditEnd);
     }
 
-    public void UpdateAmountText()
-    {
-        if (amountText != null)
-            amountText.text = $"Amount of {itemName}:";
-    }
 
     public void Increment()
     {
