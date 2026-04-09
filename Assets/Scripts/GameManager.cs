@@ -46,8 +46,7 @@ public class GameManager : MonoBehaviour
     public GameObject berryBushPrefab;
 
     [Header("Simulation Length")]
-    public Slider simulationLengthSlider;
-    public TextMeshProUGUI simulationTimeText;
+    public TimeSetup time;
     private float simulationTime;
     private float timer;
     private static bool simulationRunning;
@@ -86,7 +85,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        simulationLengthSlider.value = 60f;
+        time.SetAmount(60);
         cameraMovement.enabled = false;
         Time.timeScale = 1f;
         simulationUI.gameObject.SetActive(false);
@@ -184,7 +183,7 @@ public class GameManager : MonoBehaviour
         nutrientTreeSpawner.SetTreeAmount(nutrientTree.amount);
         nutrientTreeSpawner.InitializeSpawn();
 
-        simulationTime = simulationLengthSlider.value;
+        simulationTime = time.amount;
         timer = 0f;
         simulationRunning = true;
 
@@ -300,11 +299,6 @@ public class GameManager : MonoBehaviour
         SimulationResults.simulationLength = simulationTime;
 
         SceneManager.LoadScene("SimOver");
-    }
-
-    public void UpdateTimeText()
-    {
-        simulationTimeText.text = $"Simulation Length: {simulationLengthSlider.value} seconds";
     }
 
     void RecordPopulation()
