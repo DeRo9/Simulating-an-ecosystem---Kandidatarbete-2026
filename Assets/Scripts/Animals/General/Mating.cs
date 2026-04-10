@@ -239,7 +239,11 @@ public class Mating : MonoBehaviour
         babyAnimal.size = pendingBabySize;
         babyAnimal.speed = pendingBabySpeed;
         babyAnimal.sightRange = pendingBabySight;
-        babyAnimal.hearingRange = pendingBabyHearing; 
+        babyAnimal.hearingRange = pendingBabyHearing;
+
+        AnimalBehaviour babyBehaviour = baby.GetComponent<AnimalBehaviour>();
+        if (babyBehaviour != null)
+            babyBehaviour.StartWandering();
     }
 
     private void SpawnBabyNow(Animal partnerAnimal)
@@ -255,6 +259,10 @@ public class Mating : MonoBehaviour
         babyAnimal.speed = (animal.speed + partnerAnimal.speed) / 2f;
         babyAnimal.sightRange = (animal.sightRange + partnerAnimal.sightRange) / 2f;
         babyAnimal.hearingRange = (animal.hearingRange + partnerAnimal.hearingRange) / 2f;
+
+        AnimalBehaviour babyBehaviour = baby.GetComponent<AnimalBehaviour>();
+        if (babyBehaviour != null)
+            babyBehaviour.StartWandering();
     }
 
     private bool HasEnoughNeeds(AnimalNeeds targetNeeds)

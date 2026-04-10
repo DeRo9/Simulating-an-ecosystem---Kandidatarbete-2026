@@ -22,26 +22,19 @@ public class GameManager : MonoBehaviour
     [Header("UI")]
     public GameObject startMenu;
 
-    
-    [Header("Animal Setup Sliders")]
-    public Slider mooseSlider;
-    public Slider wolfSlider;
-    public Slider bearSlider;
 
-    public TextMeshProUGUI mooseText;
-    public TextMeshProUGUI wolfText;
 
-    public TextMeshProUGUI bearText;
+    [Header("Animal Setup Panels")]
+    public AnimalSetupPanel mooseSetup;
+    public AnimalSetupPanel wolfSetup;
+    public AnimalSetupPanel bearSetup;
 
-    [Header("Food Setup Sliders")]
-    public Slider berrySlider;
-    public Slider mushroomSlider;
-    public Slider nutrientTreeSlider; 
 
-    public TextMeshProUGUI berryText;
-    public TextMeshProUGUI mushroomText;
+    [Header("Food Setup Panel")]
+    public FoodSetupPanel berryBushSetup;
+    public FoodSetupPanel mushroomSetup;
+    public FoodSetupPanel nutrientTree; //??
 
-    public TextMeshProUGUI nutrientTreeText;
 
     [Header("Food")]
     public MushroomSpawner mushroomSpawner;
@@ -55,8 +48,7 @@ public class GameManager : MonoBehaviour
     public GameObject berryBushPrefab;
 
     [Header("Simulation Length")]
-    public Slider simulationLengthSlider;
-    public TextMeshProUGUI simulationTimeText;
+    public TimeSetup timesetup;
     private float simulationTime;
     private float timer;
     private static bool simulationRunning;
@@ -95,7 +87,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        simulationLengthSlider.value = 60f;
+        timesetup.SetAmount(60);
         cameraMovement.enabled = false;
         Time.timeScale = 1f;
         simulationUI.gameObject.SetActive(false);
@@ -103,14 +95,6 @@ public class GameManager : MonoBehaviour
         RenderSettings.skybox.SetColor("_Tint", Color.white);
         summerToggle.isOn = true;
         SeasonManager.Instance.SetSummer(summerToggle.isOn);
-
-        mooseSlider.onValueChanged.AddListener(delegate { UpdateAmountText(mooseText, "Moose", mooseSlider.value); });
-        wolfSlider.onValueChanged.AddListener(delegate { UpdateAmountText(wolfText, "Wolves", wolfSlider.value); });
-        bearSlider.onValueChanged.AddListener(delegate { UpdateAmountText(bearText, "Bears", bearSlider.value); });
-        berrySlider.onValueChanged.AddListener(delegate { UpdateAmountText(berryText, "Berry Bushes", berrySlider.value); });
-        mushroomSlider.onValueChanged.AddListener(delegate { UpdateAmountText(mushroomText, "Mushrooms", mushroomSlider.value); });
-        nutrientTreeSlider.onValueChanged.AddListener(delegate { UpdateAmountText(nutrientTreeText, "Nutrient Trees", nutrientTreeSlider.value); });
-        simulationLengthSlider.onValueChanged.AddListener(delegate { UpdateTimeText(); });
 
         InitializeSpawnPoints();
     }
@@ -177,19 +161,19 @@ public class GameManager : MonoBehaviour
 
         cameraMovement.enabled = true;
 
-        StartCoroutine(SpawnAnimalsStaggered(moosePrefab, (int)mooseSlider.value, herbivoresFolder));
-        StartCoroutine(SpawnAnimalsStaggered(wolfPrefab, (int)wolfSlider.value, carnivoreFolder));
-        StartCoroutine(SpawnAnimalsStaggered(bearPrefab, (int)bearSlider.value, omnivoreFolder));
+        StartCoroutine(SpawnAnimalsStaggered(moosePrefab, mooseSetup.amount, herbivoresFolder));
+        StartCoroutine(SpawnAnimalsStaggered(wolfPrefab, wolfSetup.amount, carnivoreFolder));
+        StartCoroutine(SpawnAnimalsStaggered(bearPrefab, bearSetup.amount, omnivoreFolder));
 
-        SpawnFood(berryBushPrefab, (int)berrySlider.value, berryBushFolder);
+        SpawnFood(berryBushPrefab, berryBushSetup.amount, berryBushFolder);
         
-        mushroomSpawner.SetMaxMushrooms((int)mushroomSlider.value);
+        mushroomSpawner.SetMaxMushrooms(mushroomSetup.amount);
         mushroomSpawner.InitializeSpawn();
 
-        nutrientTreeSpawner.SetTreeAmount((int)nutrientTreeSlider.value);
+        nutrientTreeSpawner.SetTreeAmount(nutrientTree.amount);
         nutrientTreeSpawner.InitializeSpawn();
 
-        simulationTime = simulationLengthSlider.value;
+        simulationTime = timesetup.amount;
         timer = 0f;
         simulationRunning = true;
 
@@ -349,11 +333,6 @@ public class GameManager : MonoBehaviour
     public void togglePrecipitation()
     {
         SeasonManager.Instance.SetPercipitation(percipitationToggle.isOn);
-    }
-
-    public void UpdateTimeText()
-    {
-        simulationTimeText.text = $"Simulation Length: {simulationLengthSlider.value} seconds";
     }
 
     public void UpdateAmountText(TextMeshProUGUI amountText, string animalName, float sliderValue)

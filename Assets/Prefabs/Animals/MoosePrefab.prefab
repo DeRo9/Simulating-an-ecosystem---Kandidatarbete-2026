@@ -575,7 +575,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7830fc1b68d5d5f49a60c2b79c1c012e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalFOV
-  viewAngle: 0
+  viewAngle: 150
   viewLayer:
     serializedVersion: 2
     m_Bits: 0

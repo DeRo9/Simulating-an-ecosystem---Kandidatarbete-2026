@@ -1,4 +1,7 @@
 using JetBrains.Annotations;
+using NUnit.Framework;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -33,6 +36,8 @@ public class WolfBehaviour : AnimalBehaviour
 
     GameObject foodTarget;
     GameObject pendingCarcass;
+
+    private List<BearBehaviour> bearAttackers = new List<BearBehaviour>();
 
     [Header("Layers")]
     [SerializeField]
@@ -88,8 +93,22 @@ public class WolfBehaviour : AnimalBehaviour
 
         if (leaderBehaviour != null && leaderBehaviour.preyTarget != null)
         {
-            preyTarget = leaderBehaviour.preyTarget;
-            ChangeState(State.Hunt);
+            if (preyTarget != leaderBehaviour.preyTarget) // If the prey target of the leader has changed, update it for the follower as well
+            {  
+                preyTarget = leaderBehaviour.preyTarget;
+
+                MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
+                if(moose != null)
+                {
+                    moose.RegisterWolfAttacker(this); // Register as attacker to the moose
+                }
+
+
+            }
+
+            if(CurrentState != State.Hunt)
+                ChangeState(State.Hunt);
+
             return;
         }
 
@@ -289,7 +308,9 @@ public class WolfBehaviour : AnimalBehaviour
             {
                 memory.RememberPrey(closestPrey.transform.position);
             }
-            StatisticsTableManager.instance.WolfhuntAttemptsCount++;
+
+            if (wolf.isLeader || pack == null || pack.countCurrentPackSize() <= 1)
+                StatisticsTableManager.instance.WolfhuntAttemptsCount++;
 
             MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
             if (moose != null)
@@ -445,14 +466,16 @@ public class WolfBehaviour : AnimalBehaviour
 
         if (preyTarget != null)
         {
-            if (!fov.IsInFOV(preyTarget.transform))
+            float distance = Vector3.Distance(transform.position, preyTarget.transform.position);
+
+            if (!fov.IsInFOV(preyTarget.transform)) // Wolf FOV accidentally losing sight of prey when it is very close, this is a fix for that
             {
                 LostPrey(); // If the prey is no longer in the wolf's field of view, give up
                 return;
+
             }
 
             // Check if the prey is still within sight range
-            float distance = Vector3.Distance(transform.position, preyTarget.transform.position);
             if (distance > animal.sightRange)
             {
                 LostPrey(); // If the prey is too far away, give up
@@ -501,6 +524,9 @@ public class WolfBehaviour : AnimalBehaviour
                 agent.isStopped = true;
                 anim.SetTrigger("Attack");
                 attackTimer = 0f;
+            } else
+            {
+                agent.isStopped = false;
             }
         }
     }
@@ -523,7 +549,8 @@ public class WolfBehaviour : AnimalBehaviour
 
         if (huntCooldownTimer > 0) return;
 
-        StatisticsTableManager.instance.WolfhuntFailuresCount++;
+        if(wolf.isLeader || pack == null || pack.countCurrentPackSize() <= 1)
+            StatisticsTableManager.instance.WolfhuntFailuresCount++;
 
         if (preyTarget != null)
         {
@@ -845,7 +872,22 @@ public class WolfBehaviour : AnimalBehaviour
 
     public override void OnDeath()
     {
-        if(wolf.isLeader && pack != null)
+        bool bearKill = bearAttackers.Count > 0;
+
+        foreach(BearBehaviour bear in bearAttackers.ToList())
+        {
+            if(bear != null)
+            {
+                bear.notifyDeath();
+            }
+        }
+
+        bearAttackers.Clear();
+
+        if (bearKill)
+            StatisticsTableManager.instance.BearSuccessfulHuntsCount++;
+
+        if (wolf.isLeader && pack != null)
         {
             pack.OnLeaderDeath();
         } else if (pack != null)
@@ -857,6 +899,19 @@ public class WolfBehaviour : AnimalBehaviour
         wolf.isLeader = false;
 
         base.OnDeath();
+    }
+
+    public void RegisterBearAttacker(BearBehaviour bear)
+    {
+        if (bear == null) return;
+        if (!bearAttackers.Contains(bear))
+            bearAttackers.Add(bear);
+    }
+
+    public void UnregisterBearAttacker(BearBehaviour bear)
+    {
+        if (bear == null) return;
+            bearAttackers.Remove(bear);
     }
 
 }
