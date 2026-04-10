@@ -1,4 +1,7 @@
 using JetBrains.Annotations;
+using NUnit.Framework;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -33,6 +36,8 @@ public class WolfBehaviour : AnimalBehaviour
 
     GameObject foodTarget;
     GameObject pendingCarcass;
+
+    private List<BearBehaviour> bearAttackers = new List<BearBehaviour>();
 
     [Header("Layers")]
     [SerializeField]
@@ -845,7 +850,22 @@ public class WolfBehaviour : AnimalBehaviour
 
     public override void OnDeath()
     {
-        if(wolf.isLeader && pack != null)
+        bool bearKill = bearAttackers.Count > 0;
+
+        foreach(BearBehaviour bear in bearAttackers.ToList())
+        {
+            if(bear != null)
+            {
+                bear.notifyDeath();
+            }
+        }
+
+        bearAttackers.Clear();
+
+        if (bearKill)
+            StatisticsTableManager.instance.BearSuccessfulHuntsCount++;
+
+        if (wolf.isLeader && pack != null)
         {
             pack.OnLeaderDeath();
         } else if (pack != null)
@@ -857,6 +877,19 @@ public class WolfBehaviour : AnimalBehaviour
         wolf.isLeader = false;
 
         base.OnDeath();
+    }
+
+    public void RegisterBearAttacker(BearBehaviour bear)
+    {
+        if (bear == null) return;
+        if (!bearAttackers.Contains(bear))
+            bearAttackers.Add(bear);
+    }
+
+    public void UnregisterBearAttacker(BearBehaviour bear)
+    {
+        if (bear == null) return;
+            bearAttackers.Remove(bear);
     }
 
 }

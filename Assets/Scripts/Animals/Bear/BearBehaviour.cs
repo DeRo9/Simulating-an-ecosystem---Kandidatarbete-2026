@@ -398,19 +398,19 @@ public class BearBehaviour : AnimalBehaviour
             MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
             if (moose != null)
             {
-                moose.OnNoLongerHunted(gameObject); // Notify the moose that it is no longer being hunted
-            }
-        }
-
-        if (preyTarget != null)
-        {
-            MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
-            if (moose != null)
-            {
                 moose.UnregisterBearAttacker(this);
                 moose.OnNoLongerHunted(gameObject); // Notify the moose that it is no longer being hunted
             }
+
+
+            WolfBehaviour wolf = preyTarget.GetComponentInParent<WolfBehaviour>();
+            if (wolf != null)
+            {
+                wolf.UnregisterBearAttacker(this);
+                wolf.OnNoLongerHunted(gameObject); // Notify the wolf that it is no longer being hunted
+            }
         }
+
         preyTarget = null; // Give up on the prey after hunting for too long
         huntCooldownTimer = huntCooldown; // Start cooldown timer
         agent.speed = animal.speed; // Reset speed to normal
@@ -505,10 +505,17 @@ public class BearBehaviour : AnimalBehaviour
     public void notifyDeath()
     {
         if (preyTarget == null) return;
+
         MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
         if (moose != null)
         {
             moose.UnregisterBearAttacker(this);
+        }
+
+        WolfBehaviour wolf = preyTarget.GetComponentInParent<WolfBehaviour>();
+        if(wolf != null)
+        {
+            wolf.UnregisterBearAttacker(this);
         }
 
         pendingCarcass = preyTarget.GetComponentInParent<AnimalBehaviour>().gameObject;

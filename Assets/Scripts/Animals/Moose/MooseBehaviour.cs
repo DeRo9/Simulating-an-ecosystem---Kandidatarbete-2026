@@ -4,6 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
+using System.Linq;
 
 
 public class MooseBehaviour : AnimalBehaviour
@@ -358,7 +359,7 @@ public class MooseBehaviour : AnimalBehaviour
     {
         bool wolfKill = wolfAttackers.Count > 0;
 
-        foreach (WolfBehaviour wolf in wolfAttackers)
+        foreach (WolfBehaviour wolf in wolfAttackers.ToList())
         {
             if(wolf != null)
             {
@@ -373,7 +374,7 @@ public class MooseBehaviour : AnimalBehaviour
 
         bool bearKill = bearAttackers.Count > 0; 
         
-        foreach(BearBehaviour bear in bearAttackers)
+        foreach(BearBehaviour bear in bearAttackers.ToList())
         {
             if (bear != null)
             {
