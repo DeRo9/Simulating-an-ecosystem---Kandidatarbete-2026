@@ -167,8 +167,12 @@ public class GameManager : MonoBehaviour
 
         SpawnFood(berryBushPrefab, berryBushSetup.amount, berryBushFolder);
         
-        mushroomSpawner.SetMaxMushrooms(mushroomSetup.amount);
-        mushroomSpawner.InitializeSpawn();
+        //mushroomSpawner.SetMaxMushrooms(mushroomSetup.amount);
+        //mushroomSpawner.InitializeSpawn();
+
+        mushroomSpawner.SetMaxMushrooms(200); // current max amount
+        mushroomSpawner.InitializeSpawn(mushroomSetup.amount);
+
 
         nutrientTreeSpawner.SetTreeAmount(nutrientTree.amount);
         nutrientTreeSpawner.InitializeSpawn();
