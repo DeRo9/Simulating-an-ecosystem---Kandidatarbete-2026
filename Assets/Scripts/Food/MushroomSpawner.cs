@@ -8,12 +8,12 @@ public class MushroomSpawner : MonoBehaviour
     [SerializeField] private GameObject mushroomPrefab;
     [SerializeField] private Transform Mushrooms;
 
-    [SerializeField] private int mushroomMaxInitialization = 30;
-    [SerializeField] private int mushroomMapLimit = 500;
+    //[SerializeField] private int mushroomMaxInitialization = 30;
+    //[SerializeField] private int mushroomMapLimit = 500;
 
     [SerializeField] private float SpawnRadius = 100f;
     [SerializeField] private float reproduceRadius = 10f;
-    [SerializeField] private float timeInterval = 10f; // 1 second = 1 hour
+    [SerializeField] private float timeInterval = 500f; // 1 second = 1 hour
 
     private float timer;
     private bool isSimulationRunning = false;
@@ -24,68 +24,85 @@ public class MushroomSpawner : MonoBehaviour
     void Start()
     {
     
-        maxMushrooms = mushroomMaxInitialization;
+        //maxMushrooms = mushroomMaxInitialization;
         isSimulationRunning = false;
     }
 
-    public void InitializeSpawn()
+    public void InitializeSpawn(int startAmount)
     {
+
         isSimulationRunning = true;
 
-        
+        mushrooms.Clear();
+
+        //maxMushrooms = mushroomMaxInitialization;
+
         if (SeasonManager.Instance.IsWinter)
         {
-            maxMushrooms = mushroomMaxInitialization / 20;
-        }
-        else if (SeasonManager.Instance.IsSummer)
-        {
-            maxMushrooms = mushroomMaxInitialization;
+            return;
         }
 
-        int initialAmount = Mathf.Min(maxMushrooms / 2, mushroomMapLimit);
+        //int initialAmount = Mathf.Min(maxMushrooms / 2, mushroomMapLimit);
+        int initialAmount = Mathf.Min(startAmount, maxMushrooms); //mushroomMapLimit
+
         for (int i = 0; i < initialAmount; i++)
         {
             SpawnMushrooms();
         }
     }
 
+    
+
     void Update()
     {
-        if (!isSimulationRunning)
+        if (!isSimulationRunning || SeasonManager.Instance.IsWinter)
+        {
             return;
+        }
+
 
         timer += Time.deltaTime;
 
         if (timer >= timeInterval)
         {
+            
             timer = 0f;
             ReproduceMushrooms();
         }
     }
 
+    
     void ReproduceMushrooms()
     {
+
+        if (SeasonManager.Instance.IsWinter){
+            return;
+        }
+
         mushrooms.RemoveAll(item => item == null);
         List<GameObject> current = new List<GameObject>(mushrooms);
 
-        float baseChance;
+        float baseChance = 0.2f;
 
-        if (SeasonManager.Instance.IsWinter)
+        if (SeasonManager.Instance.IsRaining)
         {
-            baseChance = 0.05f;
+            baseChance = 0.4f;
         }
-        else if (SeasonManager.Instance.IsSummer)
-            baseChance = 0.6f;
-        else if (SeasonManager.Instance.IsRaining)
-            baseChance = 0.8f;
 
         foreach (GameObject mushroom in current)
         {
-            if (mushrooms.Count >= mushroomMapLimit || mushrooms.Count >= maxMushrooms)
-                return;
+            //if (mushrooms.Count >= mushroomMapLimit || mushrooms.Count >= maxMushrooms)
+            if (mushrooms.Count >= maxMushrooms)
+            {
+                break;
+                //return;
+            }
 
-            if (Random.value > 0.5f)
+
+            if (Random.value < baseChance) //>
+            {
                 continue;
+            }
 
             Vector3 spawnPos;
 
@@ -103,13 +120,19 @@ public class MushroomSpawner : MonoBehaviour
                 GameObject newMushroom = Instantiate(mushroomPrefab, spawnPos, Quaternion.identity, Mushrooms);
                 mushrooms.Add(newMushroom);
             }
+
         }
+
     }
+    
 
     void SpawnMushrooms()
     {
-        if (mushrooms.Count >= mushroomMapLimit || mushrooms.Count >= maxMushrooms)
+        //if (mushrooms.Count >= mushroomMapLimit || mushrooms.Count >= maxMushrooms)
+        if (mushrooms.Count >= maxMushrooms)
+        {
             return;
+        }
 
         Vector3 pos = GetRandomNavMeshPoint();
 
