@@ -198,7 +198,7 @@ public class BearBehaviour : AnimalBehaviour
         if (preyTarget != null)
             return true; // If the wolf already has a target, don't change prey
 
-        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange);
+        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange, PreyLayer);
 
         float closestDistance = Mathf.Infinity;
         GameObject closestPrey = null;
@@ -241,6 +241,7 @@ public class BearBehaviour : AnimalBehaviour
         if (closestPrey != null)
         {
             preyTarget = closestPrey;
+
             MooseBehaviour moosePrey = preyTarget.GetComponentInParent<MooseBehaviour>();
             if (moosePrey != null)
             {
@@ -254,15 +255,12 @@ public class BearBehaviour : AnimalBehaviour
             }
             StatisticsTableManager.instance.BearhuntAttemptsCount++;
 
-            MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
-            if (moose != null)
-            {
-                moose.OnBeingHunted(gameObject); // Notify the moose that it is being hunted
-            }
+
 
             WolfBehaviour wolf = preyTarget.GetComponentInParent<WolfBehaviour>();
             if (wolf != null)
             {
+                wolf.RegisterBearAttacker(this);
                 wolf.OnBeingHunted(gameObject); // Notify the wolf that it is being hunted
             }
 
@@ -391,10 +389,10 @@ public class BearBehaviour : AnimalBehaviour
 
     void LostPrey()
     {
-        StatisticsTableManager.instance.BearhuntFailuresCount++;
-
         if (preyTarget != null)
         {
+            StatisticsTableManager.instance.BearhuntFailuresCount++;
+
             MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
             if (moose != null)
             {
