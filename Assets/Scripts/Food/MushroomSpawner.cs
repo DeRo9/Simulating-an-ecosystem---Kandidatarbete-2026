@@ -71,60 +71,69 @@ public class MushroomSpawner : MonoBehaviour
         }
     }
 
-    
     void ReproduceMushrooms()
-    {
-
-        if (SeasonManager.Instance.IsWinter){
+    {   
+        // no reproduction during winter
+        if (SeasonManager.Instance.IsWinter)
             return;
-        }
 
+        // removes destroyed mushrooms
         mushrooms.RemoveAll(item => item == null);
+
+        // create copy of list
+        // so list "current" is the mushrooms at this point of time,
+        // and list "mushroom" is a real time list that can change / grow
         List<GameObject> current = new List<GameObject>(mushrooms);
 
-        float baseChance = 0.2f;
+        // normal probability of reproduction is 20%
+        float baseChance = 0.2f; 
 
         if (SeasonManager.Instance.IsRaining)
-        {
-            baseChance = 0.4f;
-        }
+            // probability of reproduction when it is raining is 40%
+            baseChance = 0.4f; 
 
+        // calculating how many more mushrooms we are allowed to spawn
+        // maxLimit is set in GameManager
+        int availableSlots = maxMushrooms - mushrooms.Count;
+        int spawned = 0;
+
+        // iterating all mushrooms in list "current"
         foreach (GameObject mushroom in current)
         {
-            //if (mushrooms.Count >= mushroomMapLimit || mushrooms.Count >= maxMushrooms)
-            if (mushrooms.Count >= maxMushrooms)
-            {
+            
+            // if we exceed maxLimit, stop
+            if (spawned >= availableSlots)
                 break;
-                //return;
-            }
 
-
-            if (Random.value < baseChance) //>
-            {
+            // if greater than baseChance: fail
+            if (Random.value > baseChance)
                 continue;
-            }
 
             Vector3 spawnPos;
 
+            // 90% spawn near parent
             if (Random.value < 0.9f)
             {
                 spawnPos = GetNavMeshPositionNearOtherMushrooms(mushroom.transform.position, reproduceRadius);
             }
             else
             {
+                // 10% spawn randomly
                 spawnPos = GetRandomNavMeshPoint();
             }
 
-            if (spawnPos != Vector3.zero)
-            {
-                GameObject newMushroom = Instantiate(mushroomPrefab, spawnPos, Quaternion.identity, Mushrooms);
-                mushrooms.Add(newMushroom);
-            }
+            if (spawnPos == Vector3.zero)
+                continue;
 
+            GameObject newMushroom = Instantiate(mushroomPrefab, spawnPos, Quaternion.identity, Mushrooms);
+
+            mushrooms.Add(newMushroom);
+            spawned++;
         }
-
-    }
     
+    }
+
+
 
     void SpawnMushrooms()
     {
@@ -142,6 +151,7 @@ public class MushroomSpawner : MonoBehaviour
             mushrooms.Add(newMushroom);
         }
     }
+    
 
     Vector3 GetRandomNavMeshPoint()
     {
