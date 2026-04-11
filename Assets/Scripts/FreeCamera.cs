@@ -122,13 +122,10 @@ public class FreeCamera : MonoBehaviour
 
     if (followKeyAction.WasPressedThisFrame())
 {
-    Debug.Log("F pressed. Selected animal: " + (selectedAnimal != null ? selectedAnimal.name : "NONE"));
-    
     if (selectedAnimal != null)
     {
         followTarget = selectedAnimal;
         orbitAngle = followTarget.eulerAngles.y;
-        Debug.Log("Now following " + followTarget.gameObject.name);
     }
 }
 
@@ -289,7 +286,6 @@ public class FreeCamera : MonoBehaviour
         if (animal != null)
         {
             selectedAnimal = animal.transform;
-            Debug.Log("Selected: " + animal.gameObject.name + " (press F to follow)");
         }
         else
         {
@@ -324,10 +320,6 @@ private void FollowAnimal()
 }
     private void StopFollowing()
     {
-        if(followTarget != null)
-        {
-            Debug.Log("Stopped following: "+ followTarget.gameObject.name);
-        }
         followTarget = null;
     }
 
@@ -348,7 +340,6 @@ private void FollowAnimal()
 {
     StopFollowing();
     transform.position = new Vector3(transform.position.x, 20, transform.position.z);
-    Debug.Log("Camera height reset");
 }
 
 }
