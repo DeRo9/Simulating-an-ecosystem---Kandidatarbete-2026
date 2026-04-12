@@ -13,7 +13,7 @@ public class MushroomSpawner : MonoBehaviour
 
     [SerializeField] private float SpawnRadius = 100f;
     [SerializeField] private float reproduceRadius = 10f;
-    [SerializeField] private float timeInterval = 500f; // 1 second = 1 hour
+    [SerializeField] private float timeInterval = 50f; // 1 second = 1 hour
 
     private float timer;
     private bool isSimulationRunning = false;

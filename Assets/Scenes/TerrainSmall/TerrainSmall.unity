@@ -12471,11 +12471,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MushroomSpawner
   mushroomPrefab: {fileID: 867574789282101160, guid: edfba5393d29181408282f1fe3dec338, type: 3}
   Mushrooms: {fileID: 1631463089}
-  mushroomMaxInitialization: 30
-  mushroomMapLimit: 500
   SpawnRadius: 100
   reproduceRadius: 10
-  timeInterval: 10
+  timeInterval: 50
 --- !u!1 &1399830366
 GameObject:
   m_ObjectHideFlags: 0
