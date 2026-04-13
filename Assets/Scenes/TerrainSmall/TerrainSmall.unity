@@ -2280,8 +2280,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1.8571, y: 30.440147}
-  m_SizeDelta: {x: 421.52, y: 50}
+  m_AnchoredPosition: {x: 10.145529, y: 30.440147}
+  m_SizeDelta: {x: 438.1, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &144747692
 MonoBehaviour:
@@ -2303,7 +2303,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Amount of Mushroom
+  m_text: 'Amount of Mushrooms:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -9770,8 +9770,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 3.67, y: 30.440147}
-  m_SizeDelta: {x: 417.89, y: 50}
+  m_AnchoredPosition: {x: 23.449583, y: 30.440147}
+  m_SizeDelta: {x: 457.4492, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1107844886
 MonoBehaviour:
@@ -9793,7 +9793,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Amount of Berry Bush
+  m_text: 'Amount of Berry Bushes:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -11353,8 +11353,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: FoodSetupPanel, Assembly-CSharp
+      - m_Target: {fileID: 546735678}
+        m_TargetAssemblyTypeName: TimeSetup, Assembly-CSharp
         m_MethodName: Increment
         m_Mode: 1
         m_Arguments:
@@ -15726,7 +15726,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Amount of Moose: '
+  m_text: 'Amount of Bears: '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -17375,8 +17375,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1.0831, y: 30.440147}
-  m_SizeDelta: {x: 434.67, y: 50}
+  m_AnchoredPosition: {x: 6.470947, y: 30.440147}
+  m_SizeDelta: {x: 445.45, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1986475454
 MonoBehaviour:
@@ -17398,7 +17398,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Amount of Edible Tree
+  m_text: 'Amount of Edible Trees:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -17972,8 +17972,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: FoodSetupPanel, Assembly-CSharp
+      - m_Target: {fileID: 546735678}
+        m_TargetAssemblyTypeName: TimeSetup, Assembly-CSharp
         m_MethodName: Decrement
         m_Mode: 1
         m_Arguments:
@@ -18960,7 +18960,7 @@ GameObject:
   - component: {fileID: 2125322618}
   - component: {fileID: 2125322617}
   m_Layer: 5
-  m_Name: AmountOfMoose
+  m_Name: AmountOfWolves
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19005,7 +19005,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Amount of Wolf:'
+  m_text: 'Amount of Wolves:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

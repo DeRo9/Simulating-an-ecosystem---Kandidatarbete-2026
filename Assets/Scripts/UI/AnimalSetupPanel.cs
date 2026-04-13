@@ -20,13 +20,13 @@ public class AnimalSetupPanel : MonoBehaviour
 
     public void Increment()
     {
-        amount = Mathf.Clamp(amount + 1, minAmount, maxAmount);
+        amount = Mathf.Clamp(amount + 5, minAmount, maxAmount);
         amountInput.text = amount.ToString();
     }
 
     public void Decrement()
     {
-        amount = Mathf.Clamp(amount - 1, minAmount, maxAmount);
+        amount = Mathf.Clamp(amount - 5, minAmount, maxAmount);
         amountInput.text = amount.ToString();
     }
 
