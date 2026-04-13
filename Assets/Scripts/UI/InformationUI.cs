@@ -17,8 +17,14 @@ public class InformationUI : MonoBehaviour
     public GameObject imageMale;
     public GameObject imageFemale;
 
+    public TextMeshProUGUI stateText;
+
     [Header("Animal Info")]
     public AnimalNeeds current;
+
+    public AnimalBehaviour currentBehaviour;
+
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -48,6 +54,11 @@ public class InformationUI : MonoBehaviour
             pregnancySlider.value = pregnancyValue;
 
         }
+
+        if (currentBehaviour != null)
+        {
+            stateText.text = "State: " + currentBehaviour.CurrentState.ToString();
+        }
     }
 
 
@@ -66,6 +77,8 @@ public class InformationUI : MonoBehaviour
     public void ShowInfo(Animal animal)
     {
         current = animal.needs;
+        currentBehaviour = animal.GetComponent<AnimalBehaviour>();
+
         animalType.text = animal.species.ToString();
         panel.SetActive(true);
 

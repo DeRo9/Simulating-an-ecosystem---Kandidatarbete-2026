@@ -49,9 +49,6 @@ public class MooseBehaviour : AnimalBehaviour
         if (isDead)
             return;
 
-        if (CurrentState == State.Pregnant)
-            return;
-
         // Update animation based on movement
         anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f); // "isWalking" Ã¤r en bool i animator
         anim.SetBool("isRunning", agent.velocity.magnitude > 3f); // "isRunning" Ã¤r en bool i animator
@@ -228,8 +225,6 @@ public class MooseBehaviour : AnimalBehaviour
             ChangeState(State.Wander);
             return;
         }
-
-
 
         // If the moose has reached the food, stop moving
         if (hasArrived())

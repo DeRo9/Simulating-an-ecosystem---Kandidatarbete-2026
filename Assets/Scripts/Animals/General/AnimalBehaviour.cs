@@ -16,7 +16,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
         Drink, // General
         Hunt, // For animals that hunt, wolves and bears
         Fleeing, // For animals that flee (moose)
-        Pregnant,
         Hibernate,
         Dead,
         Defend, // For wolfs to defend against bears
@@ -46,7 +45,8 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected GameObject waterTarget;
 
     public bool isDead;
-    public bool IsPregnant => CurrentState == State.Pregnant;
+
+    public bool isPregnant;
 
     [Header("Water Layer")]
     [SerializeField] LayerMask waterLayer;
@@ -113,9 +113,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
             case State.Fleeing:
                 FleeState();
                 break;
-            case State.Pregnant:
-                PregnantState();
-                break;
             case State.Hibernate:
                 HibernationState();
                 break;
@@ -156,12 +153,13 @@ public abstract class AnimalBehaviour : MonoBehaviour
             return;
         }
 
+        ApplyPregnancyEffects();
+
         if (animal.GetHealth() <= 0f)
         {
             OnDeath();
             return;
         }
-
 
         if (animal != null)
         {
@@ -197,9 +195,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
             case State.Fleeing:
                 UpdateFlee();
                 break;
-            case State.Pregnant:
-                UpdatePregnant();
-                break;
             case State.Hibernate:
                 HibernationState();
                 break;
@@ -212,16 +207,10 @@ public abstract class AnimalBehaviour : MonoBehaviour
         }
     }
 
-    public virtual void EnterPregnantState()
+    public virtual void SetPregnant(bool value)
     {
-        if (!isDead)
-            ChangeState(State.Pregnant);
-    }
-
-    public virtual void ExitPregnantState()
-    {
-        if (CurrentState == State.Pregnant)
-            ChangeState(State.Wander);
+        if (isDead) return;
+        isPregnant = value;
     }
 
     public void StartWandering()
@@ -369,36 +358,26 @@ public abstract class AnimalBehaviour : MonoBehaviour
         }
  
     }    
+
+    protected virtual void ApplyPregnancyEffects()
+    {
+        if (agent == null || animal == null || needs == null) return;
+
+        if (isPregnant)
+        {
+            agent.speed = animal.speed * 0.5f;
+        }
+        else
+        {
+            agent.speed = animal.speed;
+        }
+    }
     protected virtual void UpdateHunt() { return; }
     protected virtual void UpdateFlee() { return; }
     protected virtual void HuntState() { return; }
     protected virtual void FleeState() { return; }
-    protected virtual void PregnantState()
-    {
-        if (agent != null && agent.enabled)
-        {
-            agent.isStopped = false;
-            agent.speed = animal != null ? animal.speed : agent.speed;
-            if (!agent.hasPath || agent.remainingDistance <= agent.stoppingDistance)
-            {
-                agent.SetDestination(GetRandomPoints());
-            }
-        }
-    }
 
     protected virtual void HibernationState() { return; }
-    protected virtual void UpdatePregnant()
-    {
-        PregnantState();
-        
-        // Update animations based on movement
-        if (anim != null && agent != null)
-        {
-            anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f);
-            anim.SetBool("isRunning", agent.velocity.magnitude > 3f);
-        }
-    }
-
     protected virtual void DefendState() { return; }
     protected virtual void UpdateDefend() { return; }
 

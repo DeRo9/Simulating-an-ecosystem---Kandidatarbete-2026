@@ -31,13 +31,4 @@ public class Bear : Animal
         base.Awake();
     }   
 
-    public override void GetStats(out float speed, out float sight, out float hearing)
-    {
-        speed = this.speed;
-        sight = this.sightRange;
-        hearing = this.hearingRange;
-    }
-
-
-
 }
