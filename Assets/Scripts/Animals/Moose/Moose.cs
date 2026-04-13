@@ -33,9 +33,4 @@ public class Moose : Animal
         base.Awake();
     }
 
-    
-
-
-
-
 }

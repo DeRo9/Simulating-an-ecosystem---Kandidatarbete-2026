@@ -180,9 +180,6 @@ public class WolfBehaviour : AnimalBehaviour
             huntCooldown = huntCooldown * 0.5f;
         }
 
-        if (CurrentState == State.Pregnant)
-            return;
-
         // Update animation based on movement
         anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f); // "isWalking" är en bool i animator
         anim.SetBool("isRunning", agent.velocity.magnitude > 3f); // "isRunning" är en bool i animator

@@ -70,7 +70,7 @@ public class BearBehaviour : AnimalBehaviour
             return;
         }
 
-        if (CurrentState == State.Pregnant || CurrentState == State.Hibernate)
+        if (CurrentState == State.Hibernate)
             return;
 
 
