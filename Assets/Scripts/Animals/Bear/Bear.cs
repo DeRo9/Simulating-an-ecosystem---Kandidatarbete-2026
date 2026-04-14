@@ -17,8 +17,8 @@ public class Bear : Animal
         minSpeed = 1.8f;
         maxSpeed = 1.95f;
 
-        minSight = 50f;
-        maxSight = 70f;
+        minSight = 20f;
+        maxSight = 30f;
 
         minHearing = 45f;
         maxHearing = 55f;
@@ -26,7 +26,9 @@ public class Bear : Animal
         minStrength = 23f;
         maxStrength = 25f;
 
-
+        // Health
+        minHealth = 100f;
+        maxHealth = 120f;
 
         base.Awake();
     }   

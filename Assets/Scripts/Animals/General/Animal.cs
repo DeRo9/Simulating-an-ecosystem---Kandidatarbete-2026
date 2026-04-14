@@ -54,7 +54,6 @@ public class Animal : MonoBehaviour
     // Health
     public float minHealth;
     public float maxHealth;
-    public float health;
 
     [Header("Forces")]
     public float speed;

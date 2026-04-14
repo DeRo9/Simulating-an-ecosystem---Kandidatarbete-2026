@@ -24,8 +24,8 @@ public class Wolf : Animal
         maxSpeed = 1.8f;
 
         // Sight
-        minSight = 70f;
-        maxSight = 90f;
+        minSight = 30f;
+        maxSight = 35f;
 
         // Hearing
         minHearing = 45f;
@@ -34,6 +34,10 @@ public class Wolf : Animal
         // Strength
         minStrength = 9f;
         maxStrength = 11f;
+
+        // Health
+        minHealth = 20f;
+        maxHealth = 40f;
 
         //attackDamage = 20f;
 
