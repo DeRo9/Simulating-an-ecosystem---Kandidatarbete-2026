@@ -34,6 +34,7 @@ public class AnimalMemory : MonoBehaviour
     float[,] foodMemory;
     float[,] dangerMemory;
     float[,] preyMemory;
+    float [,] waterMemory;
 
 
     int gridSizeX;
@@ -62,6 +63,7 @@ public class AnimalMemory : MonoBehaviour
         foodMemory = new float[gridSizeX, gridSizeZ];
         dangerMemory = new float[gridSizeX, gridSizeZ];
         preyMemory = new float[gridSizeX, gridSizeZ];
+        waterMemory = new float[gridSizeX, gridSizeZ];
     }
 
     void Update()
@@ -74,11 +76,13 @@ public class AnimalMemory : MonoBehaviour
                 foodMemory[x, z] -= memoryDecayRate * Time.deltaTime;
                 dangerMemory[x, z] -= memoryDecayRate * Time.deltaTime;
                 preyMemory[x,z] -= memoryDecayRate * Time.deltaTime;
+                waterMemory[x,z] -= memoryDecayRate * Time.deltaTime;
 
                 // Negative values not ok
                 foodMemory[x, z] = Mathf.Max(0, foodMemory[x,z]);
                 dangerMemory[x, z] = Mathf.Max(0, dangerMemory[x,z]);
                 preyMemory[x, z] = Mathf.Max(0, preyMemory[x, z]);
+                waterMemory[x, z] = Mathf.Max(0, waterMemory[x, z]);
             }
     }
 
@@ -130,6 +134,14 @@ public class AnimalMemory : MonoBehaviour
         var chunkpos = GetChunk(pos);
         preyMemory[chunkpos.x,chunkpos.y] += 5f;
     }
+
+    public void RememberWater(Vector3 pos)
+    {
+        var chunkpos = GetChunk(pos);
+        waterMemory[chunkpos.x,chunkpos.y] += 5f;
+    }
+
+
     // Returns best food chunk
     public Vector2Int GetBestFoodChunk()
     {
@@ -150,6 +162,29 @@ public class AnimalMemory : MonoBehaviour
 
         return bestChunk;
     }
+
+        public Vector2Int GetBestWaterChunk()
+    {
+        float bestValue = 0f;
+        Vector2Int bestChunk = new Vector2Int(-1, -1);
+
+        for (int x = 0; x < gridSizeX; x++)
+        {
+            for (int z = 0; z < gridSizeZ; z++)
+            {
+                if (waterMemory[x, z] > bestValue)
+                {
+                    bestValue = waterMemory[x, z];
+                    bestChunk = new Vector2Int(x, z);
+                }
+            }
+        }
+
+        return bestChunk;
+    }
+
+
+
 
     void GetBestPreyChunk()
     {
@@ -204,6 +239,12 @@ public class AnimalMemory : MonoBehaviour
     {
         return preyMemory[x,z];
     }
+
+    public float GetWaterValue(int x, int z)
+    {
+        return waterMemory[x,z];
+    }
+
     public int GetGridSizeX() => gridSizeX;
     public int GetGridSizeZ() => gridSizeZ;
 
