@@ -3,6 +3,14 @@ using UnityEngine.AI;
 
 public class BearBehaviour : AnimalBehaviour
 {
+    [Header("Pack Threat")]
+    float packCheckCooldown = 0f;
+    float packCheckInterval = 2f;
+    int dangerousPackSize = 5;
+
+    GameObject enemy;
+    float fleeRepathTimer = 0f;
+    float fleeRepathInterval = 1f;
     GameObject foodTarget;
     BearHearing hearing;
     AnimalFOV fov;
@@ -29,6 +37,7 @@ public class BearBehaviour : AnimalBehaviour
     bool waitingForDeathAnimation = false;
 
     GameObject pendingCarcass;
+
 
     [Header("Layers")]
     [SerializeField]
@@ -91,6 +100,12 @@ public class BearBehaviour : AnimalBehaviour
             }
             return;
         }
+
+        if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Fleeing)
+    {
+        CheckForWolfPacks();
+        if (CurrentState == State.Fleeing || CurrentState == State.Hunt) return;
+    }
         if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt)
         {
             memoryDecisionCooldown -= Time.deltaTime;
@@ -587,6 +602,95 @@ public class BearBehaviour : AnimalBehaviour
 
         return bestChunk;
     }
+
+    void CheckForWolfPacks()
+    {
+        packCheckCooldown -= Time.deltaTime;
+        if(packCheckCooldown >0) return;
+        packCheckCooldown = packCheckInterval;
+
+        Collider[]nearby = Physics.OverlapSphere(transform.position,animal.sightRange);
+
+        foreach(Collider hit in nearby)
+        {
+            if(!hit.CompareTag("Wolf")) continue;
+            if(fov != null && !fov.IsInFOV(hit.transform)) continue;
+            
+            Wolf wolfComp = hit.GetComponentInParent<Wolf>();
+            if(wolfComp == null || wolfComp.pack == null) continue;
+
+            if(wolfComp.pack.members.Count >= dangerousPackSize)
+            {
+                Debug.Log("Bear detected pack of wolves" + wolfComp.pack.members.Count);
+                if (memory !=null)
+                {
+                    memory.RememberDanger(transform.position);                   
+                }
+                if (needs.howHungryInPercent < 0.25f)
+                {
+                    Debug.Log("Bear is hungry,its attacking the wolves");
+                    preyTarget = hit.gameObject;
+                    ChangeState(State.Hunt);
+                }
+                else
+                {
+                    Debug.Log("Bear is not hungry enough for this, runs away");
+                    enemy = hit.gameObject;
+                    ChangeState(State.Fleeing);
+
+                }
+                return;
+
+            }
+        }
+
+        
+    }
+
+    protected override void FleeState()
+{
+    foodTarget = null;
+    waterTarget = null;
+    preyTarget = null;
+    agent.isStopped = false;
+    agent.speed = animal.runningSpeed;
+}
+
+protected override void UpdateFlee()
+{
+    if (enemy == null || enemy.Equals(null))
+    {
+        enemy = null;
+        agent.speed = animal.speed;
+        ChangeState(State.Wander);
+        return;
+    }
+
+    agent.speed = needs.noMoreStamina ? animal.speed : animal.runningSpeed;
+
+    float distance = Vector3.Distance(transform.position, enemy.transform.position);
+    if (distance > animal.sightRange * 1.5f)
+    {
+        enemy = null;
+        agent.speed = animal.speed;
+        ChangeState(State.Wander);
+        return;
+    }
+
+    fleeRepathTimer += Time.deltaTime;
+    if (fleeRepathTimer >= fleeRepathInterval)
+    {
+        Vector3 fleeDirection = (transform.position - enemy.transform.position).normalized;
+        Vector3 fleeTarget = transform.position + fleeDirection * animal.sightRange;
+
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(fleeTarget, out hit, animal.sightRange, NavMesh.AllAreas))
+        {
+            agent.SetDestination(hit.position);
+        }
+        fleeRepathTimer = 0f;
+    }
+}
 
     protected override void HibernationState()
     {
