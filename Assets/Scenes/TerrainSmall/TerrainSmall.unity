@@ -2087,11 +2087,11 @@ RectTransform:
   - {fileID: 1627862629}
   m_Father: {fileID: 1743179726}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 6.436, y: 90}
-  m_SizeDelta: {x: 1984.539, y: 158.512}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 481.16614, y: 289.5}
+  m_SizeDelta: {x: 517.53894, y: -240.488}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &111162045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12610,11 +12610,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MushroomSpawner
   mushroomPrefab: {fileID: 867574789282101160, guid: edfba5393d29181408282f1fe3dec338, type: 3}
   Mushrooms: {fileID: 1631463089}
-  mushroomMaxInitialization: 30
-  mushroomMapLimit: 500
   SpawnRadius: 100
   reproduceRadius: 10
-  timeInterval: 10
+  timeInterval: 50
 --- !u!1 &1399830366
 GameObject:
   m_ObjectHideFlags: 0

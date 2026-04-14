@@ -114,6 +114,13 @@ public class MooseBehaviour : AnimalBehaviour
                         return;
                     }
 
+                    /*
+                    if (needs.thirstLevel <= 0.45f)
+                    {
+                        Vector2Int targetChunk = DecideOptimalFoodAndWaterChunk();
+                    }
+                    */
+
                     Vector2Int targetChunk = DecideFoodTargetChunk();
 
                     if (targetChunk.x != -1)

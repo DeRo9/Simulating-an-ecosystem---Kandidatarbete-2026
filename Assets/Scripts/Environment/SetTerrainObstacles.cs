@@ -20,7 +20,6 @@ public class SetTerrainObstacles : MonoBehaviour
         lenght = terrain.terrainData.size.z;
         width = terrain.terrainData.size.x;
         hight = terrain.terrainData.size.y;
-        Debug.Log("Terrain Size is :" + width + " , " + hight + " , " + lenght);
 
         int i = 0;
         GameObject parent = new GameObject("Tree_Obstacles");

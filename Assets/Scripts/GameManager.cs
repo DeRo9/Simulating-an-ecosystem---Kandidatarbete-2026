@@ -167,8 +167,12 @@ public class GameManager : MonoBehaviour
 
         SpawnFood(berryBushPrefab, berryBushSetup.amount, berryBushFolder);
         
-        mushroomSpawner.SetMaxMushrooms(mushroomSetup.amount);
-        mushroomSpawner.InitializeSpawn();
+        //mushroomSpawner.SetMaxMushrooms(mushroomSetup.amount);
+        //mushroomSpawner.InitializeSpawn();
+
+        mushroomSpawner.SetMaxMushrooms(200); // current max amount
+        mushroomSpawner.InitializeSpawn(mushroomSetup.amount);
+
 
         nutrientTreeSpawner.SetTreeAmount(nutrientTree.amount);
         nutrientTreeSpawner.InitializeSpawn();
@@ -213,9 +217,13 @@ public class GameManager : MonoBehaviour
 
                 // Randomize stats from species ranges
                 animal.speed = UnityEngine.Random.Range(animal.minSpeed, animal.maxSpeed);
-                animal.runningSpeed = animal.speed * 1.5f; //What would make sense?
+                animal.runningSpeed = animal.maxSpeed * 1.25f; //What would make sense?
                 animal.sightRange = UnityEngine.Random.Range(animal.minSight, animal.maxSight);
                 animal.hearingRange = UnityEngine.Random.Range(animal.minHearing, animal.maxHearing);
+
+                float randomizedHealth = animal.CalculateHealth(animal.minHealth, animal.maxHealth);
+                animal.needs.maxHealth = randomizedHealth;
+                animal.needs.healthLevel = randomizedHealth;
 
 
                 animal.strength = UnityEngine.Random.Range(animal.minStrength, animal.maxStrength);

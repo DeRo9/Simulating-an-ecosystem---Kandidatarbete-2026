@@ -1,3 +1,4 @@
+using System.Drawing;
 using UnityEngine;
 
 public enum Species
@@ -50,6 +51,10 @@ public class Animal : MonoBehaviour
     public float minStrength;
     public float maxStrength;
 
+    // Health
+    public float minHealth;
+    public float maxHealth;
+
     [Header("Forces")]
     public float speed;
     public float runningSpeed; //= animal.speed * 2f 
@@ -95,7 +100,15 @@ public class Animal : MonoBehaviour
             return;
         }
 
-        attackDamage = strength * UnityEngine.Random.Range(1f, 2f);
+        attackDamage = strength * Random.Range(1f, 1.2f);
+        // add size in equation... somehow also affect
+    }
+
+    public virtual float CalculateHealth(float minHealth, float maxHealth)
+    {
+        return Random.Range(minHealth, maxHealth);
+        
+        
     }
 
 

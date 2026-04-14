@@ -45,6 +45,7 @@ public class AnimalNeeds : MonoBehaviour
         thirstLevel = maxThirst; // Start fully hydrated
         healthLevel = maxHealth; // Start at full health
         staminaLevel = maxStamina; // Start at full stamina
+        healthLevel = maxHealth; // Set health
     }
 
     // Update is called once per frame
