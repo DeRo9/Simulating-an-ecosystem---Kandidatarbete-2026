@@ -3,6 +3,8 @@ using UnityEngine;
 public class Moose : Animal
 {
 
+    private AnimalNeeds needs;
+
     protected override void Awake()
     {
         species = Species.moose;
@@ -12,11 +14,11 @@ public class Moose : Animal
         grownUpAge = 4f;
         oldAge = 8f;
 
-        size = 1f;
+        size = 1f; 
 
         // Speed
-        minSpeed = 1.5f;
-        maxSpeed = 2f;
+        minSpeed = 1.65f;
+        maxSpeed = 1.8f;
 
         // Sight
         minSight = 40f;
@@ -27,10 +29,14 @@ public class Moose : Animal
         maxHearing = 25f;
 
         // Strength
-        minStrength = 8f;
-        maxStrength = 14f;
+        minStrength = 13f;
+        maxStrength = 15f;
+
+        // Health
+        minHealth = 80f;
+        maxHealth = 100f;
+        needs.maxHealth = health;
 
         base.Awake();
     }
-
 }

@@ -217,7 +217,8 @@ public class GameManager : MonoBehaviour
 
                 // Randomize stats from species ranges
                 animal.speed = UnityEngine.Random.Range(animal.minSpeed, animal.maxSpeed);
-                animal.runningSpeed = animal.speed * 1.5f; //What would make sense?
+                animal.health = animal.CalculateHealth(animal.minHealth, animal.maxHealth);
+                animal.runningSpeed = animal.maxSpeed * 1.25f; //What would make sense?
                 animal.sightRange = UnityEngine.Random.Range(animal.minSight, animal.maxSight);
                 animal.hearingRange = UnityEngine.Random.Range(animal.minHearing, animal.maxHearing);
 

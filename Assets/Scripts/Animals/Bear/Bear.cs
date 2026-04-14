@@ -14,8 +14,8 @@ public class Bear : Animal
 
         size = 1f;
 
-        minSpeed = 2f;
-        maxSpeed = 3f;
+        minSpeed = 1.8f;
+        maxSpeed = 1.95f;
 
         minSight = 50f;
         maxSight = 70f;
@@ -23,8 +23,8 @@ public class Bear : Animal
         minHearing = 45f;
         maxHearing = 55f;
 
-        minStrength = 10f;
-        maxStrength = 18f;
+        minStrength = 23f;
+        maxStrength = 25f;
 
 
 
