@@ -20,8 +20,8 @@ public class Bear : Animal
         minSight = 20f;
         maxSight = 30f;
 
-        minHearing = 45f;
-        maxHearing = 55f;
+        minHearing = 35f;
+        maxHearing = 40f;
 
         minStrength = 23f;
         maxStrength = 25f;

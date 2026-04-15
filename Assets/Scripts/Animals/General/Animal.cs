@@ -46,6 +46,7 @@ public class Animal : MonoBehaviour
     // Hearing
     public float minHearing;
     public float maxHearing;
+    public SphereCollider hearingCollider;
 
     // Strength
     public float minStrength;
@@ -79,7 +80,9 @@ public class Animal : MonoBehaviour
     {
         age += Time.deltaTime * agingSpeed;
 
-      
+        hearingCollider.radius = hearingRange / size; // Wolf has scale of 2 , so hearing range is divided by 2 to keep it consistent with other animals
+
+
     }
     
     public virtual void SetMovementState(bool moving, float speed){

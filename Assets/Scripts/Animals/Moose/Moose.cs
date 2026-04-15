@@ -23,8 +23,8 @@ public class Moose : Animal
         maxSight = 25f;
 
         // Hearing
-        minHearing = 15f;
-        maxHearing = 25f;
+        minHearing = 25f;
+        maxHearing = 30f;
 
         // Strength
         minStrength = 13f;
