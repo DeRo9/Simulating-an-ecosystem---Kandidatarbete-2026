@@ -39,6 +39,8 @@ public class Wolf : Animal
         minHealth = 20f;
         maxHealth = 40f;
 
+        needs.staminaDecreaseRate = 4.5f;
+
         //attackDamage = 20f;
 
         gameObject.tag = "Wolf";

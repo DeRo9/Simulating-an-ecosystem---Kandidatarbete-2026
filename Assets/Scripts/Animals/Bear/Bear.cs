@@ -30,6 +30,8 @@ public class Bear : Animal
         minHealth = 100f;
         maxHealth = 120f;
 
+        needs.staminaDecreaseRate = 8f;
+
         base.Awake();
     }   
 

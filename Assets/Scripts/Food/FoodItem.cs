@@ -22,6 +22,7 @@ public class FoodItem : MonoBehaviour
             if (needs != null && needs.isHungry)
             {
                 needs.Eat(nutritionValue);
+                needs.RegenerateHealth(20f);
 
                 if (spawner != null)
                 {

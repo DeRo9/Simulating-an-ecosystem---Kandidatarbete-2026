@@ -19,7 +19,7 @@ public class AnimalNeeds : MonoBehaviour
     
     [SerializeField] private float hungerDecreaseRate = 2f;
     [SerializeField] private float thirstDecreaseRate = 1f;
-    [SerializeField] private float staminaDecreaseRate = 1f;
+    [SerializeField] public float staminaDecreaseRate = 1f; // Made public so it can be modified by the animals classes
     [SerializeField] private float staminaIncreaseRate = 1.5f;
 
     public float hibernationMultiplier = 1f;
@@ -150,6 +150,13 @@ public class AnimalNeeds : MonoBehaviour
     {
         staminaLevel += staminaIncreaseRate * Time.deltaTime;
         staminaLevel = Mathf.Clamp(staminaLevel, 0f, maxStamina);
+    }
+
+    // Called after eating or drinking to regenerate some health
+    public void RegenerateHealth(float amount)
+    {
+        healthLevel += amount;
+        healthLevel = Mathf.Clamp(healthLevel, 0f, maxHealth);
     }
     
 

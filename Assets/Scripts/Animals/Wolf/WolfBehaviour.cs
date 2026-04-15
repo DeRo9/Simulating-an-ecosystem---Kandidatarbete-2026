@@ -122,8 +122,8 @@ public class WolfBehaviour : AnimalBehaviour
             agent.isStopped = true; // Stop moving if close enough to the target position
         }
 
-        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f);
-        anim.SetBool("isRunning", agent.velocity.magnitude > 3f);
+        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < animal.runningSpeed * 0.95f);
+        anim.SetBool("isRunning", agent.velocity.magnitude > animal.runningSpeed * 0.95f);
 
         ApplySeperation();
     }
@@ -181,8 +181,8 @@ public class WolfBehaviour : AnimalBehaviour
         }
 
         // Update animation based on movement
-        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f); // "isWalking" är en bool i animator
-        anim.SetBool("isRunning", agent.velocity.magnitude > 3f); // "isRunning" är en bool i animator
+        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < animal.runningSpeed * 0.95f); // "isWalking" är en bool i animator
+        anim.SetBool("isRunning", agent.velocity.magnitude > animal.runningSpeed * 0.95f); // "isRunning" är en bool i animator
 
         if (waitingForDeathAnimation)
         {
@@ -286,6 +286,8 @@ public class WolfBehaviour : AnimalBehaviour
             {
                 MooseBehaviour moose = hit.GetComponentInParent<MooseBehaviour>();
                 if (moose == null || moose.isDead) continue; // Skip if moose is already dead.
+                if ((pack == null || pack.countCurrentPackSize() <= 1) && moose.GetAge() >= moose.GetGrownUpAge()) continue; // If the wolf is alone, only target moose calves, not grown up moose,
+                                                                                                                             // to balance the difficulty of hunting alone vs in a pack
 
                 float distance = Vector3.Distance(transform.position, hit.transform.position);
                 if (distance < closestDistance)
@@ -454,6 +456,8 @@ public class WolfBehaviour : AnimalBehaviour
             return; // If the wolf has no prey, switch to wandering
         }
 
+        agent.speed = needs.noMoreStamina ? animal.speed : animal.runningSpeed;
+
         MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
         if (moose != null && moose.isDead)
         {
@@ -598,6 +602,7 @@ public class WolfBehaviour : AnimalBehaviour
                 if (nutrition > 0f)
                 {
                     needs.Eat(nutrition);
+                    needs.RegenerateHealth(20f); // Regenerate some health upon eating carcass
                 }
 
                 if (carcass.IsEmpty)

@@ -34,6 +34,8 @@ public class Moose : Animal
         minHealth = 80f;
         maxHealth = 100f;
 
+        needs.staminaDecreaseRate = 5f;
+
         base.Awake();
     }
 }

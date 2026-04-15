@@ -50,8 +50,8 @@ public class MooseBehaviour : AnimalBehaviour
             return;
 
         // Update animation based on movement
-        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f); // "isWalking" Ã¤r en bool i animator
-        anim.SetBool("isRunning", agent.velocity.magnitude > 3f); // "isRunning" Ã¤r en bool i animator
+        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < animal.runningSpeed * 0.95f); // "isWalking" Ã¤r en bool i animator
+        anim.SetBool("isRunning", agent.velocity.magnitude > animal.runningSpeed * 0.95f); // "isRunning" Ã¤r en bool i animator
 
         if (hearing != null && hearing.HeardSomething)
         {
@@ -485,5 +485,9 @@ public class MooseBehaviour : AnimalBehaviour
         if (bear == null) return;
         bearAttackers.Remove(bear);
     }
+
+    public float GetAge() { return animal.age; }
+    public float GetGrownUpAge() { return animal.grownUpAge; }
+
 
 }

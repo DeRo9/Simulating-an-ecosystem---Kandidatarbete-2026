@@ -19,6 +19,7 @@ public class WaterSource : MonoBehaviour
             if (needs != null && needs.isThirsty) //Only drink if thirsty
             {
                 needs.drinkFromSource(chunkOfWater);
+                needs.RegenerateHealth(10f); // Drinking also regenerates health
 
                 if (!needs.isThirsty)
                 {

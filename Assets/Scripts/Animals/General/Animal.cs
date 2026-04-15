@@ -58,7 +58,7 @@ public class Animal : MonoBehaviour
 
     [Header("Forces")]
     public float speed;
-    public float runningSpeed; //= animal.speed * 2f 
+    public float runningSpeed;
     public float size = 1f;
     public float strength;
    
