@@ -91,7 +91,8 @@ public class BearBehaviour : AnimalBehaviour
             }
             return;
         }
-        if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt)
+        if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt && 
+            CurrentState != State.SearchFood && CurrentState != State.SearchWater)
         {
             memoryDecisionCooldown -= Time.deltaTime;
             // If the bear is more thirsty than hungry, switch to drink state, if more hungry than thirsty, switch to eat state
@@ -100,6 +101,11 @@ public class BearBehaviour : AnimalBehaviour
                 if (FindWater())
                 {
                     ChangeState(State.Drink);
+                    return;
+                }
+                else
+                {
+                    ChangeState(State.SearchWater);
                     return;
                 }
             }
@@ -127,13 +133,17 @@ public class BearBehaviour : AnimalBehaviour
                         if (agent.isOnNavMesh)
                         {
                             agent.SetDestination(memory.GetRandomPointInChunk(bestChunk));
-                            ChangeState(State.Wander);
+                            ChangeState(State.SearchFood);
                         }
                     }
                     else
                     {
                         ChangeState(State.Wander);
                     }
+                }
+                else if(CurrentState != State.SearchFood)
+                {
+                    ChangeState(State.SearchFood);
                 }
             }
         }
@@ -599,6 +609,45 @@ public class BearBehaviour : AnimalBehaviour
     public void InflictDamage(float damage)
     {
         needs.TakeDamage(damage);
+    }
+
+    protected override void UpdateSearchFood()
+    {
+        // If prey is found while searching, switch to hunt state
+        if (FindPrey())
+        {
+            ChangeState(State.Hunt);
+            return;
+        }
+
+        // If food (carcass) is found while searching, switch to eat state
+        if (FindFood())
+        {
+            ChangeState(State.Eat);
+            return;
+        }
+
+        // If reached destination while searching, pick a new random destination to continue searching
+        if (hasArrived())
+        {
+            agent.SetDestination(GetRandomPoints());
+        }
+    }
+
+    protected override void UpdateSearchWater()
+    {
+        // If water is found while searching, switch to drink state
+        if (FindWater())
+        {
+            ChangeState(State.Drink);
+            return;
+        }
+
+        // If reached destination while searching, pick a new random destination to continue searching
+        if (hasArrived())
+        {
+            agent.SetDestination(GetRandomPoints());
+        }
     }
 
 }

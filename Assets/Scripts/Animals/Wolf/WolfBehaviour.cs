@@ -214,7 +214,8 @@ public class WolfBehaviour : AnimalBehaviour
             }
         }
 
-        if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt && CurrentState != State.Fleeing)
+        if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt && 
+            CurrentState != State.SearchFood && CurrentState != State.SearchWater && CurrentState != State.Fleeing)
         {
             // If the wolf is more thirsty than hungry, switch to drink state, if more hungry than thirsty, switch to eat state
             if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
@@ -222,6 +223,11 @@ public class WolfBehaviour : AnimalBehaviour
                 if (FindWater())
                 {
                     ChangeState(State.Drink);
+                    return;
+                }
+                else
+                {
+                    ChangeState(State.SearchWater);
                     return;
                 }
             }
@@ -248,13 +254,17 @@ public class WolfBehaviour : AnimalBehaviour
                         if (agent.isOnNavMesh)
                         {
                             agent.SetDestination(memory.GetRandomPointInChunk(bestChunk));
-                            ChangeState(State.Wander);
+                            ChangeState(State.SearchFood);
                         }
                     }
                     else
                     {
                         ChangeState(State.Wander);
                     }
+                }
+                else if(CurrentState != State.SearchFood)
+                {
+                    ChangeState(State.SearchFood);
                 }
             }
         }
@@ -337,81 +347,6 @@ public class WolfBehaviour : AnimalBehaviour
         }
     }
 
-    protected override void UpdateFlee()
-    {
-        // If there is no enemy, switch back to wandering
-        if (enemy == null)
-        {
-            agent.speed = animal.speed;
-            ChangeState(State.Wander);
-            return;
-        }
-
-        agent.speed = needs.noMoreStamina ? animal.speed : animal.runningSpeed;
-
-        float distanceToPredator = Vector3.Distance(transform.position, enemy.transform.position);
-        if (distanceToPredator > animal.sightRange * 1.2)
-        {
-            enemy = null;
-            agent.speed = animal.speed;
-            ChangeState(State.Wander);
-            return;
-        }
-
-        fleeRepathTimer += Time.deltaTime;
-        if (fleeRepathTimer >= fleeRepathInterval)
-        {
-            Vector3 fleePoint = CalculateFleePath();
-            agent.SetDestination(fleePoint);
-            fleeRepathTimer = 0f;
-        }
-    }
-
-    private Vector3 CalculateFleePath()
-    {
-        Vector3 dirAwayFromEnemy = (transform.position - enemy.transform.position).normalized;
-
-        Vector3[] directionTests = new Vector3[] // Which direction is best to flee to (to avoid walking to edge of terrain)
-        {
-            dirAwayFromEnemy,
-            Quaternion.Euler(0,45,0) * dirAwayFromEnemy,
-            Quaternion.Euler(0,-45,0) * dirAwayFromEnemy,
-        };
-
-        Vector3 bestPoint = transform.position + dirAwayFromEnemy * animal.sightRange;
-        float furthestEdge = -1f;
-
-        foreach (Vector3 direction in directionTests)
-        {
-            Vector3 point = transform.position + direction * animal.sightRange;
-            NavMeshHit hit;
-
-            if (NavMesh.SamplePosition(point, out hit, animal.sightRange, NavMesh.AllAreas))
-            {
-                NavMeshHit wallHit;
-                if (NavMesh.FindClosestEdge(hit.position, out wallHit, NavMesh.AllAreas))
-                {
-                    if (wallHit.distance > furthestEdge)
-                    {
-                        furthestEdge = wallHit.distance;
-                        bestPoint = hit.position;
-                    }
-                }
-            }
-        }
-        return bestPoint;
-    }
-
-    protected override void FleeState()
-    {
-        // set food and water to null to stop the moose from trying to eat or drink while fleeing
-        foodTarget = null;
-        waterTarget = null;
-
-        agent.isStopped = false;
-        agent.speed = animal.runningSpeed; // Increase speed while fleeing
-    }
-
     public void OnBeingHunted(GameObject predator)
     {
         if (memory != null)
@@ -438,11 +373,6 @@ public class WolfBehaviour : AnimalBehaviour
                 ChangeState(State.Wander);
             }
         }
-    }
-
-    public void InflictDamage(float damage)
-    {
-        needs.TakeDamage(damage);
     }
 
     protected override void UpdateHunt()
@@ -909,6 +839,45 @@ public class WolfBehaviour : AnimalBehaviour
     {
         if (bear == null) return;
             bearAttackers.Remove(bear);
+    }
+
+    protected override void UpdateSearchFood()
+    {
+        // If prey is found while searching, switch to hunt state
+        if (FindPrey())
+        {
+            ChangeState(State.Hunt);
+            return;
+        }
+
+        // If food (carcass) is found while searching, switch to eat state
+        if (FindFood())
+        {
+            ChangeState(State.Eat);
+            return;
+        }
+
+        // If reached destination while searching, pick a new random destination to continue searching
+        if (hasArrived())
+        {
+            agent.SetDestination(GetRandomPoints());
+        }
+    }
+
+    protected override void UpdateSearchWater()
+    {
+        // If water is found while searching, switch to drink state
+        if (FindWater())
+        {
+            ChangeState(State.Drink);
+            return;
+        }
+
+        // If reached destination while searching, pick a new random destination to continue searching
+        if (hasArrived())
+        {
+            agent.SetDestination(GetRandomPoints());
+        }
     }
 
 }
