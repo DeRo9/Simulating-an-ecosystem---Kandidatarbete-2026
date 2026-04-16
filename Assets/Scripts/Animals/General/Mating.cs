@@ -37,6 +37,10 @@ public class Mating : MonoBehaviour
     private float pendingBabySight;
     private float pendingBabyHearing;
 
+    [Header("Failed Mating")]
+    public float matingRejectionCooldown = 30f; // Cooldown to avoid re-attempting with same mate
+    private System.Collections.Generic.List<GameObject> rejectedMates = new System.Collections.Generic.List<GameObject>();
+
     public static event Action<string> OnMating;
 
     private void Start()
@@ -85,6 +89,26 @@ public class Mating : MonoBehaviour
         return cooldownTimer;
     }
 
+    public bool IsRejectedMate(GameObject potential)
+    {
+        return potential != null && rejectedMates.Contains(potential);
+    }
+
+    private void RejectMate(GameObject mate)
+    {
+        if (mate != null && !rejectedMates.Contains(mate))
+        {
+            rejectedMates.Add(mate);
+            StartCoroutine(RemoveRejectedMateAfterDelay(mate));
+        }
+    }
+
+    private System.Collections.IEnumerator RemoveRejectedMateAfterDelay(GameObject mate)
+    {
+        yield return new WaitForSeconds(matingRejectionCooldown);
+        rejectedMates.Remove(mate);
+    }
+
     public void TryMate(GameObject partner)
     {
         if (partner == null) return;
@@ -106,19 +130,29 @@ public class Mating : MonoBehaviour
     private void MateWith(GameObject partner)
     {
         if (animalPrefab == null || heartPrefab == null)
+        {
+            RejectMate(partner);
             return;
+        }
 
         Animal partnerAnimal = partner.GetComponent<Animal>();
         Mating partnerMating = partner.GetComponent<Mating>();
         if (partnerAnimal == null || partnerMating == null)
+        {
+            RejectMate(partner);
             return;
+        }
 
         Mating motherMating = animal.IsMale ? partnerMating : this;
         Animal fatherAnimal = animal.IsMale ? animal : partnerAnimal;
         if (motherMating.usePregnancySystem)
         {
             if (!motherMating.TryStartPregnancy(fatherAnimal))
+            {
+                RejectMate(partner);
+                partnerMating.RejectMate(gameObject);
                 return;
+            }
         }
         else
         {

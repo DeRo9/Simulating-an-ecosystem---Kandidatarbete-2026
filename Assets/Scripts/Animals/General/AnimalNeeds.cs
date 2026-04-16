@@ -6,7 +6,6 @@ using UnityEngine;
 public class AnimalNeeds : MonoBehaviour
 
 {
-
     public float maxHunger = 100f; //so InformationUI works...?
     public float maxThirst = 100f;
     public float maxHealth = 100f;
@@ -27,7 +26,7 @@ public class AnimalNeeds : MonoBehaviour
     public bool isHungry => hungerLevel < maxHunger * 0.8f;
     public bool isHungryBearH => hungerLevel < maxHunger * 0.5f; 
     public bool isThirsty => thirstLevel < maxThirst * 0.5f;
-    public bool isTired => staminaLevel < maxStamina * 0.5f;
+    public bool isTired => staminaLevel < maxStamina * 0.1f;
     public bool noMoreStamina { get; private set; }
     public bool isDead => healthLevel <= 0f;
 
@@ -37,15 +36,14 @@ public class AnimalNeeds : MonoBehaviour
     private bool IsStarving => howHungryInPercent <= 0f;
     private bool IsDehydrated => howThirstyInPercent <= 0f;
 
-
     
     void Start()
     {
-        hungerLevel = maxHunger; // Start fully satisfied
-        thirstLevel = maxThirst; // Start fully hydrated
-        healthLevel = maxHealth; // Start at full health
-        staminaLevel = maxStamina; // Start at full stamina
-        healthLevel = maxHealth; // Set health
+        hungerLevel = maxHunger;
+        thirstLevel = maxThirst;
+        healthLevel = maxHealth;
+        staminaLevel = maxStamina;
+        healthLevel = maxHealth;
     }
 
     // Update is called once per frame
@@ -61,8 +59,6 @@ public class AnimalNeeds : MonoBehaviour
 
         hungerLevel -= hungerDecreaseRate * Time.deltaTime * hungerMultiplier * hibernationMultiplier;
         hungerLevel = Mathf.Clamp(hungerLevel, 0f, maxHunger);
-
-
         float thirstMultiplier = 1f;
 
         if (SeasonManager.Instance.IsSummer)
@@ -75,7 +71,6 @@ public class AnimalNeeds : MonoBehaviour
         }
 
         survivalDamage();
-
         if(staminaLevel <= 0.1f)
         {
             noMoreStamina = true;
@@ -88,8 +83,6 @@ public class AnimalNeeds : MonoBehaviour
 
         thirstLevel -= thirstDecreaseRate * Time.deltaTime * thirstMultiplier * hibernationMultiplier;
         thirstLevel = Mathf.Clamp(thirstLevel, 0f, maxThirst);
-
-
     }
 
     private void survivalDamage()
@@ -119,7 +112,6 @@ public class AnimalNeeds : MonoBehaviour
         hungerLevel += nutritionValue; // Increase hunger level by the nutrition value of the food
         hungerLevel = Mathf.Clamp(hungerLevel, 0f, maxHunger); // Ensure it doesn't exceed max
     }
-
     
     public void drinkFromSource(float chunkOfWater)
     {
@@ -151,7 +143,4 @@ public class AnimalNeeds : MonoBehaviour
         staminaLevel += staminaIncreaseRate * Time.deltaTime;
         staminaLevel = Mathf.Clamp(staminaLevel, 0f, maxStamina);
     }
-    
-
-
 }

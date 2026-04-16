@@ -11,11 +11,11 @@ public class MooseBehaviour : AnimalBehaviour
 
     AnimalFOV fov;
     AnimalHearing hearing;
-    Mating mating;
-
     float foodSearchingCooldown;
 
     float memoryDecisionCooldown = 0f;
+
+    private float needsEvalCooldown = 0f;
 
     [Header("Layers")]
     [SerializeField] LayerMask foodLayer;
@@ -28,12 +28,10 @@ public class MooseBehaviour : AnimalBehaviour
         base.Start();
         fov = GetComponent<AnimalFOV>();
         hearing = GetComponent<AnimalHearing>();
-        mating = GetComponent<Mating>();
     }
 
     protected override void Update()
     {
-
         if (!agent.isOnNavMesh)
             return;
         
@@ -46,12 +44,23 @@ public class MooseBehaviour : AnimalBehaviour
 
         if (CheckForThreats()) return;
 
-        if (CurrentState == State.Fleeing) return;
-        if (CurrentState == State.Mating)  return;
-        if (CurrentState == State.Eat)     return;
-        if (CurrentState == State.Drink)   return;
+        switch (CurrentState)
+        {
+            case State.Fleeing:
+            case State.Mating:
+            case State.Eat:
+            case State.Drink:
+            case State.SearchFood:
+            case State.SearchWater:
+                return;
+        }
 
-        EvaluateNeeds();
+        needsEvalCooldown -= Time.deltaTime;
+        if (needsEvalCooldown <= 0f)
+        {
+            needsEvalCooldown = 2f;
+            EvaluateNeeds();
+        }
     }
 
     private bool CheckForThreats()
@@ -85,9 +94,6 @@ public class MooseBehaviour : AnimalBehaviour
 
     private void EvaluateNeeds()
     {
-        if (CurrentState == State.SearchFood || CurrentState == State.SearchWater || CurrentState == State.SearchMate)
-            return;
-
         bool hungry  = IsHungry();
         bool thirsty = IsThirsty();
 
@@ -102,7 +108,6 @@ public class MooseBehaviour : AnimalBehaviour
 
         if (hungry)
         {
-          
             if (FindFood())
                 ChangeState(State.Eat);
             else
@@ -116,27 +121,10 @@ public class MooseBehaviour : AnimalBehaviour
             return;
         }
 
+        if (CurrentState != State.Wander && CurrentState != State.Idle)
+        {
             ChangeState(State.Wander);
-    }
-
-    private bool CanMate()
-    {
-        if (mating == null || isDead)
-            return false;
-
-        if (isPregnant)
-            return false;
-
-        if (animal.age < animal.grownUpAge)
-            return false;
-
-        if (mating.GetPregnancyTimer() > 0f)
-            return false;
-
-        if (SeasonManager.Instance.IsWinter && (animal.species == Species.bear || animal.species == Species.moose))
-            return false;
-
-        return true;
+        }
     }
 
     //
@@ -220,6 +208,7 @@ public class MooseBehaviour : AnimalBehaviour
             foodTarget = closestFood;
             return true;
         }
+
         foodTarget = null;
         return false;
     }

@@ -89,6 +89,10 @@ public abstract class AnimalBehaviour : MonoBehaviour
     float fleeRepathInterval = 2f;
 
     protected GameObject mateTarget;
+
+    private bool isMating = false;
+
+    public Mating mating; 
     
     protected virtual void Start()
     {
@@ -98,6 +102,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         needs = GetComponent<AnimalNeeds>();
         memory = GetComponent<AnimalMemory>();
+        mating = GetComponent<Mating>();
 
         if (agent != null && animal != null)
         {
@@ -127,8 +132,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
             stateTrackers[CurrentState].ResetSession();
         }
 
-        // Clear mate target when leaving mating-related states
-        if (CurrentState == State.SearchMate || CurrentState == State.Mating)
+        if ((CurrentState == State.SearchMate || CurrentState == State.Mating) && newState != State.Mating)
         {
             mateTarget = null;
         }
@@ -169,6 +173,11 @@ public abstract class AnimalBehaviour : MonoBehaviour
                 agent.SetDestination(GetRandomPoints());
                 break;
             case State.Eat:
+                if (foodTarget == null)
+                {
+                    ChangeState(State.SearchFood);
+                    break;
+                }
                 agent.isStopped = false;
                 agent.SetDestination(foodTarget.transform.position);
                 break;
@@ -201,6 +210,12 @@ public abstract class AnimalBehaviour : MonoBehaviour
     {
         Vector3 randomDirection = UnityEngine.Random.insideUnitSphere * 20f;
         randomDirection.y = 0f;
+
+        if (randomDirection.magnitude < 10f)
+        {
+            randomDirection = randomDirection.normalized * 10f;
+        }
+
         Vector3 randomPoint = transform.position + randomDirection;
 
         NavMeshHit navMeshHit;
@@ -242,10 +257,12 @@ public abstract class AnimalBehaviour : MonoBehaviour
             animal.SetMovementState (moving,agent.velocity.magnitude);
         }
 
-        if (animatorState.IsName("Running"))
+        bool isRunning = agent.velocity.magnitude > 3f;  // Match running animation threshold
+
+        if (isRunning)
         {
             needs.DrainStamina();
-        } 
+        }
         else
         {
             needs.RegenerateStamina();
@@ -430,7 +447,10 @@ public abstract class AnimalBehaviour : MonoBehaviour
         else
         {
             agent.isStopped = false;
-            agent.SetDestination(foodTarget.transform.position);
+            if (!agent.pathPending && agent.remainingDistance < 0.05f && !agent.hasPath)
+            {
+                agent.SetDestination(foodTarget.transform.position);
+            }
         }
 
         if (!needs.isHungry)
@@ -485,7 +505,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
         if (isPregnant)
         {
-            agent.speed = animal.speed * 0.5f;
+            agent.speed = animal.speed * 0.8f;
         }
         else
         {
@@ -495,6 +515,13 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected virtual void UpdateHunt() { return; }
     protected virtual void UpdateFlee() 
     {
+        if (needs.noMoreStamina)
+        {
+            agent.speed = animal.speed;
+            ChangeState(State.Idle); // ADD THIS
+            return;
+        }
+
         if (enemy == null)
         {
             agent.speed = animal.speed;
@@ -584,63 +611,71 @@ public abstract class AnimalBehaviour : MonoBehaviour
             agent.SetDestination(GetRandomPoints());
         } 
     }
-    protected virtual void UpdateSearchMate()
+
+    public bool CanMate()
     {
+        if (mating == null || isDead) return false;
+        if (isPregnant) return false;
+        if (mating.GetPregnancyTimer() > 0f) return false;
+        if (animal.age < animal.grownUpAge) return false;
+        if (mating.GetCooldownTimer() > 0f) return false;
+        return true;
+    }
+
+protected float searchMateCooldown = 0f; // Cooldown timer for changing destination while searching
+
+protected virtual void UpdateSearchMate()
+{
+    if (mateTarget == null)
+    {
+        mateTarget = FindPotentialMate();
+
         if (mateTarget == null)
         {
-            mateTarget = FindPotentialMate();
-
-            if (mateTarget == null)
+            // No mate found - wander using cooldown-based destination changes
+            searchMateCooldown -= Time.deltaTime;
+            if (searchMateCooldown <= 0f)
             {
-                // No mate found - always ensure we have a wander destination
-                if (hasArrived() || agent.velocity.magnitude < 0.1f)
-                {
-                    agent.SetDestination(GetRandomPoints());
-                }
-                return;
-            }
-        }
-
-        agent.isStopped = false;
-        agent.SetDestination(mateTarget.transform.position);
-
-        AnimalBehaviour otherBehaviour = mateTarget.GetComponent<AnimalBehaviour>();
-        if (otherBehaviour == null || otherBehaviour.isDead)
-        {
-            mateTarget = null;
-            // Ensure we have a destination when mate becomes invalid
-            if (agent.velocity.magnitude < 0.1f)
-            {
+                searchMateCooldown = 2f; // Change destination every 2 seconds for varied paths
                 agent.SetDestination(GetRandomPoints());
             }
             return;
         }
-
-        if (hasArrived())
-        {
-            Animal other = mateTarget.GetComponent<Animal>();
-            Mating otherMating = mateTarget.GetComponent<Mating>();
-            
-            if (other != null && otherBehaviour != null && otherMating != null)
-            {
-                if (IsCompatibleForMating(other, otherBehaviour, otherMating))
-                {
-                    ChangeState(State.Mating);
-                    otherBehaviour.ChangeState(State.Mating);
-                    return;
-                }
-            }
-            mateTarget = null;
-            agent.SetDestination(GetRandomPoints());
-        }
     }
+
+    AnimalBehaviour otherBehaviour = mateTarget.GetComponent<AnimalBehaviour>();
+
+    if (otherBehaviour == null || otherBehaviour.isDead)
+    {
+        mateTarget = null;
+        return;
+    }
+
+    float distance = Vector3.Distance(transform.position, mateTarget.transform.position);
+
+    if (distance > mating.matingRange)
+    {
+        agent.isStopped = false;
+        agent.SetDestination(mateTarget.transform.position);
+        return;
+    }
+
+    Animal other = mateTarget.GetComponent<Animal>();
+    Mating otherMating = mateTarget.GetComponent<Mating>();
+
+    if (other != null && otherMating != null && IsCompatibleForMating(other, otherBehaviour, otherMating))
+    {
+        otherBehaviour.AcceptMateRequest(gameObject);
+        ChangeState(State.Mating);
+    }
+}
     
     protected GameObject FindPotentialMate()
     {
         Mating mating = GetComponent<Mating>();
         if (mating == null) return null;
         
-        Collider[] nearby = Physics.OverlapSphere(transform.position, animal.sightRange);
+        Collider[] nearby = Physics.OverlapSphere(transform.position, 10f);
         
         foreach (Collider col in nearby)
         {
@@ -654,9 +689,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
             AnimalBehaviour otherBehaviour = col.GetComponent<AnimalBehaviour>();
             if (otherBehaviour == null || otherBehaviour.isDead) continue;
             
-            if (otherBehaviour.CurrentState != State.Idle && 
-                otherBehaviour.CurrentState != State.Wander && 
-                otherBehaviour.CurrentState != State.SearchMate) 
+            if (otherBehaviour.CurrentState != State.SearchMate) 
                 continue;
             
             if (other.IsMale == animal.IsMale) continue;
@@ -667,6 +700,8 @@ public abstract class AnimalBehaviour : MonoBehaviour
             AnimalNeeds otherNeeds = col.GetComponent<AnimalNeeds>();
             if (otherMating == null || otherNeeds == null) continue;
             if (!otherMating.HasEnoughNeeds(otherNeeds)) continue;
+            
+            if (mating.IsRejectedMate(col.gameObject)) continue;
             
             return col.gameObject;
         }
@@ -698,35 +733,56 @@ public abstract class AnimalBehaviour : MonoBehaviour
     { 
         agent.isStopped = true;
         Mating mating = GetComponent<Mating>();
-        if (mating == null) 
+
+        if (mating == null)
         {
             ChangeState(State.Wander);
-            mateTarget = null;
             return;
         }
-        
+
         if (mateTarget == null)
         {
-            ChangeState(State.SearchMate);
+            ChangeState(State.Wander);
             return;
         }
-        
+
         AnimalBehaviour otherBehaviour = mateTarget.GetComponent<AnimalBehaviour>();
-        if (otherBehaviour == null || otherBehaviour.CurrentState != State.Mating)
+        if (otherBehaviour == null || otherBehaviour.isDead)
         {
-            ChangeState(State.SearchMate);
             mateTarget = null;
+            ChangeState(State.Wander);
             return;
         }
-        
+
         float distanceToMate = Vector3.Distance(transform.position, mateTarget.transform.position);
-        if (distanceToMate <= mating.matingRange)
+        if (distanceToMate > mating.matingRange)
+        {
+            agent.isStopped = false;
+            agent.SetDestination(mateTarget.transform.position);
+            return;
+        }
+
+        if (animal.IsMale)
         {
             mating.TryMate(mateTarget);
-            
-            ChangeState(State.Wander);
-            mateTarget = null;
         }
+
+        mateTarget = null;
+        ChangeState(State.Wander);
+    }
+
+    public void AcceptMateRequest(GameObject requester)
+    {
+        if (requester == null || isDead) return;
+    
+        // Validate distance - only accept if close enough
+        float distanceToRequester = Vector3.Distance(transform.position, requester.transform.position);
+        Mating requesterMating = requester.GetComponent<Mating>();
+        if (requesterMating == null || distanceToRequester > requesterMating.matingRange * 2f)
+            return;
+        
+        mateTarget = requester;
+        ChangeState(State.Mating);
     }
 
     public float GetStateTime(State state)
