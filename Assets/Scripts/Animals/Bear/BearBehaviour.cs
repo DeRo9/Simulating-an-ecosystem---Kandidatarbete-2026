@@ -3,6 +3,14 @@ using UnityEngine.AI;
 
 public class BearBehaviour : AnimalBehaviour
 {
+    [Header("Pack Threat")]
+    float packCheckCooldown = 0f;
+    float packCheckInterval = 2f;
+    int dangerousPackSize = 5;
+
+    GameObject enemy;
+    float fleeRepathTimer = 0f;
+    float fleeRepathInterval = 1f;
     GameObject foodTarget;
     BearHearing hearing;
     AnimalFOV fov;
@@ -29,6 +37,7 @@ public class BearBehaviour : AnimalBehaviour
     bool waitingForDeathAnimation = false;
 
     GameObject pendingCarcass;
+
 
     [Header("Layers")]
     [SerializeField]
@@ -74,7 +83,6 @@ public class BearBehaviour : AnimalBehaviour
             return;
 
 
-        // Update animation based on movement
         anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < animal.runningSpeed * 0.95f); // "isWalking" är en bool i animator
         anim.SetBool("isRunning", agent.velocity.magnitude > animal.runningSpeed * 0.95f); // "isRunning" är en bool i animator
 
@@ -91,27 +99,43 @@ public class BearBehaviour : AnimalBehaviour
             }
             return;
         }
-        if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt)
-        {
-            memoryDecisionCooldown -= Time.deltaTime;
-            // If the bear is more thirsty than hungry, switch to drink state, if more hungry than thirsty, switch to eat state
-            if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
-            {
-                if (FindWater())
-                {
-                    ChangeState(State.Drink);
-                    return;
-                }
-            }
 
-            if (IsHungry() && huntCooldownTimer <= 0 && !needs.isTired)
+        if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Fleeing)
+        {
+            CheckForWolfPacks();
+            if (CurrentState == State.Fleeing || CurrentState == State.Hunt) return;
+        }
+        if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt && CurrentState != State.Fleeing)
+        {
+            bool needsSomething = IsHungry() || IsThirsty();
+
+            if (needsSomething)
             {
-                
-                if (FindPrey())
-                    ChangeState(State.Hunt);
-                else if (FindFood())
-                    ChangeState(State.Eat);
-                else if (memoryDecisionCooldown <=0)
+                memoryDecisionCooldown -= Time.deltaTime;
+
+                if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
+                {
+                    if (FindWater())
+                    {
+                        ChangeState(State.Drink);
+                        return;
+                    }
+                }
+                else if (IsHungry() && huntCooldownTimer <= 0 && !needs.isTired)
+                {
+                    if (FindFood())
+                    {
+                        ChangeState(State.Eat);
+                        return;
+                    }
+                    else if (FindPrey())
+                    {
+                        ChangeState(State.Hunt);
+                        return;
+                    }
+                }
+
+                if (memoryDecisionCooldown <= 0f)
                 {
                     memoryDecisionCooldown = 2f;
 
@@ -121,14 +145,11 @@ public class BearBehaviour : AnimalBehaviour
                         return;
                     }
 
-                    Vector2Int bestChunk = DecideFoodTargetChunk();
-                    if (bestChunk.x != -1)
+                    Vector2Int bestChunk = DecideTargetChunk();
+                    if (bestChunk.x != -1 && agent.isOnNavMesh)
                     {
-                        if (agent.isOnNavMesh)
-                        {
-                            agent.SetDestination(memory.GetRandomPointInChunk(bestChunk));
-                            ChangeState(State.Wander);
-                        }
+                        agent.SetDestination(memory.GetRandomPointInChunk(bestChunk));
+                        ChangeState(State.Wander);
                     }
                     else
                     {
@@ -149,7 +170,7 @@ public class BearBehaviour : AnimalBehaviour
     bool FindFood()
     {
 
-        if(foodSearchingCooldown > 0f)
+        if (foodSearchingCooldown > 0f)
         {
             foodSearchingCooldown -= Time.deltaTime;
             return foodTarget != null;
@@ -172,7 +193,7 @@ public class BearBehaviour : AnimalBehaviour
                 continue;
             if (!fov.IsInFOV(hit.transform))
                 continue;
-            
+
             memory.RememberFood(hit.transform.position);
 
             float distance = Vector3.Distance(transform.position, hit.transform.position);
@@ -245,7 +266,7 @@ public class BearBehaviour : AnimalBehaviour
             MooseBehaviour moosePrey = preyTarget.GetComponentInParent<MooseBehaviour>();
             if (moosePrey != null)
             {
-                moosePrey.RegisterBearAttacker(this); 
+                moosePrey.RegisterBearAttacker(this);
                 moosePrey.OnBeingHunted(gameObject); // Notify the moose that it is being hunted
             }
 
@@ -514,7 +535,7 @@ public class BearBehaviour : AnimalBehaviour
         }
 
         WolfBehaviour wolf = preyTarget.GetComponentInParent<WolfBehaviour>();
-        if(wolf != null)
+        if (wolf != null)
         {
             wolf.UnregisterBearAttacker(this);
         }
@@ -540,21 +561,25 @@ public class BearBehaviour : AnimalBehaviour
 
     }
 
-    Vector2Int DecideFoodTargetChunk()
+    Vector2Int DecideTargetChunk()
     {
-        // 0 = full, 1 = starving
         float hunger = 1f - needs.howHungryInPercent;
+        float thirst = 1f - needs.howThirstyInPercent;
 
         Vector2Int bestChunk = new Vector2Int(-1, -1);
-
         float bestScore = float.MinValue;
-
-        // World pos to chunk
         Vector2Int currentChunk = memory.GetChunk(transform.position);
 
-        // Hunger affects risk tolerance
-        float dangerWeight = Mathf.Lerp(3f, 0.3f, hunger);
-        float preyWeight = Mathf.Lerp(0.5f, 0.3f, hunger);
+        float totalNeed = hunger + thirst;
+        if (totalNeed <= 0.1f)
+            return new Vector2Int(-1, -1);
+
+        float hungerWeight = hunger / totalNeed;
+        float thirstWeight = thirst / totalNeed;
+
+        float urgency = Mathf.Max(hunger, thirst);
+        float dangerWeight = Mathf.Lerp(3f, 0.3f, urgency);
+        float preyWeight = Mathf.Lerp(0.5f, 0.3f, urgency);
 
         for (int x = 0; x < memory.GetGridSizeX(); x++)
         {
@@ -562,23 +587,24 @@ public class BearBehaviour : AnimalBehaviour
             {
                 float food = memory.GetFoodValue(x, z);
                 float prey = memory.GetPreyValue(x, z);
+                float water = memory.GetWaterValue(x, z);
                 float danger = memory.GetDangerValue(x, z);
-
-
-                // Skip empty memory?
-                if (food <= 0f && prey <= 0f)
-                    continue;
 
                 float distance = Vector2.Distance(
                     new Vector2(x, z),
                     new Vector2(currentChunk.x, currentChunk.y)
                 );
 
-                float reward = food + (prey * preyWeight);
+                // Combine all rewards based on what the bear needs
+                float foodReward = (food + prey * preyWeight) * hungerWeight;
+                float waterReward = water * thirstWeight;
+                float reward = foodReward + waterReward;
+
                 float risk = danger * dangerWeight;
                 float effort = distance * 0.3f;
+                float randomness = UnityEngine.Random.Range(-1f, 1f) * (1f - urgency);
 
-                float score = reward - risk - effort;
+                float score = reward - risk - effort + randomness;
 
                 if (score > bestScore)
                 {
@@ -588,7 +614,99 @@ public class BearBehaviour : AnimalBehaviour
             }
         }
 
+        if (bestScore < 1f)
+            return new Vector2Int(-1, -1);
+
         return bestChunk;
+    }
+
+    void CheckForWolfPacks()
+    {
+        packCheckCooldown -= Time.deltaTime;
+        if (packCheckCooldown > 0) return;
+        packCheckCooldown = packCheckInterval;
+
+        Collider[] nearby = Physics.OverlapSphere(transform.position, animal.sightRange);
+
+        foreach (Collider hit in nearby)
+        {
+            if (!hit.CompareTag("Wolf")) continue;
+            if (fov != null && !fov.IsInFOV(hit.transform)) continue;
+
+            Wolf wolfComp = hit.GetComponentInParent<Wolf>();
+            if (wolfComp == null || wolfComp.pack == null) continue;
+
+            if (wolfComp.pack.members.Count >= dangerousPackSize)
+            {
+                Debug.Log("Bear detected pack of wolves" + wolfComp.pack.members.Count);
+                if (memory != null)
+                {
+                    memory.RememberDanger(transform.position);
+                }
+                if (needs.howHungryInPercent < 0.25f)
+                {
+                    Debug.Log("Bear is hungry,its attacking the wolves");
+                    preyTarget = hit.gameObject;
+                    ChangeState(State.Hunt);
+                }
+                else
+                {
+                    Debug.Log("Bear is not hungry enough for this, runs away");
+                    enemy = hit.gameObject;
+                    ChangeState(State.Fleeing);
+
+                }
+                return;
+
+            }
+        }
+
+
+    }
+
+    protected override void FleeState()
+    {
+        foodTarget = null;
+        waterTarget = null;
+        preyTarget = null;
+        agent.isStopped = false;
+        agent.speed = animal.runningSpeed;
+    }
+
+    protected override void UpdateFlee()
+    {
+        if (enemy == null || enemy.Equals(null))
+        {
+            enemy = null;
+            agent.speed = animal.speed;
+            ChangeState(State.Wander);
+            return;
+        }
+
+        agent.speed = needs.noMoreStamina ? animal.speed : animal.runningSpeed;
+
+        float distance = Vector3.Distance(transform.position, enemy.transform.position);
+        if (distance > animal.sightRange * 1.5f)
+        {
+            enemy = null;
+            agent.speed = animal.speed;
+            ChangeState(State.Wander);
+            return;
+        }
+
+        fleeRepathTimer += Time.deltaTime;
+        if (fleeRepathTimer >= fleeRepathInterval)
+        {
+            Vector3 fleeDirection = (transform.position - enemy.transform.position).normalized;
+            Vector3 fleeTarget = transform.position + fleeDirection * animal.sightRange;
+
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(fleeTarget, out hit, animal.sightRange, NavMesh.AllAreas))
+            {
+                agent.SetDestination(hit.position);
+            }
+            fleeRepathTimer = 0f;
+        }
     }
 
     protected override void HibernationState()

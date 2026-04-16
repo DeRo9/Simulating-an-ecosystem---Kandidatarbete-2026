@@ -94,11 +94,11 @@ public class WolfBehaviour : AnimalBehaviour
         if (leaderBehaviour != null && leaderBehaviour.preyTarget != null)
         {
             if (preyTarget != leaderBehaviour.preyTarget) // If the prey target of the leader has changed, update it for the follower as well
-            {  
+            {
                 preyTarget = leaderBehaviour.preyTarget;
 
                 MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
-                if(moose != null)
+                if (moose != null)
                 {
                     moose.RegisterWolfAttacker(this); // Register as attacker to the moose
                 }
@@ -106,7 +106,7 @@ public class WolfBehaviour : AnimalBehaviour
 
             }
 
-            if(CurrentState != State.Hunt)
+            if (CurrentState != State.Hunt)
                 ChangeState(State.Hunt);
 
             return;
@@ -214,25 +214,39 @@ public class WolfBehaviour : AnimalBehaviour
             }
         }
 
-        if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt && CurrentState != State.Fleeing)
+        if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt && CurrentState != State.Fleeing && CurrentState != State.Defend)
         {
-            // If the wolf is more thirsty than hungry, switch to drink state, if more hungry than thirsty, switch to eat state
-            if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
-            {
-                if (FindWater())
-                {
-                    ChangeState(State.Drink);
-                    return;
-                }
-            }
+            bool needsSomething = IsHungry() || IsThirsty();
 
-            if (IsHungry() && huntCooldownTimer <= 0 && !needs.isTired)
+            if (needsSomething)
             {
-                if (FindPrey())
-                    ChangeState(State.Hunt);
-                else if (FindFood())
-                    ChangeState(State.Eat);
-                else if (memoryDecisionCooldown <= 0f)
+                memoryDecisionCooldown -= Time.deltaTime;
+
+                // Try to satisfy the most urgent need first
+                if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
+                {
+                    if (FindWater())
+                    {
+                        ChangeState(State.Drink);
+                        return;
+                    }
+                }
+                else if (IsHungry() && huntCooldownTimer <= 0 && !needs.isTired)
+                {
+                    if (FindPrey())
+                    {
+                        ChangeState(State.Hunt);
+                        return;
+                    }
+                    else if (FindFood())
+                    {
+                        ChangeState(State.Eat);
+                        return;
+                    }
+                }
+
+                // Nothing nearby — use memory fallback
+                if (memoryDecisionCooldown <= 0f)
                 {
                     memoryDecisionCooldown = 2f;
 
@@ -242,14 +256,11 @@ public class WolfBehaviour : AnimalBehaviour
                         return;
                     }
 
-                    Vector2Int bestChunk = DecideFoodTargetChunk();
-                    if (bestChunk.x != -1)
+                    Vector2Int bestChunk = DecideTargetChunk();
+                    if (bestChunk.x != -1 && agent.isOnNavMesh)
                     {
-                        if (agent.isOnNavMesh)
-                        {
-                            agent.SetDestination(memory.GetRandomPointInChunk(bestChunk));
-                            ChangeState(State.Wander);
-                        }
+                        agent.SetDestination(memory.GetRandomPointInChunk(bestChunk));
+                        ChangeState(State.Wander);
                     }
                     else
                     {
@@ -258,7 +269,6 @@ public class WolfBehaviour : AnimalBehaviour
                 }
             }
         }
-
         if (huntCooldownTimer > 0)
             huntCooldownTimer -= Time.deltaTime;
 
@@ -314,7 +324,7 @@ public class WolfBehaviour : AnimalBehaviour
             MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
             if (moose != null)
             {
-                moose.RegisterWolfAttacker(this); 
+                moose.RegisterWolfAttacker(this);
                 moose.OnBeingHunted(gameObject);
             }
 
@@ -525,7 +535,8 @@ public class WolfBehaviour : AnimalBehaviour
                 agent.isStopped = true;
                 anim.SetTrigger("Attack");
                 attackTimer = 0f;
-            } else
+            }
+            else
             {
                 agent.isStopped = false;
             }
@@ -550,7 +561,7 @@ public class WolfBehaviour : AnimalBehaviour
 
         if (huntCooldownTimer > 0) return;
 
-        if(wolf.isLeader || pack == null || pack.countCurrentPackSize() <= 1)
+        if (wolf.isLeader || pack == null || pack.countCurrentPackSize() <= 1)
             StatisticsTableManager.instance.WolfhuntFailuresCount++;
 
         if (preyTarget != null)
@@ -727,38 +738,53 @@ public class WolfBehaviour : AnimalBehaviour
 
     }
 
-    Vector2Int DecideFoodTargetChunk()
+    Vector2Int DecideTargetChunk()
     {
         if (memory == null) return new Vector2Int(-1, -1);
 
         float hunger = 1f - needs.howHungryInPercent;
+        float thirst = 1f - needs.howThirstyInPercent;
+
         Vector2Int bestChunk = new Vector2Int(-1, -1);
         float bestScore = float.MinValue;
         Vector2Int currentChunk = memory.GetChunk(transform.position);
 
-        float winterModifier = SeasonManager.Instance.IsWinter ? 0.5f : 1f;
-        float dangerWeight = Mathf.Lerp(3f, 0.3f, hunger);
+        float totalNeed = hunger + thirst;
+        if (totalNeed <= 0.1f)
+            return new Vector2Int(-1, -1);
+
+        float hungerWeight = hunger / totalNeed;
+        float thirstWeight = thirst / totalNeed;
+
+        float urgency = Mathf.Max(hunger, thirst);
+        float dangerWeight = Mathf.Lerp(3f, 0.3f, urgency);
+
+        if (SeasonManager.Instance.IsWinter)
+            dangerWeight *= 0.7f; // Wolves are bolder in winter when food is scarce
 
         for (int x = 0; x < memory.GetGridSizeX(); x++)
         {
             for (int z = 0; z < memory.GetGridSizeZ(); z++)
             {
                 float prey = memory.GetPreyValue(x, z);
-                float food = memory.GetFoodValue(x, z); // Carcass locations
+                float food = memory.GetFoodValue(x, z); // carcasses
+                float water = memory.GetWaterValue(x, z);
                 float danger = memory.GetDangerValue(x, z);
-
-                if (prey <= 0f && food <= 0f)
-                    continue;
 
                 float distance = Vector2.Distance(
                     new Vector2(x, z),
                     new Vector2(currentChunk.x, currentChunk.y)
                 );
 
-                float reward = prey + food;
+                float foodReward = (prey + food) * hungerWeight;
+                float waterReward = water * thirstWeight;
+                float reward = foodReward + waterReward;
+
                 float risk = danger * dangerWeight;
                 float effort = distance * 0.3f;
-                float score = reward - risk - effort;
+                float randomness = UnityEngine.Random.Range(-1f, 1f) * (1f - urgency);
+
+                float score = reward - risk - effort + randomness;
 
                 if (score > bestScore)
                 {
@@ -768,9 +794,11 @@ public class WolfBehaviour : AnimalBehaviour
             }
         }
 
+        if (bestScore < 1f)
+            return new Vector2Int(-1, -1);
+
         return bestChunk;
     }
-
 
     void DecideFightOrFlee()
     {
@@ -876,9 +904,9 @@ public class WolfBehaviour : AnimalBehaviour
     {
         bool bearKill = bearAttackers.Count > 0;
 
-        foreach(BearBehaviour bear in bearAttackers.ToList())
+        foreach (BearBehaviour bear in bearAttackers.ToList())
         {
-            if(bear != null)
+            if (bear != null)
             {
                 bear.notifyDeath();
             }
@@ -892,7 +920,8 @@ public class WolfBehaviour : AnimalBehaviour
         if (wolf.isLeader && pack != null)
         {
             pack.OnLeaderDeath();
-        } else if (pack != null)
+        }
+        else if (pack != null)
         {
             pack.members.Remove(wolf);
         }
@@ -913,7 +942,7 @@ public class WolfBehaviour : AnimalBehaviour
     public void UnregisterBearAttacker(BearBehaviour bear)
     {
         if (bear == null) return;
-            bearAttackers.Remove(bear);
+        bearAttackers.Remove(bear);
     }
 
 }
