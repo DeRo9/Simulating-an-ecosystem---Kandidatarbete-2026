@@ -83,7 +83,6 @@ public class BearBehaviour : AnimalBehaviour
             return;
 
 
-        // Update animation based on movement
         anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < animal.runningSpeed * 0.95f); // "isWalking" är en bool i animator
         anim.SetBool("isRunning", agent.velocity.magnitude > animal.runningSpeed * 0.95f); // "isRunning" är en bool i animator
 
@@ -106,52 +105,59 @@ public class BearBehaviour : AnimalBehaviour
         CheckForWolfPacks();
         if (CurrentState == State.Fleeing || CurrentState == State.Hunt) return;
     }
-        if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt)
+        if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt && CurrentState != State.Fleeing)
+{
+    bool needsSomething = IsHungry() || IsThirsty();
+
+    if (needsSomething)
+    {
+        memoryDecisionCooldown -= Time.deltaTime;
+
+        if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
         {
-            memoryDecisionCooldown -= Time.deltaTime;
-            // If the bear is more thirsty than hungry, switch to drink state, if more hungry than thirsty, switch to eat state
-            if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
+            if (FindWater())
             {
-                if (FindWater())
-                {
-                    ChangeState(State.Drink);
-                    return;
-                }
-            }
-
-            if (IsHungry() && huntCooldownTimer <= 0 && !needs.isTired)
-            {
-                
-                if (FindPrey())
-                    ChangeState(State.Hunt);
-                else if (FindFood())
-                    ChangeState(State.Eat);
-                else if (memoryDecisionCooldown <=0)
-                {
-                    memoryDecisionCooldown = 2f;
-
-                    if (UnityEngine.Random.value < 0.2f)
-                    {
-                        ChangeState(State.Wander);
-                        return;
-                    }
-
-                    Vector2Int bestChunk = DecideFoodTargetChunk();
-                    if (bestChunk.x != -1)
-                    {
-                        if (agent.isOnNavMesh)
-                        {
-                            agent.SetDestination(memory.GetRandomPointInChunk(bestChunk));
-                            ChangeState(State.Wander);
-                        }
-                    }
-                    else
-                    {
-                        ChangeState(State.Wander);
-                    }
-                }
+                ChangeState(State.Drink);
+                return;
             }
         }
+        else if (IsHungry() && huntCooldownTimer <= 0 && !needs.isTired)
+        {
+            if (FindFood())
+            {
+                ChangeState(State.Eat);
+                return;
+            }
+            else if (FindPrey())
+            {
+                ChangeState(State.Hunt);
+                return;
+            }
+        }
+
+        if (memoryDecisionCooldown <= 0f)
+        {
+            memoryDecisionCooldown = 2f;
+
+            if (UnityEngine.Random.value < 0.2f)
+            {
+                ChangeState(State.Wander);
+                return;
+            }
+
+            Vector2Int bestChunk = DecideTargetChunk();
+            if (bestChunk.x != -1 && agent.isOnNavMesh)
+            {
+                agent.SetDestination(memory.GetRandomPointInChunk(bestChunk));
+                ChangeState(State.Wander);
+            }
+            else
+            {
+                ChangeState(State.Wander);
+            }
+        }
+    }
+}
 
         if (huntCooldownTimer > 0)
             huntCooldownTimer -= Time.deltaTime;
@@ -555,56 +561,64 @@ public class BearBehaviour : AnimalBehaviour
 
     }
 
-    Vector2Int DecideFoodTargetChunk()
+    Vector2Int DecideTargetChunk()
+{
+    float hunger = 1f - needs.howHungryInPercent;
+    float thirst = 1f - needs.howThirstyInPercent;
+
+    Vector2Int bestChunk = new Vector2Int(-1, -1);
+    float bestScore = float.MinValue;
+    Vector2Int currentChunk = memory.GetChunk(transform.position);
+
+    float totalNeed = hunger + thirst;
+    if (totalNeed <= 0.1f)
+        return new Vector2Int(-1, -1);
+
+    float hungerWeight = hunger / totalNeed;
+    float thirstWeight = thirst / totalNeed;
+
+    float urgency = Mathf.Max(hunger, thirst);
+    float dangerWeight = Mathf.Lerp(3f, 0.3f, urgency);
+    float preyWeight = Mathf.Lerp(0.5f, 0.3f, urgency);
+
+    for (int x = 0; x < memory.GetGridSizeX(); x++)
     {
-        // 0 = full, 1 = starving
-        float hunger = 1f - needs.howHungryInPercent;
-
-        Vector2Int bestChunk = new Vector2Int(-1, -1);
-
-        float bestScore = float.MinValue;
-
-        // World pos to chunk
-        Vector2Int currentChunk = memory.GetChunk(transform.position);
-
-        // Hunger affects risk tolerance
-        float dangerWeight = Mathf.Lerp(3f, 0.3f, hunger);
-        float preyWeight = Mathf.Lerp(0.5f, 0.3f, hunger);
-
-        for (int x = 0; x < memory.GetGridSizeX(); x++)
+        for (int z = 0; z < memory.GetGridSizeZ(); z++)
         {
-            for (int z = 0; z < memory.GetGridSizeZ(); z++)
+            float food = memory.GetFoodValue(x, z);
+            float prey = memory.GetPreyValue(x, z);
+            float water = memory.GetWaterValue(x, z);
+            float danger = memory.GetDangerValue(x, z);
+
+            float distance = Vector2.Distance(
+                new Vector2(x, z),
+                new Vector2(currentChunk.x, currentChunk.y)
+            );
+
+            // Combine all rewards based on what the bear needs
+            float foodReward = (food + prey * preyWeight) * hungerWeight;
+            float waterReward = water * thirstWeight;
+            float reward = foodReward + waterReward;
+
+            float risk = danger * dangerWeight;
+            float effort = distance * 0.3f;
+            float randomness = UnityEngine.Random.Range(-1f, 1f) * (1f - urgency);
+
+            float score = reward - risk - effort + randomness;
+
+            if (score > bestScore)
             {
-                float food = memory.GetFoodValue(x, z);
-                float prey = memory.GetPreyValue(x, z);
-                float danger = memory.GetDangerValue(x, z);
-
-
-                // Skip empty memory?
-                if (food <= 0f && prey <= 0f)
-                    continue;
-
-                float distance = Vector2.Distance(
-                    new Vector2(x, z),
-                    new Vector2(currentChunk.x, currentChunk.y)
-                );
-
-                float reward = food + (prey * preyWeight);
-                float risk = danger * dangerWeight;
-                float effort = distance * 0.3f;
-
-                float score = reward - risk - effort;
-
-                if (score > bestScore)
-                {
-                    bestScore = score;
-                    bestChunk = new Vector2Int(x, z);
-                }
+                bestScore = score;
+                bestChunk = new Vector2Int(x, z);
             }
         }
-
-        return bestChunk;
     }
+
+    if (bestScore < 1f)
+        return new Vector2Int(-1, -1);
+
+    return bestChunk;
+}
 
     void CheckForWolfPacks()
     {
