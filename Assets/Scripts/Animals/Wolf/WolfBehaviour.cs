@@ -896,6 +896,7 @@ public class WolfBehaviour : AnimalBehaviour
             if (bear != null && !bear.isDead)
             {
                 bear.InflictDamage(animal.attackDamage);
+                bear.OnAttackedByWolves(gameObject); 
             }
         }
     }

@@ -393,6 +393,20 @@ public class BearBehaviour : AnimalBehaviour
         }
     }
 
+
+    public void OnAttackedByWolves(GameObject attacker)
+{
+    if (CurrentState == State.Hunt && preyTarget != null) return;
+
+    Debug.Log("Bear is being attacked by wolves — fighting back!");
+
+    if (memory != null)
+        memory.RememberDanger(transform.position);
+
+    preyTarget = attacker;
+    enemy = null; // Bear stops fleeing and attacks the wolves back if the wolves have caught up with bear
+    ChangeState(State.Hunt);
+}
     public void DamageTarget()
     {
         if (preyTarget == null) return;
