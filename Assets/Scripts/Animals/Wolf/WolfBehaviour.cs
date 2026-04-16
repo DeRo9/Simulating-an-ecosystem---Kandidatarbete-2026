@@ -214,51 +214,61 @@ public class WolfBehaviour : AnimalBehaviour
             }
         }
 
-        if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt && CurrentState != State.Fleeing)
+       if (CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Hunt && CurrentState != State.Fleeing && CurrentState != State.Defend)
+{
+    bool needsSomething = IsHungry() || IsThirsty();
+
+    if (needsSomething)
+    {
+        memoryDecisionCooldown -= Time.deltaTime;
+
+        // Try to satisfy the most urgent need first
+        if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
         {
-            // If the wolf is more thirsty than hungry, switch to drink state, if more hungry than thirsty, switch to eat state
-            if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
+            if (FindWater())
             {
-                if (FindWater())
-                {
-                    ChangeState(State.Drink);
-                    return;
-                }
+                ChangeState(State.Drink);
+                return;
             }
-
-            if (IsHungry() && huntCooldownTimer <= 0 && !needs.isTired)
+        }
+        else if (IsHungry() && huntCooldownTimer <= 0 && !needs.isTired)
+        {
+            if (FindPrey())
             {
-                if (FindPrey())
-                    ChangeState(State.Hunt);
-                else if (FindFood())
-                    ChangeState(State.Eat);
-                else if (memoryDecisionCooldown <= 0f)
-                {
-                    memoryDecisionCooldown = 2f;
-
-                    if (UnityEngine.Random.value < 0.2f)
-                    {
-                        ChangeState(State.Wander);
-                        return;
-                    }
-
-                    Vector2Int bestChunk = DecideFoodTargetChunk();
-                    if (bestChunk.x != -1)
-                    {
-                        if (agent.isOnNavMesh)
-                        {
-                            agent.SetDestination(memory.GetRandomPointInChunk(bestChunk));
-                            ChangeState(State.Wander);
-                        }
-                    }
-                    else
-                    {
-                        ChangeState(State.Wander);
-                    }
-                }
+                ChangeState(State.Hunt);
+                return;
+            }
+            else if (FindFood())
+            {
+                ChangeState(State.Eat);
+                return;
             }
         }
 
+        // Nothing nearby — use memory fallback
+        if (memoryDecisionCooldown <= 0f)
+        {
+            memoryDecisionCooldown = 2f;
+
+            if (UnityEngine.Random.value < 0.2f)
+            {
+                ChangeState(State.Wander);
+                return;
+            }
+
+            Vector2Int bestChunk = DecideTargetChunk();
+            if (bestChunk.x != -1 && agent.isOnNavMesh)
+            {
+                agent.SetDestination(memory.GetRandomPointInChunk(bestChunk));
+                ChangeState(State.Wander);
+            }
+            else
+            {
+                ChangeState(State.Wander);
+            }
+        }
+    }
+}
         if (huntCooldownTimer > 0)
             huntCooldownTimer -= Time.deltaTime;
 
@@ -727,50 +737,67 @@ public class WolfBehaviour : AnimalBehaviour
 
     }
 
-    Vector2Int DecideFoodTargetChunk()
+    Vector2Int DecideTargetChunk()
+{
+    if (memory == null) return new Vector2Int(-1, -1);
+
+    float hunger = 1f - needs.howHungryInPercent;
+    float thirst = 1f - needs.howThirstyInPercent;
+
+    Vector2Int bestChunk = new Vector2Int(-1, -1);
+    float bestScore = float.MinValue;
+    Vector2Int currentChunk = memory.GetChunk(transform.position);
+
+    float totalNeed = hunger + thirst;
+    if (totalNeed <= 0.1f)
+        return new Vector2Int(-1, -1);
+
+    float hungerWeight = hunger / totalNeed;
+    float thirstWeight = thirst / totalNeed;
+
+    float urgency = Mathf.Max(hunger, thirst);
+    float dangerWeight = Mathf.Lerp(3f, 0.3f, urgency);
+
+    if (SeasonManager.Instance.IsWinter)
+        dangerWeight *= 0.7f; // Wolves are bolder in winter when food is scarce
+
+    for (int x = 0; x < memory.GetGridSizeX(); x++)
     {
-        if (memory == null) return new Vector2Int(-1, -1);
-
-        float hunger = 1f - needs.howHungryInPercent;
-        Vector2Int bestChunk = new Vector2Int(-1, -1);
-        float bestScore = float.MinValue;
-        Vector2Int currentChunk = memory.GetChunk(transform.position);
-
-        float winterModifier = SeasonManager.Instance.IsWinter ? 0.5f : 1f;
-        float dangerWeight = Mathf.Lerp(3f, 0.3f, hunger);
-
-        for (int x = 0; x < memory.GetGridSizeX(); x++)
+        for (int z = 0; z < memory.GetGridSizeZ(); z++)
         {
-            for (int z = 0; z < memory.GetGridSizeZ(); z++)
+            float prey = memory.GetPreyValue(x, z);
+            float food = memory.GetFoodValue(x, z); // carcasses
+            float water = memory.GetWaterValue(x, z);
+            float danger = memory.GetDangerValue(x, z);
+
+            float distance = Vector2.Distance(
+                new Vector2(x, z),
+                new Vector2(currentChunk.x, currentChunk.y)
+            );
+
+            float foodReward = (prey + food) * hungerWeight;
+            float waterReward = water * thirstWeight;
+            float reward = foodReward + waterReward;
+
+            float risk = danger * dangerWeight;
+            float effort = distance * 0.3f;
+            float randomness = UnityEngine.Random.Range(-1f, 1f) * (1f - urgency);
+
+            float score = reward - risk - effort + randomness;
+
+            if (score > bestScore)
             {
-                float prey = memory.GetPreyValue(x, z);
-                float food = memory.GetFoodValue(x, z); // Carcass locations
-                float danger = memory.GetDangerValue(x, z);
-
-                if (prey <= 0f && food <= 0f)
-                    continue;
-
-                float distance = Vector2.Distance(
-                    new Vector2(x, z),
-                    new Vector2(currentChunk.x, currentChunk.y)
-                );
-
-                float reward = prey + food;
-                float risk = danger * dangerWeight;
-                float effort = distance * 0.3f;
-                float score = reward - risk - effort;
-
-                if (score > bestScore)
-                {
-                    bestScore = score;
-                    bestChunk = new Vector2Int(x, z);
-                }
+                bestScore = score;
+                bestChunk = new Vector2Int(x, z);
             }
         }
-
-        return bestChunk;
     }
 
+    if (bestScore < 1f)
+        return new Vector2Int(-1, -1);
+
+    return bestChunk;
+}
 
     void DecideFightOrFlee()
     {
