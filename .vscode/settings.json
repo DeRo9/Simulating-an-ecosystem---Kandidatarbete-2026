@@ -67,5 +67,5 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "Simulating-an-ecosystem---Kandidatarbete-2026.slnx"
+    "dotnet.defaultSolution": "ecosystem.slnx"
 }

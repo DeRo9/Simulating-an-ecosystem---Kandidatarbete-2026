@@ -600,7 +600,7 @@ MonoBehaviour:
   grownUpAge: 4
   oldAge: 8
   IsMale: 0
-  sightRange: 18
+  sightRange: 20
   hearingRange: 20
   minSpeed: 0
   maxSpeed: 0
@@ -608,10 +608,13 @@ MonoBehaviour:
   maxSight: 0
   minHearing: 0
   maxHearing: 0
+  hearingCollider: {fileID: 5694396359575962331}
   minStrength: 0
   maxStrength: 0
-  speed: 2
-  runningSpeed: 4
+  minHealth: 0
+  maxHealth: 0
+  speed: 1.8
+  runningSpeed: 2.7
   size: 1
   strength: 0
   needs: {fileID: -2986275176863535938}
@@ -632,6 +635,7 @@ MonoBehaviour:
   maxTimeWaiting: 5
   waitTime: 0
   isDead: 0
+  isPregnant: 0
   waterLayer:
     serializedVersion: 2
     m_Bits: 16
@@ -785,7 +789,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.26
-  m_Speed: 2
+  m_Speed: 1.8
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120

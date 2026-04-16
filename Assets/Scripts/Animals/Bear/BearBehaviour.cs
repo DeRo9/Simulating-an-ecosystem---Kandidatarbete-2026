@@ -84,8 +84,8 @@ public class BearBehaviour : AnimalBehaviour
 
 
         // Update animation based on movement
-        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude <= 3.2f); // "isWalking" är en bool i animator
-        anim.SetBool("isRunning", agent.velocity.magnitude > 3.5f); // "isRunning" är en bool i animator
+        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < animal.runningSpeed * 0.95f); // "isWalking" är en bool i animator
+        anim.SetBool("isRunning", agent.velocity.magnitude > animal.runningSpeed * 0.95f); // "isRunning" är en bool i animator
 
         if (waitingForDeathAnimation)
         {
@@ -309,6 +309,8 @@ public class BearBehaviour : AnimalBehaviour
             return; // If the bear has no prey, switch to wandering
         }
 
+        agent.speed = needs.noMoreStamina ? animal.speed : animal.runningSpeed;
+
         MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
         if (moose != null && moose.isDead)
         {
@@ -484,6 +486,7 @@ public class BearBehaviour : AnimalBehaviour
                 if (nutrition > 0f)
                 {
                     needs.Eat(nutrition);
+                    needs.RegenerateHealth(20f); // Regenerate some health upon eating carcass
                 }
 
                 if (carcass.IsEmpty)

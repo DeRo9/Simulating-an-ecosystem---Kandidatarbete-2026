@@ -1,3 +1,4 @@
+using System.Drawing;
 using UnityEngine;
 
 public enum Species
@@ -45,14 +46,19 @@ public class Animal : MonoBehaviour
     // Hearing
     public float minHearing;
     public float maxHearing;
+    public SphereCollider hearingCollider;
 
     // Strength
     public float minStrength;
     public float maxStrength;
 
+    // Health
+    public float minHealth;
+    public float maxHealth;
+
     [Header("Forces")]
     public float speed;
-    public float runningSpeed; //= animal.speed * 2f 
+    public float runningSpeed;
     public float size = 1f;
     public float strength;
    
@@ -74,7 +80,9 @@ public class Animal : MonoBehaviour
     {
         age += Time.deltaTime * agingSpeed;
 
-      
+        hearingCollider.radius = hearingRange / size; // Wolf has scale of 2 , so hearing range is divided by 2 to keep it consistent with other animals
+
+
     }
     
     public virtual void SetMovementState(bool moving, float speed){
@@ -95,7 +103,15 @@ public class Animal : MonoBehaviour
             return;
         }
 
-        attackDamage = strength * UnityEngine.Random.Range(1f, 2f);
+        attackDamage = strength * Random.Range(1f, 1.2f);
+        // add size in equation... somehow also affect
+    }
+
+    public virtual float CalculateHealth(float minHealth, float maxHealth)
+    {
+        return Random.Range(minHealth, maxHealth);
+        
+        
     }
 
 

@@ -24,7 +24,7 @@ public class InformationUI : MonoBehaviour
 
     public AnimalBehaviour currentBehaviour;
 
-
+    float baseHealthBar = 100f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -48,6 +48,10 @@ public class InformationUI : MonoBehaviour
 
             staminaSlider.maxValue = current.maxStamina;
             staminaSlider.value = current.staminaLevel;
+
+            float healthPerctange = current.maxHealth / baseHealthBar;
+            RectTransform healthBar = healthSlider.GetComponent<RectTransform>();
+            healthBar.localScale = new Vector3(healthPerctange, 1f, 1f);
 
             float pregnancyValue = current.GetComponent<Mating>()?.GetPregnancyTimer() ?? 0f;
             pregnancySlider.maxValue = 30f;
