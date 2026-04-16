@@ -414,7 +414,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
     {
         return needs.isThirsty;
     }
-    protected virtual void EatStateForSpecificAnimal() {return;}
 
     protected virtual void UpdateIdle() 
     { 
@@ -447,10 +446,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         else
         {
             agent.isStopped = false;
-            if (!agent.pathPending && agent.remainingDistance < 0.05f && !agent.hasPath)
-            {
-                agent.SetDestination(foodTarget.transform.position);
-            }
+            agent.SetDestination(foodTarget.transform.position);  // Always keep moving toward food
         }
 
         if (!needs.isHungry)

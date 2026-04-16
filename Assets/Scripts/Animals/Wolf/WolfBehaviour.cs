@@ -156,6 +156,18 @@ public class WolfBehaviour : AnimalBehaviour
 
         if (isDead) return;
 
+        if (waitingForDeathAnimation)
+        {
+            deathWaitTimer -= Time.deltaTime;
+            if (deathWaitTimer <= 0f)
+            {
+                waitingForDeathAnimation = false;
+                preyTarget = null; // Clear prey target
+                ChangeState(State.SearchFood); // Go search for food (finds the carcass)
+            }
+            return;
+        }
+
         anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f);
         anim.SetBool("isRunning", agent.velocity.magnitude > 3f);
 
@@ -572,6 +584,7 @@ public class WolfBehaviour : AnimalBehaviour
             moose.UnregisterWolfAttacker(this);
         }
         pendingCarcass = preyTarget.GetComponentInParent<AnimalBehaviour>().gameObject;
+        foodTarget = pendingCarcass; 
         preyTarget = null;
         agent.isStopped = true;
         waitingForDeathAnimation = true;

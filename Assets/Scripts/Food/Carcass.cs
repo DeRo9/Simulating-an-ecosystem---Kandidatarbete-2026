@@ -4,7 +4,7 @@ public class Carcass : MonoBehaviour
 {
     public Species species;
     public int maxFeeds = 10;
-    public float nutritionPerFeed = 50f;
+    public float nutritionPerFeed = 100f;
 
     public int remainingFeeds;
 
@@ -23,6 +23,25 @@ public class Carcass : MonoBehaviour
             if (expireTime <= 0f)
             {
                 Destroy(gameObject);
+            }
+        }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        bool canEatCarcass = other.CompareTag("Wolf") || other.CompareTag("Bear");
+
+        if (canEatCarcass && !(other is SphereCollider))
+        {
+            AnimalNeeds needs = other.GetComponentInParent<AnimalNeeds>();
+
+            if (needs != null && needs.isHungry)
+            {
+                float nutrition = ConsumeOneFeed();
+                if (nutrition > 0f)
+                {
+                    needs.Eat(nutrition);
+                }
             }
         }
     }

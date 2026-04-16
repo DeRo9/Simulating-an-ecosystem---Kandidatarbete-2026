@@ -50,6 +50,18 @@ public class BearBehaviour : AnimalBehaviour
 
         if (isDead) return;
 
+        if (waitingForDeathAnimation)
+        {
+            deathWaitTimer -= Time.deltaTime;
+            if (deathWaitTimer <= 0f)
+            {
+                waitingForDeathAnimation = false;
+                preyTarget = null; // Clear prey target
+                ChangeState(State.SearchFood); // Go search for food (finds the carcass)
+            }
+            return;
+        }
+
         if (SeasonManager.Instance.IsWinter && CurrentState != State.Hibernate)
         {
             ChangeState(State.Hibernate);
@@ -478,6 +490,8 @@ public class BearBehaviour : AnimalBehaviour
         }
 
         pendingCarcass = preyTarget.GetComponentInParent<AnimalBehaviour>().gameObject;
+        foodTarget = pendingCarcass;
+
         preyTarget = null;
         agent.isStopped = true;
         waitingForDeathAnimation = true;
