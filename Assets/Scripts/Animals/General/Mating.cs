@@ -47,6 +47,7 @@ public class Mating : MonoBehaviour
 
         pregnancyTimer = 0f;
         behaviour.SetPregnant(false);
+        gestationDuration = GetGestationDurationForSpecies(animal.species);
     }
 
 
@@ -80,6 +81,24 @@ public class Mating : MonoBehaviour
     public float GetPregnancyTimer()
     {
         return pregnancyTimer;
+    }
+
+    public float GetGestationDuration()
+    {
+        return gestationDuration;
+    }
+
+    private static float GetGestationDurationForSpecies(Species species)
+    {
+        // Use species-specific gestation lengths here.
+        // The values are in game seconds; adjust the scale if needed.
+        return species switch
+        {
+            Species.bear => 80f,  // ~8 months in game time
+            Species.moose => 80f, // ~8 months in game time
+            Species.wolf => 20f,   // ~2 months in game time
+            _ => 20f,
+        };
     }
 
     private void TryFindMate()
