@@ -26,11 +26,18 @@ public class Bear : Animal
         minStrength = 23f;
         maxStrength = 25f;
 
+        // Food
+        minFood = 100f;
+        maxFood = 150f;
+
         // Health
         minHealth = 100f;
         maxHealth = 120f;
 
-        needs.staminaDecreaseRate = 8f;
+        // Stamina
+        minStamina = 8f;
+        maxStamina = 10f;
+
 
         base.Awake();
     }   

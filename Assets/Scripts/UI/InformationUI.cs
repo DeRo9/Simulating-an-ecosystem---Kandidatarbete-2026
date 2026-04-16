@@ -11,6 +11,12 @@ public class InformationUI : MonoBehaviour
     public Slider healthSlider;
     public Slider pregnancySlider;
 
+    [Header("NumberTexts")]
+    public TextMeshProUGUI hungerText;
+    public TextMeshProUGUI thirstText;
+    public TextMeshProUGUI staminaText;
+    public TextMeshProUGUI healthText;
+
     [Header("UI")]
     public TMP_Text animalType;
     public GameObject panel;
@@ -39,15 +45,19 @@ public class InformationUI : MonoBehaviour
         {
             hungerSlider.maxValue = current.maxHunger;
             hungerSlider.value = current.hungerLevel;
+            hungerText.SetText(Mathf.FloorToInt(hungerSlider.value).ToString());
 
             thirstSlider.maxValue = current.maxThirst;
             thirstSlider.value = current.thirstLevel;
+            thirstText.SetText(Mathf.FloorToInt(thirstSlider.value).ToString());
 
             healthSlider.maxValue = current.maxHealth;
             healthSlider.value = current.healthLevel;
+            healthText.SetText(Mathf.FloorToInt(healthSlider.value).ToString() + " HP");
 
             staminaSlider.maxValue = current.maxStamina;
             staminaSlider.value = current.staminaLevel;
+            staminaText.SetText(Mathf.FloorToInt(staminaSlider.value).ToString());
 
             float healthPerctange = current.maxHealth / baseHealthBar;
             RectTransform healthBar = healthSlider.GetComponent<RectTransform>();

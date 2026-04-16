@@ -39,7 +39,17 @@ public class Wolf : Animal
         minHealth = 20f;
         maxHealth = 40f;
 
-        needs.staminaDecreaseRate = 4.5f;
+        // Food
+        minFood = 100f;
+        maxFood = 120f;
+
+
+
+        // Stamina
+        minStamina = 4f;
+        maxStamina = 5f;
+
+
 
         //attackDamage = 20f;
 

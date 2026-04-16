@@ -365,7 +365,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
         if (isPregnant)
         {
-            agent.speed = animal.speed * 0.5f;
+            agent.speed = animal.speed * 0.8f;
         }
         else
         {
