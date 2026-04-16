@@ -31,7 +31,6 @@ public class Mating : MonoBehaviour
     public float pregnancyThirstDrainPerSecond = 0.45f;
     public float pregnancyStaminaDrainPerSecond = 0.25f;
 
-    private bool isPregnant = false;
     private float pregnancyTimer = 0f;
     private float pendingBabySize;
     private float pendingBabySpeed;
@@ -45,6 +44,10 @@ public class Mating : MonoBehaviour
         animal = GetComponent<Animal>();
         needs = GetComponent<AnimalNeeds>();
         behaviour = GetComponent<AnimalBehaviour>();
+
+        pregnancyTimer = 0f;
+        behaviour.SetPregnant(false);
+        gestationDuration = GetGestationDurationForSpecies(animal.species);
     }
 
 
@@ -55,7 +58,7 @@ public class Mating : MonoBehaviour
 
         UpdatePregnancy();
 
-        if (isPregnant)
+        if (behaviour.isPregnant)
             return;
 
         cooldownTimer -= Time.deltaTime;
@@ -75,6 +78,28 @@ public class Mating : MonoBehaviour
         TryFindMate();
     }
 
+    public float GetPregnancyTimer()
+    {
+        return pregnancyTimer;
+    }
+
+    public float GetGestationDuration()
+    {
+        return gestationDuration;
+    }
+
+    private static float GetGestationDurationForSpecies(Species species)
+    {
+        // Use species-specific gestation lengths here.
+        // The values are in game seconds; adjust the scale if needed.
+        return species switch
+        {
+            Species.bear => 80f,  // ~8 months in game time
+            Species.moose => 80f, // ~8 months in game time
+            Species.wolf => 20f,   // ~2 months in game time
+            _ => 20f,
+        };
+    }
 
     private void TryFindMate()
     {
@@ -110,10 +135,10 @@ public class Mating : MonoBehaviour
             if (other.IsMale == animal.IsMale)
                 continue;
 
-            if (!animal.IsMale && isPregnant)
+            if (!animal.IsMale && behaviour.isPregnant)
                 continue;
 
-            if (!other.IsMale && otherMating.isPregnant)
+            if (!other.IsMale && otherMating.behaviour.isPregnant)
                 continue;
 
             if (!HasEnoughNeeds(otherNeeds))
@@ -179,10 +204,10 @@ public class Mating : MonoBehaviour
         if (animal == null || fatherAnimal == null)
             return false;
 
-        if (animal.IsMale || isPregnant)
+        if (animal.IsMale || behaviour.isPregnant)
             return false;
 
-        isPregnant = true;
+        behaviour.isPregnant = true;
         pregnancyTimer = gestationDuration;
 
         pendingBabySize = (animal.size + fatherAnimal.size) / 2f;
@@ -191,14 +216,14 @@ public class Mating : MonoBehaviour
         pendingBabyHearing = (animal.hearingRange + fatherAnimal.hearingRange) / 2f;
 
         if (behaviour != null)
-            behaviour.EnterPregnantState();
+            behaviour.SetPregnant(true);
 
         return true;
     }
 
     private void UpdatePregnancy()
     {
-        if (!usePregnancySystem || !isPregnant)
+        if (!usePregnancySystem || !behaviour.isPregnant)
             return;
 
         pregnancyTimer -= Time.deltaTime;
@@ -214,9 +239,11 @@ public class Mating : MonoBehaviour
         if (pregnancyTimer <= 0f)
         {
             SpawnPregnancyBaby();
-            isPregnant = false;
-            if (behaviour != null)
-                behaviour.ExitPregnantState();
+            behaviour.SetPregnant(false);
+            pregnancyTimer = 0f;
+            cooldownTimer = matingCooldown;
+            return;
+
         }
     }
 
@@ -235,7 +262,15 @@ public class Mating : MonoBehaviour
         babyAnimal.size = pendingBabySize;
         babyAnimal.speed = pendingBabySpeed;
         babyAnimal.sightRange = pendingBabySight;
-        babyAnimal.hearingRange = pendingBabyHearing; 
+        babyAnimal.hearingRange = pendingBabyHearing;
+
+        AnimalBehaviour babyBehaviour = baby.GetComponent<AnimalBehaviour>();
+        if (babyBehaviour != null)
+        {
+            babyBehaviour.SetPregnant(false);
+            babyBehaviour.StartWandering();
+        }
+            
     }
 
     private void SpawnBabyNow(Animal partnerAnimal)
@@ -251,6 +286,10 @@ public class Mating : MonoBehaviour
         babyAnimal.speed = (animal.speed + partnerAnimal.speed) / 2f;
         babyAnimal.sightRange = (animal.sightRange + partnerAnimal.sightRange) / 2f;
         babyAnimal.hearingRange = (animal.hearingRange + partnerAnimal.hearingRange) / 2f;
+
+        AnimalBehaviour babyBehaviour = baby.GetComponent<AnimalBehaviour>();
+        if (babyBehaviour != null)
+            babyBehaviour.StartWandering();
     }
 
     private bool HasEnoughNeeds(AnimalNeeds targetNeeds)

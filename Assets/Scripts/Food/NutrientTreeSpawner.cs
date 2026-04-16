@@ -37,29 +37,37 @@ public class NutrientTreeSpawner : MonoBehaviour
     }
 
    Vector3 GetRandomTerrainPoint()
-{
-    Terrain terrain = Terrain.activeTerrain;
+   {
+       Terrain terrain = Terrain.activeTerrain;
 
-    Vector3 terrainPos = terrain.transform.position;
-    Vector3 terrainSize = terrain.terrainData.size;
+       Vector3 terrainPos = terrain.transform.position;
+       Vector3 terrainSize = terrain.terrainData.size;
 
-    float randomX = Random.Range(0, terrainSize.x);
-    float randomZ = Random.Range(0, terrainSize.z);
+       float randomX = Random.Range(0, terrainSize.x);
+       float randomZ = Random.Range(0, terrainSize.z);
 
-    float y = terrain.SampleHeight(new Vector3(randomX, 0, randomZ));
+       float y = terrain.SampleHeight(new Vector3(randomX, 0, randomZ));
 
-    Vector3 worldPos = new Vector3(
-        terrainPos.x + randomX,
-        y + terrainPos.y,
-        terrainPos.z + randomZ
-    );
+       Vector3 worldPos = new Vector3(
+            terrainPos.x + randomX,
+            y + terrainPos.y,
+            terrainPos.z + randomZ
+       );
 
-    return worldPos;
-}
+        NavMeshHit hit;
+        if(NavMesh.SamplePosition(worldPos, out hit, 10f, NavMesh.AllAreas))
+        {
+            return hit.position;
+        }
 
-public void SetTreeAmount(int amount)
-{
-    nutrientTreeInitializationAmount = amount;
-}
+
+
+        return Vector3.zero;
+   }
+
+    public void SetTreeAmount(int amount)
+    {
+        nutrientTreeInitializationAmount = amount;
+    }
 
 }

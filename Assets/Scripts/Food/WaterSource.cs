@@ -14,13 +14,12 @@ public class WaterSource : MonoBehaviour
         if (!(other is SphereCollider))
         {
 
-            Debug.Log("Something entered water: " + other.name);
-
             AnimalNeeds needs = other.GetComponentInParent<AnimalNeeds>();
 
             if (needs != null && needs.isThirsty) //Only drink if thirsty
             {
                 needs.drinkFromSource(chunkOfWater);
+                needs.RegenerateHealth(10f); // Drinking also regenerates health
 
                 if (!needs.isThirsty)
                 {

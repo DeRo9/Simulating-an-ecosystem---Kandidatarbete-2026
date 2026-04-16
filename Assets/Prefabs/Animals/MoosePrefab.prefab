@@ -492,13 +492,13 @@ GameObject:
   m_Component:
   - component: {fileID: 6538256312678152227}
   - component: {fileID: 770165260363730541}
+  - component: {fileID: 7441592838408442743}
+  - component: {fileID: 4832887292300718432}
   - component: {fileID: 4130331568563197886}
   - component: {fileID: 4656165741010984386}
   - component: {fileID: -2986275176863535938}
   - component: {fileID: 2652676559356234131}
   - component: {fileID: 7690077303167740514}
-  - component: {fileID: 7253260387713355870}
-  - component: {fileID: 8839650572549012831}
   - component: {fileID: 4377887995782312641}
   - component: {fileID: -7914532255645837834}
   - component: {fileID: 5694396359575962331}
@@ -550,6 +550,35 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7441592838408442743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2670038152025143281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bcd898770ad1a334db39ca4f402e8908, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalHearing
+  minHearingSpeed: 0.1
+--- !u!114 &4832887292300718432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2670038152025143281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7830fc1b68d5d5f49a60c2b79c1c012e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalFOV
+  viewAngle: 150
+  viewLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &4130331568563197886
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -563,20 +592,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Moose
   species: 2
+  canAttack: 1
+  attackDamage: 20
   age: 2
   agingSpeed: 0.1
   startingMaxAge: 15
   grownUpAge: 4
   oldAge: 8
   IsMale: 0
-  sightRange: 18
+  sightRange: 20
   hearingRange: 20
-  speed: 2
-  runningSpeed: 4
+  minSpeed: 0
+  maxSpeed: 0
+  minSight: 0
+  maxSight: 0
+  minHearing: 0
+  maxHearing: 0
+  hearingCollider: {fileID: 5694396359575962331}
+  minStrength: 0
+  maxStrength: 0
+  minHealth: 0
+  maxHealth: 0
+  speed: 1.8
+  runningSpeed: 2.7
   size: 1
   strength: 0
-  attackDamage: 20
-  needs: {fileID: 0}
+  needs: {fileID: -2986275176863535938}
 --- !u!114 &4656165741010984386
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -594,6 +635,7 @@ MonoBehaviour:
   maxTimeWaiting: 5
   waitTime: 0
   isDead: 0
+  isPregnant: 0
   waterLayer:
     serializedVersion: 2
     m_Bits: 16
@@ -624,6 +666,7 @@ MonoBehaviour:
   thirstDecreaseRate: 1
   staminaDecreaseRate: 1
   staminaIncreaseRate: 1.5
+  hibernationMultiplier: 1
 --- !u!114 &2652676559356234131
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -667,35 +710,6 @@ MonoBehaviour:
   pregnancyHungerDrainPerSecond: 0.35
   pregnancyThirstDrainPerSecond: 0.45
   pregnancyStaminaDrainPerSecond: 0.25
---- !u!114 &7253260387713355870
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2670038152025143281}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ffadf3d2ef29a947904e874f049bf4b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MooseFOV
-  viewAngle: 100
-  viewLayer:
-    serializedVersion: 2
-    m_Bits: 0
---- !u!114 &8839650572549012831
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2670038152025143281}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 706da7dd76967fb40a62dba58f1b19e3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MooseHearing
-  minHearingSpeed: 0.1
 --- !u!54 &4377887995782312641
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -775,7 +789,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.26
-  m_Speed: 2
+  m_Speed: 1.8
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120

@@ -4,6 +4,8 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 
 public class GameManager : MonoBehaviour
@@ -18,17 +20,21 @@ public class GameManager : MonoBehaviour
     public Transform berryBushFolder;
 
     [Header("UI")]
-    public GameObject startMenuPanel;
+    public GameObject startMenu;
+
+
 
     [Header("Animal Setup Panels")]
     public AnimalSetupPanel mooseSetup;
     public AnimalSetupPanel wolfSetup;
     public AnimalSetupPanel bearSetup;
 
+
     [Header("Food Setup Panel")]
     public FoodSetupPanel berryBushSetup;
     public FoodSetupPanel mushroomSetup;
     public FoodSetupPanel nutrientTree; //??
+
 
     [Header("Food")]
     public MushroomSpawner mushroomSpawner;
@@ -42,8 +48,7 @@ public class GameManager : MonoBehaviour
     public GameObject berryBushPrefab;
 
     [Header("Simulation Length")]
-    public Slider simulationLengthSlider;
-    public TextMeshProUGUI simulationTimeText;
+    public TimeSetup timesetup;
     private float simulationTime;
     private float timer;
     private static bool simulationRunning;
@@ -70,20 +75,65 @@ public class GameManager : MonoBehaviour
     public Toggle winterToggle;
     public Toggle percipitationToggle; // set >0 for precipitation active (rain/snow based on season)
 
+    // Performance optimization: precomputed spawn points
+    private List<Vector3> recordedSpawnPoints = new List<Vector3>();
+    private const int recordedSpawnPointsCount = 5000;
+    public float recordInterval = 5f;
+    public float spawnSpacing = 5f;
+    
+    private Coroutine recordingCoroutine;
+    private bool spawnPointsInitialized = false;
+
+
     private void Start()
     {
-        simulationLengthSlider.value = 60f;
+        timesetup.SetAmount(60);
         cameraMovement.enabled = false;
         Time.timeScale = 1f;
         simulationUI.gameObject.SetActive(false);
         RenderSettings.skybox.SetFloat("_Exposure", 1f);
         RenderSettings.skybox.SetColor("_Tint", Color.white);
         summerToggle.isOn = true;
+        SeasonManager.Instance.SetSummer(summerToggle.isOn);
 
+        InitializeSpawnPoints();
     }
 
-    public float recordInterval = 5f;
-    private float recordTimer = 0f;
+    private void InitializeSpawnPoints()
+    {
+        if (spawnPointsInitialized) return;
+        
+        HashSet<Vector3> uniquePoints = new HashSet<Vector3>();
+        int attempts = 0;
+        int maxAttempts = recordedSpawnPointsCount * 3; // Try 3x to get enough unique points
+        
+        while (uniquePoints.Count < recordedSpawnPointsCount && attempts < maxAttempts)
+        {
+            Vector3 point = GetRandomNavMeshPoint();
+            
+            // Only add if it's not the fallback position and not a duplicate
+            if (point != transform.position && !IsPointTooClose(point, uniquePoints))
+            {
+                uniquePoints.Add(point);
+            }
+            attempts++;
+        }
+        
+        recordedSpawnPoints.AddRange(uniquePoints);
+        spawnPointsInitialized = true;
+    }
+
+    private bool IsPointTooClose(Vector3 point, HashSet<Vector3> existingPoints)
+    {
+        foreach (Vector3 existing in existingPoints)
+        {
+            if (Vector3.Distance(point, existing) < 5f)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     void Update() 
     {
@@ -93,13 +143,6 @@ public class GameManager : MonoBehaviour
         }
 
         timer += Time.deltaTime;
-        recordTimer += Time.deltaTime;
-
-        if(recordTimer >= recordInterval)
-        {
-            RecordPopulation();
-            recordTimer = 0f;
-        }
 
         if (timer >= simulationTime)
         {
@@ -118,43 +161,81 @@ public class GameManager : MonoBehaviour
 
         cameraMovement.enabled = true;
 
-        SpawnAnimals(moosePrefab, mooseSetup, herbivoresFolder);
-        SpawnAnimals(wolfPrefab, wolfSetup, carnivoreFolder);
-        SpawnAnimals(bearPrefab, bearSetup, omnivoreFolder);
+        StartCoroutine(SpawnAnimalsStaggered(moosePrefab, mooseSetup.amount, herbivoresFolder));
+        StartCoroutine(SpawnAnimalsStaggered(wolfPrefab, wolfSetup.amount, carnivoreFolder));
+        StartCoroutine(SpawnAnimalsStaggered(bearPrefab, bearSetup.amount, omnivoreFolder));
+
         SpawnFood(berryBushPrefab, berryBushSetup.amount, berryBushFolder);
         
-        mushroomSpawner.SetMaxMushrooms(mushroomSetup.amount);
-        mushroomSpawner.InitializeSpawn();
+        //mushroomSpawner.SetMaxMushrooms(mushroomSetup.amount);
+        //mushroomSpawner.InitializeSpawn();
+
+        mushroomSpawner.SetMaxMushrooms(200); // current max amount
+        mushroomSpawner.InitializeSpawn(mushroomSetup.amount);
+
 
         nutrientTreeSpawner.SetTreeAmount(nutrientTree.amount);
         nutrientTreeSpawner.InitializeSpawn();
 
-        simulationTime = simulationLengthSlider.value;
+        simulationTime = timesetup.amount;
         timer = 0f;
         simulationRunning = true;
 
-        startMenuPanel.SetActive(false);
+        startMenu.SetActive(false);
         simulationUI.gameObject.SetActive(true);
+
+        // Start population recording coroutine instead of using Update timer
+        if (recordingCoroutine != null)
+        {
+            StopCoroutine(recordingCoroutine);
+        }
+        recordingCoroutine = StartCoroutine(RecordPopulationCoroutine());
     }
 
-    void SpawnAnimals(GameObject animalPrefab, AnimalSetupPanel setup, Transform parentFolder)
+    //private IEnumerator SpawnAnimalsStaggered(GameObject animalPrefab, AnimalSetupPanel setup, Transform parentFolder)
+    private IEnumerator SpawnAnimalsStaggered(GameObject animalPrefab, int amount, Transform parentFolder)
     {
-        
-        for (int i = 0; i < setup.amount; i++)
+        for (int i = 0; i < amount; i++)
         {
-            Vector3 randomPoint = GetRandomNavMeshPoint();
+            Vector3 randomPoint = GetPrecomputedSpawnPoint();
+            randomPoint += new Vector3(UnityEngine.Random.Range(-spawnSpacing, spawnSpacing), 0f, UnityEngine.Random.Range(-spawnSpacing, spawnSpacing));
+
+            NavMeshHit hit;
+            if(NavMesh.SamplePosition(randomPoint, out hit, 10f, NavMesh.AllAreas)) // Ensure the point is on the NavMesh and adjust height,
+                                                                                    // otherwise might spawn outside of the terrain
+            {
+                randomPoint = hit.position + Vector3.up * 2f;
+            }
+            
             GameObject animalObj = Instantiate(animalPrefab, randomPoint, Quaternion.identity, parentFolder);
             Animal animal = animalObj.GetComponent<Animal>();
 
-
             if (animal != null)
             {
-                animal.age = (float)System.Math.Round(UnityEngine.Random.Range(0f, animal.startingMaxAge), 2);                
-                animal.speed = (float)System.Math.Round(UnityEngine.Random.Range(setup.updatedSpeed - 0.5f, setup.updatedSpeed + 0.5f), 2);
-                animal.size = (float)System.Math.Round(UnityEngine.Random.Range(setup.updatedSize - 0.2f, setup.updatedSize + 0.2f), 2);
-                animal.sightRange = (float)System.Math.Round(UnityEngine.Random.Range(setup.updatedSight - 5f, setup.updatedSight + 5f), 2);
-                animal.hearingRange = (float)System.Math.Round(UnityEngine.Random.Range(setup.updatedHearing - 5f, setup.updatedHearing + 5f), 2);
+            
+                animal.age = (float)System.Math.Round(UnityEngine.Random.Range(0f, animal.startingMaxAge), 2);               
+
+                // Randomize stats from species ranges
+                animal.speed = UnityEngine.Random.Range(animal.minSpeed, animal.maxSpeed);
+                animal.runningSpeed = animal.maxSpeed * 1.5f; 
+                animal.sightRange = UnityEngine.Random.Range(animal.minSight, animal.maxSight);
+                animal.hearingRange = UnityEngine.Random.Range(animal.minHearing, animal.maxHearing);
+
+                float randomizedHealth = animal.CalculateHealth(animal.minHealth, animal.maxHealth);
+                animal.needs.maxHealth = randomizedHealth;
+                animal.needs.healthLevel = randomizedHealth;
+
+
+                animal.strength = UnityEngine.Random.Range(animal.minStrength, animal.maxStrength);
+
+                // Attack damage depends on strength
+                animal.CalculateAttackDamage();
+
+
+
             }
+
+            yield return new WaitForEndOfFrame();
         }
     }
 
@@ -162,9 +243,19 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < count; i++)
         {
-            Vector3 randomPoint = GetRandomNavMeshPoint();
-            Instantiate(berryBushPrefab, randomPoint, Quaternion.identity, parentFolder);
+            Vector3 randomPoint = GetPrecomputedSpawnPoint();
+            Instantiate(foodPrefab, randomPoint, Quaternion.identity, parentFolder);
         }
+    }
+
+    Vector3 GetPrecomputedSpawnPoint()
+    {
+        if (recordedSpawnPoints.Count == 0)
+        {
+            Debug.LogWarning("Recorded spawn points not initialized, falling back to NavMesh sampling");
+            return GetRandomNavMeshPoint();
+        }
+        return recordedSpawnPoints[UnityEngine.Random.Range(0, recordedSpawnPoints.Count)];
     }
 
     Vector3 GetRandomNavMeshPoint()
@@ -172,23 +263,31 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < 100; i++)
         {
             Vector2 randomCircle = UnityEngine.Random.insideUnitCircle * spawnRadius;
-
-            Vector3 randomPoint = transform.position + 
-                                new Vector3(randomCircle.x, 500f, randomCircle.y);
+            
+            Vector3 randomPoint = transform.position + new Vector3(randomCircle.x, 1000f, randomCircle.y);
 
             NavMeshHit hit;
-            if (NavMesh.SamplePosition(randomPoint, out hit, 1000f, NavMesh.AllAreas))
+            // Search downward with reasonable distance to find the surface
+            if (NavMesh.SamplePosition(randomPoint, out hit, 2000f, NavMesh.AllAreas))
             {
                 return hit.position;
             }
         }
-        Debug.LogWarning("Failed to find NavMesh point");
+        
+        Debug.LogWarning("Failed to find a valid NavMesh point after 100 attempts");
         return transform.position;
     }
 
     void EndSimulation ()
     {
         simulationRunning = false;
+
+        // Stop recording coroutine when simulation ends
+        if (recordingCoroutine != null)
+        {
+            StopCoroutine(recordingCoroutine);
+            recordingCoroutine = null;
+        }
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -200,17 +299,24 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("SimOver");
     }
 
-    public void UpdateTimeText()
-    {
-        simulationTimeText.text = $"Simulation Length: {simulationLengthSlider.value} seconds";
-    }
-
     void RecordPopulation()
     {
         SimulationResults.bearsHistory.Add(omnivoreFolder.childCount);
         SimulationResults.wolvesHistory.Add(carnivoreFolder.childCount);
         SimulationResults.mooseHistory.Add(herbivoresFolder.childCount);
+    }
 
+    private IEnumerator RecordPopulationCoroutine()
+    {
+        // Records population at intervals without per-frame polling
+        while (simulationRunning)
+        {
+            yield return new WaitForSeconds(recordInterval);
+            if (simulationRunning)  // Double-check in case sim ended
+            {
+                RecordPopulation();
+            }
+        }
     }
 
     public static bool GetSimulationStatus()
@@ -218,18 +324,27 @@ public class GameManager : MonoBehaviour
         return simulationRunning;
     }
 
-    public void toggleSummer()
+    public void ToggleSummer()
     {
-        SeasonManager.Instance.SetSummer(summerToggle.isOn);
+        summerToggle.SetIsOnWithoutNotify(true);
+        winterToggle.SetIsOnWithoutNotify(false);
+        SeasonManager.Instance.SetSummer(true);
     }
 
-    public void toggleWinter()
+    public void ToggleWinter()
     {
-        SeasonManager.Instance.SetWinter(winterToggle.isOn);
+        winterToggle.SetIsOnWithoutNotify(true);
+        summerToggle.SetIsOnWithoutNotify(false);
+        SeasonManager.Instance.SetWinter(true);
     }
 
     public void togglePrecipitation()
     {
         SeasonManager.Instance.SetPercipitation(percipitationToggle.isOn);
+    }
+
+    public void UpdateAmountText(TextMeshProUGUI amountText, string animalName, float sliderValue)
+    {
+        amountText.text = $"Amount of {animalName}: {Mathf.RoundToInt(sliderValue)}";
     }
 }

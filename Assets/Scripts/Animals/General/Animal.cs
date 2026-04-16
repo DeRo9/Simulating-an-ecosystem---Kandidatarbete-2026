@@ -1,3 +1,4 @@
+using System.Drawing;
 using UnityEngine;
 
 public enum Species
@@ -9,8 +10,13 @@ public enum Species
 
 public class Animal : MonoBehaviour
 {
+
     [Header("Species")]
     public Species species;
+
+    [Header("Combat")]
+    public bool canAttack = true;
+    public float attackDamage;  
 
     [Header("Aging")]
     public float age = 0f;
@@ -26,15 +32,36 @@ public class Animal : MonoBehaviour
     public bool IsMale;
 
     [Header("Senses")]
-    public float sightRange = 40f;
-    public float hearingRange = 10f;
+    public float sightRange;
+    public float hearingRange;
+
+    // Speed
+    public float minSpeed;
+    public float maxSpeed;
+
+    // Sight
+    public float minSight;
+    public float maxSight;
+
+    // Hearing
+    public float minHearing;
+    public float maxHearing;
+    public SphereCollider hearingCollider;
+
+    // Strength
+    public float minStrength;
+    public float maxStrength;
+
+    // Health
+    public float minHealth;
+    public float maxHealth;
 
     [Header("Forces")]
-    public float speed = 2f;
-    public float runningSpeed = 4f;
-    public float size = 1f; //I guess this well be equivalent to hp in the future... right now scale
-    public float strength = 1f;
-    public float attackDamage = 20f;
+    public float speed;
+    public float runningSpeed;
+    public float size = 1f;
+    public float strength;
+   
 
     [Header("Hearing")]
     public bool isMoving{get;private set;}
@@ -52,16 +79,12 @@ public class Animal : MonoBehaviour
     protected virtual void Update()
     {
         age += Time.deltaTime * agingSpeed;
-    }
 
-    public virtual void GetStats(out float speed, out float size, out float sight, out float hearing)
-    {
-        speed = this.speed;
-        size = this.size;
-        sight = this.sightRange;
-        hearing = this.hearingRange;
-    }
+        hearingCollider.radius = hearingRange / size; // Wolf has scale of 2 , so hearing range is divided by 2 to keep it consistent with other animals
 
+
+    }
+    
     public virtual void SetMovementState(bool moving, float speed){
         isMoving = moving;
         currentSpeed = speed;
@@ -71,4 +94,27 @@ public class Animal : MonoBehaviour
     {
         return needs.healthLevel;
     }
+
+    public virtual void CalculateAttackDamage()
+    {
+        if (!canAttack)
+        {
+            attackDamage = 0f;
+            return;
+        }
+
+        attackDamage = strength * Random.Range(1f, 1.2f);
+        // add size in equation... somehow also affect
+    }
+
+    public virtual float CalculateHealth(float minHealth, float maxHealth)
+    {
+        return Random.Range(minHealth, maxHealth);
+        
+        
+    }
+
+
+
+
 }

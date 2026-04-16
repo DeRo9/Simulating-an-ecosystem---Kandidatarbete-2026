@@ -941,12 +941,12 @@ GameObject:
   - component: {fileID: 4167753896645195812}
   - component: {fileID: 8302854409345995853}
   - component: {fileID: -8542277066833054746}
+  - component: {fileID: 5749817121992397915}
+  - component: {fileID: 1660296296341452176}
   - component: {fileID: 2432284124251840962}
   - component: {fileID: 1081293250822596563}
   - component: {fileID: 3984187836223728344}
   - component: {fileID: 8337827225156515145}
-  - component: {fileID: -5019463054831179927}
-  - component: {fileID: 6638387059564927779}
   - component: {fileID: -2968540663438234119}
   - component: {fileID: -7482082836630389072}
   - component: {fileID: 4421475189465629228}
@@ -1013,22 +1013,63 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Wolf
   species: 0
+  canAttack: 1
+  attackDamage: 20
   age: 1
   agingSpeed: 0.1
   startingMaxAge: 15
   grownUpAge: 2
   oldAge: 4
   IsMale: 0
-  sightRange: 18
+  sightRange: 20
   hearingRange: 50
-  speed: 2
-  runningSpeed: 4
+  minSpeed: 0
+  maxSpeed: 0
+  minSight: 0
+  maxSight: 0
+  minHearing: 0
+  maxHearing: 0
+  hearingCollider: {fileID: 4620774494346928479}
+  minStrength: 0
+  maxStrength: 0
+  minHealth: 0
+  maxHealth: 0
+  speed: 1.8
+  runningSpeed: 2.7
   size: 2
-  strength: 0
-  attackDamage: 20
-  needs: {fileID: 0}
+  strength: 11
+  needs: {fileID: 1081293250822596563}
   pack: {fileID: 0}
   isLeader: 0
+--- !u!114 &5749817121992397915
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4266865027632842223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bcd898770ad1a334db39ca4f402e8908, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalHearing
+  minHearingSpeed: 0.1
+--- !u!114 &1660296296341452176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4266865027632842223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7830fc1b68d5d5f49a60c2b79c1c012e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalFOV
+  viewAngle: 150
+  viewLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &2432284124251840962
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1046,6 +1087,7 @@ MonoBehaviour:
   maxTimeWaiting: 5
   waitTime: 0
   isDead: 0
+  isPregnant: 0
   waterLayer:
     serializedVersion: 2
     m_Bits: 16
@@ -1081,6 +1123,7 @@ MonoBehaviour:
   thirstDecreaseRate: 1
   staminaDecreaseRate: 5
   staminaIncreaseRate: 1
+  hibernationMultiplier: 1
 --- !u!114 &3984187836223728344
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1124,35 +1167,6 @@ MonoBehaviour:
   pregnancyHungerDrainPerSecond: 0.35
   pregnancyThirstDrainPerSecond: 0.45
   pregnancyStaminaDrainPerSecond: 0.25
---- !u!114 &-5019463054831179927
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4266865027632842223}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 889abecf89f513a4ba21fb94f92fbbb1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::wolfFOV
-  viewAngle: 100
-  viewLayer:
-    serializedVersion: 2
-    m_Bits: 0
---- !u!114 &6638387059564927779
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4266865027632842223}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b041b4b0555d1e64d933dc3c18cdc61c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WolfHearing
-  minHearingSpeed: 0.1
 --- !u!114 &-2968540663438234119
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1245,7 +1259,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.2
-  m_Speed: 2
+  m_Speed: 1.8
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
