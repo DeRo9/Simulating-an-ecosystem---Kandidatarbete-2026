@@ -3,12 +3,10 @@ using UnityEngine.AI;
 
 public class BearBehaviour : AnimalBehaviour
 {
-
     [Header("Pack Threat")]
     float packCheckCooldown = 0f;
     float packCheckInterval = 2f;
     int dangerousPackSize = 5;
-
 
     BearHearing hearing;
     AnimalFOV fov;
@@ -36,6 +34,7 @@ public class BearBehaviour : AnimalBehaviour
     bool waitingForDeathAnimation = false;
 
     GameObject pendingCarcass;
+
 
     [Header("Layers")]
     [SerializeField]
@@ -74,8 +73,8 @@ public class BearBehaviour : AnimalBehaviour
         if (CurrentState == State.Hibernate)
             return;
 
-        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f);
-        anim.SetBool("isRunning", agent.velocity.magnitude > 3f);
+        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < animal.runningSpeed * 0.95f); // "isWalking" är en bool i animator
+        anim.SetBool("isRunning", agent.velocity.magnitude > animal.runningSpeed * 0.95f); // "isRunning" är en bool i animator
 
         if (waitingForDeathAnimation)
         {
@@ -204,7 +203,7 @@ public class BearBehaviour : AnimalBehaviour
     bool FindFood()
     {
 
-        if(foodSearchingCooldown > 0f)
+        if (foodSearchingCooldown > 0f)
         {
             foodSearchingCooldown -= Time.deltaTime;
             return foodTarget != null;
@@ -227,7 +226,7 @@ public class BearBehaviour : AnimalBehaviour
                 continue;
             if (!fov.IsInFOV(hit.transform))
                 continue;
-            
+
             memory.RememberFood(hit.transform.position);
 
             float distance = Vector3.Distance(transform.position, hit.transform.position);
@@ -350,6 +349,8 @@ public class BearBehaviour : AnimalBehaviour
             ChangeState(State.Wander);
             return;
         }
+
+        agent.speed = needs.noMoreStamina ? animal.speed : animal.runningSpeed;
 
         MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
         if (moose != null && moose.isDead)
@@ -505,6 +506,8 @@ public class BearBehaviour : AnimalBehaviour
                 {
                     Vector3 targetPos = memory.GetRandomPointInChunk(targetChunk);
                     agent.SetDestination(targetPos);
+                    needs.Eat(nutrition);
+                    needs.RegenerateHealth(20f); // Regenerate some health upon eating carcass
                 }
                 else
                 {
@@ -518,7 +521,6 @@ public class BearBehaviour : AnimalBehaviour
         }
     }
 
-
     public void notifyDeath()
     {
         if (preyTarget == null) return;
@@ -530,7 +532,7 @@ public class BearBehaviour : AnimalBehaviour
         }
 
         WolfBehaviour wolf = preyTarget.GetComponentInParent<WolfBehaviour>();
-        if(wolf != null)
+        if (wolf != null)
         {
             wolf.UnregisterBearAttacker(this);
         }

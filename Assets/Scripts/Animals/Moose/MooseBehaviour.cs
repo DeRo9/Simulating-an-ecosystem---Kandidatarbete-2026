@@ -43,6 +43,9 @@ public class MooseBehaviour : AnimalBehaviour
         anim.SetBool("isRunning", agent.velocity.magnitude > 3f);
 
         if (CheckForThreats()) return;
+        // Update animation based on movement
+        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < animal.runningSpeed * 0.95f); // "isWalking" Ã¤r en bool i animator
+        anim.SetBool("isRunning", agent.velocity.magnitude > animal.runningSpeed * 0.95f); // "isRunning" Ã¤r en bool i animator
 
         switch (CurrentState)
         {
@@ -157,6 +160,32 @@ public class MooseBehaviour : AnimalBehaviour
                 else
                 {
                     agent.SetDestination(GetRandomPoints());
+                    memoryDecisionCooldown = 2f; // decide every 2 sec
+
+                    if (UnityEngine.Random.value < 0.2f) // 20% chance for exploration instead of memory
+                    {
+                        ChangeState(State.Wander);
+                        return;
+                    }
+
+            
+
+                    Vector2Int targetChunk = DecideFoodTargetChunk();
+
+                    if (targetChunk.x != -1)
+                    {
+                        Vector3 targetPos = memory.GetRandomPointInChunk(targetChunk);
+
+                        if (agent.isOnNavMesh)
+                        {
+                            agent.SetDestination(targetPos);
+                            ChangeState(State.Wander);
+                        }
+                    }
+                    else
+                    {
+                        ChangeState(State.Wander); 
+                    }
                 }
             }
         }

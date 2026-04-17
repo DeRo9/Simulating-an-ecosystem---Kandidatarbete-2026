@@ -241,12 +241,10 @@ public abstract class AnimalBehaviour : MonoBehaviour
         if (animal != null)
         {
             bool moving = agent.velocity.magnitude > 0.1f;
-            animal.SetMovementState (moving,agent.velocity.magnitude);
+            animal.SetMovementState(moving,agent.velocity.magnitude);
         }
 
-        bool isRunning = agent.velocity.magnitude > 3f;
-
-        if (isRunning)
+        if (agent.velocity.magnitude > animal.runningSpeed * 0.95f)
         {
             needs.DrainStamina();
         }

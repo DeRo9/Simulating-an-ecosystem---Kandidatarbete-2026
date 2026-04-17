@@ -1599,15 +1599,15 @@ MonoBehaviour:
   maxSight: 0
   minHearing: 0
   maxHearing: 0
+  hearingCollider: {fileID: -8017201233929457047}
   minStrength: 0
   maxStrength: 0
   minHealth: 0
   maxHealth: 0
-  health: 0
-  speed: 2
-  runningSpeed: 4
+  speed: 1.95
+  runningSpeed: 3
   size: 1.5
-  strength: 0
+  strength: 25
   needs: {fileID: 5642719112376538877}
 --- !u!114 &8115009223279749859
 MonoBehaviour:
@@ -1800,7 +1800,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.32
-  m_Speed: 2
+  m_Speed: 1.95
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120

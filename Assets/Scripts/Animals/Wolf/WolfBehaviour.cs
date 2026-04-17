@@ -88,13 +88,13 @@ public class WolfBehaviour : AnimalBehaviour
                 preyTarget = leaderBehaviour.preyTarget;
 
                 MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
-                if(moose != null)
+                if (moose != null)
                 {
                     moose.RegisterWolfAttacker(this);
                 }
             }
 
-            if(CurrentState != State.Hunt)
+            if (CurrentState != State.Hunt)
                 ChangeState(State.Hunt);
             
             return;
@@ -110,8 +110,8 @@ public class WolfBehaviour : AnimalBehaviour
             agent.isStopped = true;
         }
 
-        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f);
-        anim.SetBool("isRunning", agent.velocity.magnitude > 3f);
+        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < animal.runningSpeed * 0.95f);
+        anim.SetBool("isRunning", agent.velocity.magnitude > animal.runningSpeed * 0.95f);
 
         ApplySeperation();
     }
@@ -157,6 +157,10 @@ public class WolfBehaviour : AnimalBehaviour
             huntCooldown = huntCooldown * 0.5f;
         }
 
+        // Update animation based on movement
+        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < animal.runningSpeed * 0.95f); // "isWalking" är en bool i animator
+        anim.SetBool("isRunning", agent.velocity.magnitude > animal.runningSpeed * 0.95f); // "isRunning" är en bool i animator
+
         if (waitingForDeathAnimation)
         {
             deathWaitTimer -= Time.deltaTime;
@@ -171,9 +175,6 @@ public class WolfBehaviour : AnimalBehaviour
             }
             return;
         }
-
-        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f);
-        anim.SetBool("isRunning", agent.velocity.magnitude > 3f);
 
         if (pack != null && wolf != null && !wolf.isLeader && pack.leader != null)
         {
@@ -307,7 +308,7 @@ public class WolfBehaviour : AnimalBehaviour
             MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
             if (moose != null)
             {
-                moose.RegisterWolfAttacker(this); 
+                moose.RegisterWolfAttacker(this);
                 moose.OnBeingHunted(gameObject);
             }
 
@@ -474,7 +475,7 @@ public class WolfBehaviour : AnimalBehaviour
 
         if (huntCooldownTimer > 0) return;
 
-        if(wolf.isLeader || pack == null || pack.countCurrentPackSize() <= 1)
+        if (wolf.isLeader || pack == null || pack.countCurrentPackSize() <= 1)
             StatisticsTableManager.instance.WolfhuntFailuresCount++;
 
         if (preyTarget != null)
@@ -525,6 +526,8 @@ public class WolfBehaviour : AnimalBehaviour
                 {
                     Vector3 targetPos = memory.GetRandomPointInChunk(targetChunk);
                     agent.SetDestination(targetPos);
+                    needs.Eat(nutrition);
+                    needs.RegenerateHealth(20f); // Regenerate some health upon eating carcass
                 }
                 else
                 {
@@ -695,9 +698,9 @@ public class WolfBehaviour : AnimalBehaviour
     {
         bool bearKill = bearAttackers.Count > 0;
 
-        foreach(BearBehaviour bear in bearAttackers.ToList())
+        foreach (BearBehaviour bear in bearAttackers.ToList())
         {
-            if(bear != null)
+            if (bear != null)
             {
                 bear.notifyDeath();
             }
@@ -711,7 +714,8 @@ public class WolfBehaviour : AnimalBehaviour
         if (wolf.isLeader && pack != null)
         {
             pack.OnLeaderDeath();
-        } else if (pack != null)
+        }
+        else if (pack != null)
         {
             pack.members.Remove(wolf);
         }
@@ -732,6 +736,6 @@ public class WolfBehaviour : AnimalBehaviour
     public void UnregisterBearAttacker(BearBehaviour bear)
     {
         if (bear == null) return;
-            bearAttackers.Remove(bear);
+        bearAttackers.Remove(bear);
     }
 }

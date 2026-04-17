@@ -144,6 +144,13 @@ public class AnimalNeeds : MonoBehaviour
         staminaLevel = Mathf.Clamp(staminaLevel, 0f, maxStamina);
     }
 
+    // Called after eating or drinking to regenerate some health
+    public void RegenerateHealth(float amount)
+    {
+        healthLevel += amount;
+        healthLevel = Mathf.Clamp(healthLevel, 0f, maxHealth);
+    }
+
     public void RegenerateHealth(float amount)
     {
         healthLevel += amount;

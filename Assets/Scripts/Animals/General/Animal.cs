@@ -43,6 +43,7 @@ public class Animal : MonoBehaviour
 
     public float minHearing;
     public float maxHearing;
+    public SphereCollider hearingCollider;
 
     public SphereCollider hearingCollider;
 

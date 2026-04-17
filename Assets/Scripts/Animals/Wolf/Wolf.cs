@@ -24,7 +24,8 @@ public class Wolf : Animal
         minSight = 30f;
         maxSight = 35f;
 
-        minHearing = 45f;
+        // Hearing
+        minHearing = 40f;
         maxHearing = 45f;
 
         minStrength = 9f;
