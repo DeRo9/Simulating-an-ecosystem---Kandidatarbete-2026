@@ -18,7 +18,7 @@ public class AnimalNeeds : MonoBehaviour
     
     [SerializeField] private float hungerDecreaseRate = 2f;
     [SerializeField] private float thirstDecreaseRate = 1f;
-    [SerializeField] private float staminaDecreaseRate = 1f;
+    [SerializeField] public float staminaDecreaseRate = 1f;
     [SerializeField] private float staminaIncreaseRate = 1.5f;
 
     public float hibernationMultiplier = 1f;

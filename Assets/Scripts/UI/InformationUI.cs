@@ -55,6 +55,7 @@ public class InformationUI : MonoBehaviour
 
             float pregnancyValue = current.GetComponent<Mating>()?.GetPregnancyTimer() ?? 0f;
             pregnancySlider.maxValue = 30f;
+            pregnancySlider.maxValue = matingComponent?.GetGestationDuration() ?? 30f;
             pregnancySlider.value = pregnancyValue;
 
         }
@@ -121,6 +122,4 @@ public class InformationUI : MonoBehaviour
             pregnancySlider.gameObject.SetActive(true);
         }
     }
-
-
 }

@@ -35,23 +35,21 @@ public class Animal : MonoBehaviour
     public float sightRange;
     public float hearingRange;
 
-    // Speed
     public float minSpeed;
     public float maxSpeed;
 
-    // Sight
     public float minSight;
     public float maxSight;
 
-    // Hearing
     public float minHearing;
     public float maxHearing;
 
-    // Strength
+    public SphereCollider hearingCollider;
+
+
     public float minStrength;
     public float maxStrength;
 
-    // Health
     public float minHealth;
     public float maxHealth;
 
