@@ -14,25 +14,22 @@ public class Moose : Animal
 
         size = 1f; 
 
-        // Speed
         minSpeed = 1.65f;
         maxSpeed = 1.8f;
 
-        // Sight
         minSight = 20f;
         maxSight = 25f;
 
-        // Hearing
-        minHearing = 15f;
-        maxHearing = 25f;
+        minHearing = 25f;
+        maxHearing = 30f;
 
-        // Strength
         minStrength = 13f;
         maxStrength = 15f;
 
-        // Health
         minHealth = 80f;
         maxHealth = 100f;
+
+        needs.staminaDecreaseRate = 5f;
 
         base.Awake();
     }

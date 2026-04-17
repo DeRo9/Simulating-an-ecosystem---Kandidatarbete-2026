@@ -57,7 +57,7 @@ public class Animal : MonoBehaviour
 
     [Header("Forces")]
     public float speed;
-    public float runningSpeed; //= animal.speed * 2f 
+    public float runningSpeed;
     public float size = 1f;
     public float strength;
    
@@ -78,8 +78,7 @@ public class Animal : MonoBehaviour
     protected virtual void Update()
     {
         age += Time.deltaTime * agingSpeed;
-
-      
+        hearingCollider.radius = hearingRange / size;
     }
     
     public virtual void SetMovementState(bool moving, float speed){
@@ -101,17 +100,10 @@ public class Animal : MonoBehaviour
         }
 
         attackDamage = strength * Random.Range(1f, 1.2f);
-        // add size in equation... somehow also affect
     }
 
     public virtual float CalculateHealth(float minHealth, float maxHealth)
     {
         return Random.Range(minHealth, maxHealth);
-        
-        
     }
-
-
-
-
 }

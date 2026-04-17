@@ -228,11 +228,7 @@ public class GameManager : MonoBehaviour
 
                 animal.strength = UnityEngine.Random.Range(animal.minStrength, animal.maxStrength);
 
-                // Attack damage depends on strength
                 animal.CalculateAttackDamage();
-
-
-
             }
 
             yield return new WaitForEndOfFrame();

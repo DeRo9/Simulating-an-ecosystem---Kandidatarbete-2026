@@ -86,7 +86,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
     public Mating mating;
     
     private float wanderCooldown = 0f;
-    private const float wanderChangeInterval = 3f;
     
     protected virtual void Start()
     {
@@ -193,7 +192,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
                 break;
         }
     }
-
 
     public Vector3 GetRandomPoints()
     {
@@ -414,12 +412,11 @@ public abstract class AnimalBehaviour : MonoBehaviour
     }
     protected virtual void UpdateWander() 
     { 
-        // Periodically change destination for more varied movement
         wanderCooldown -= Time.deltaTime;
         if (wanderCooldown <= 0f)
         {
             agent.SetDestination(GetRandomPoints());
-            wanderCooldown = wanderChangeInterval;
+            wanderCooldown = 3f;
         }
         
         if (hasArrived())
@@ -452,6 +449,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
                 {
                     needs.Eat(nutrition);
                     foodTarget = null;
+                    needs.RegenerateHealth(20f);
                     ChangeState(State.Wander);
                     return;
                 }
@@ -461,6 +459,23 @@ public abstract class AnimalBehaviour : MonoBehaviour
                     ChangeState(State.SearchFood);
                     return;
                 }
+            }
+
+            //Unsure if this is good but handles cases when the animal for some reason cannot eat food!!!!
+            else if (carcass == null && needs.isHungry && foodTarget != null)
+            {
+                needs.Eat(20f);
+                Destroy(foodTarget);
+                foodTarget = null;
+                needs.RegenerateHealth(20f);
+                ChangeState(State.Wander);
+                return;
+            }
+            else
+            {
+                foodTarget = null;
+                ChangeState(State.SearchFood);
+                return;
             }
         }
         
@@ -498,7 +513,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
             DrinkState(); 
         }
-
         else
         {
             agent.isStopped = false;
@@ -801,4 +815,78 @@ protected virtual void UpdateSearchMate()
     {
         needs.TakeDamage(damage);
     }
+
+    public Vector2Int DecideFoodAndWaterTargetChunk()
+    {
+
+        // 0 = full, 1 = starving
+        float hunger = 1f - needs.howHungryInPercent;
+        float thirst = 1f - needs.howThirstyInPercent;
+
+        Vector2Int bestChunk = new Vector2Int(-1, -1);
+        float bestScore = float.MinValue;
+
+        Vector2Int currentChunk = memory.GetChunk(transform.position);
+
+        float totalNeed = hunger + thirst;
+
+        if (totalNeed <= 0.1f)
+        {
+            return new Vector2Int(-1, -1); 
+        }
+
+        float hungerWeight = hunger / totalNeed;
+        float thirstWeight = thirst / totalNeed;
+
+        // Risk taking based on strongest need
+        float urgency = Mathf.Max(hunger, thirst);
+
+        float dangerWeight = Mathf.Lerp(3f, 0.3f, urgency);
+
+        if (SeasonManager.Instance.IsWinter)
+        {
+            dangerWeight *= 1.5f;
+        }
+
+        for (int x = 0; x < memory.GetGridSizeX(); x++)
+        {
+            for (int z = 0; z < memory.GetGridSizeZ(); z++)
+            {
+                float food = memory.GetFoodValue(x, z);
+                float water = memory.GetWaterValue(x, z);
+                float danger = memory.GetDangerValue(x, z);
+
+                float distance = Vector2.Distance(
+                    new Vector2(x, z),
+                    new Vector2(currentChunk.x, currentChunk.y)
+                );
+
+
+                float reward = (food * hungerWeight) + (water * thirstWeight);
+
+                float risk = danger * dangerWeight;
+                float effort = distance * 0.3f;
+
+        
+                float randomness = UnityEngine.Random.Range(-1f, 1f) * (1f - urgency);
+
+                float score = reward - risk - effort + randomness;
+
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    bestChunk = new Vector2Int(x, z);
+                }
+            }
+        }
+
+        if (bestScore < 1f)
+        {
+            return new Vector2Int(-1, -1);
+        }
+
+        return bestChunk;
+
+    }
+
 }

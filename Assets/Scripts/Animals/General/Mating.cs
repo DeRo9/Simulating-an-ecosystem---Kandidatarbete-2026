@@ -38,7 +38,7 @@ public class Mating : MonoBehaviour
     private float pendingBabyHearing;
 
     [Header("Failed Mating")]
-    public float matingRejectionCooldown = 30f; // Cooldown to avoid re-attempting with same mate
+    public float matingRejectionCooldown = 30f;
     private System.Collections.Generic.List<GameObject> rejectedMates = new System.Collections.Generic.List<GameObject>();
 
     public static event Action<string> OnMating;
@@ -48,8 +48,11 @@ public class Mating : MonoBehaviour
         animal = GetComponent<Animal>();
         needs = GetComponent<AnimalNeeds>();
         behaviour = GetComponent<AnimalBehaviour>();
+
         pregnancyTimer = 0f;
         behaviour.SetPregnant(false);
+        gestationDuration = GetGestationDurationForSpecies(animal.species);
+
     }
 
 
@@ -82,6 +85,23 @@ public class Mating : MonoBehaviour
     public float GetPregnancyTimer()
     {
         return pregnancyTimer;
+    }
+
+    public float GetGestationDuration()
+    {
+        return gestationDuration;
+    }
+
+    private static float GetGestationDurationForSpecies(Species species)
+    {
+        // Use species-specific gestation lengths here.
+        // The values are in game seconds; adjust the scale if needed.
+        return species switch
+        {
+            Species.bear => 80f,  // ~8 months in game time
+            Species.moose => 80f, // ~8 months in game time
+            Species.wolf => 20f,   // ~2 months in game time
+        };
     }
     
     public float GetCooldownTimer()
@@ -135,7 +155,6 @@ public class Mating : MonoBehaviour
             return;
         }
         
-        // Safety check: ensure animals are old enough to mate
         if (animal.age < animal.grownUpAge)
         {
             RejectMate(partner);

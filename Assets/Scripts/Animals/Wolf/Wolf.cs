@@ -7,7 +7,6 @@ public class Wolf : Animal
     public WolfPackManager pack;
     public bool isLeader;
 
-
     protected override void Awake()
     {
         species = Species.wolf;
@@ -19,33 +18,25 @@ public class Wolf : Animal
 
         size = 2f;
 
-        // Speed
         minSpeed = 1.5f;
         maxSpeed = 1.8f;
 
-        // Sight
         minSight = 30f;
         maxSight = 35f;
 
-        // Hearing
         minHearing = 45f;
-        maxHearing = 55f;
+        maxHearing = 45f;
 
-        // Strength
         minStrength = 9f;
         maxStrength = 11f;
 
-        // Health
         minHealth = 20f;
         maxHealth = 40f;
 
-        //attackDamage = 20f;
+        needs.staminaDecreaseRate = 4.5f;
 
         gameObject.tag = "Wolf";
 
         base.Awake();
     }   
-
-
-
 }

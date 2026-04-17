@@ -39,8 +39,8 @@ public class MooseBehaviour : AnimalBehaviour
 
         if (isDead) return;
 
-        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f); // "isWalking" Ã¤r en bool i animator
-        anim.SetBool("isRunning", agent.velocity.magnitude > 3f); // "isRunning" Ã¤r en bool i animator
+        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f);
+        anim.SetBool("isRunning", agent.velocity.magnitude > 3f);
 
         if (CheckForThreats()) return;
 
@@ -127,10 +127,6 @@ public class MooseBehaviour : AnimalBehaviour
             ChangeState(State.Wander);
         }
     }
-
-    //
-    //State: SearchFood
-    //
     protected override void UpdateSearchFood()
     {
         if (FindFood())
@@ -151,7 +147,7 @@ public class MooseBehaviour : AnimalBehaviour
             }
             else
             {
-                Vector2Int targetChunk = DecideFoodTargetChunk();
+                Vector2Int targetChunk = DecideFoodAndWaterTargetChunk();
 
                 if (targetChunk.x != -1)
                 {
@@ -223,7 +219,7 @@ public class MooseBehaviour : AnimalBehaviour
             StatisticsTableManager.instance.MooseSuccessfulEscapeCount++;
 
             enemy = null;
-            agent.speed = animal.speed; // Reset speed to normal
+            agent.speed = animal.speed;
             if (CurrentState == State.Fleeing)
             {
                 ChangeState(State.Wander);
@@ -259,9 +255,6 @@ public class MooseBehaviour : AnimalBehaviour
         bearAttackers.Remove(bear);
     }
 
-    //
-    //State: Death
-
     public override void OnDeath()
     {
         bool wolfKill = wolfAttackers.Count > 0;
@@ -290,58 +283,12 @@ public class MooseBehaviour : AnimalBehaviour
         }
 
         bearAttackers.Clear();
-        // If bear killed the moose, then increase counter in the statistics table
         if (bearKill) 
             StatisticsTableManager.instance.BearSuccessfulHuntsCount++;
 
         base.OnDeath();
     }
 
-    Vector2Int DecideFoodTargetChunk()
-    {
-        float hunger = 1f - needs.howHungryInPercent;
-        Vector2Int bestChunk = new Vector2Int(-1, -1);
-        float bestScore = float.MinValue;
-
-        Vector2Int currentChunk = memory.GetChunk(transform.position);
-        float dangerWeight = Mathf.Lerp(3f, 0.3f, hunger);
-
-        if (SeasonManager.Instance.IsWinter)
-        {
-            dangerWeight *= 1.5f;
-        }
-
-        for (int x = 0; x < memory.GetGridSizeX(); x++)
-        {
-            for (int z = 0; z < memory.GetGridSizeZ(); z++)
-            {
-                float food = memory.GetFoodValue(x, z);
-                float danger = memory.GetDangerValue(x, z);
-                float distance = Vector2.Distance(
-                    new Vector2(x, z),
-                    new Vector2(currentChunk.x, currentChunk.y)
-                );
-
-                float reward = food;
-                float risk = danger * dangerWeight;
-                float effort = distance * 0.3f;
-
-                float randomness = Random.Range(-1f, 1f) * (1f - hunger);
-                float score = reward - risk - effort + randomness;
-
-                if (score > bestScore)
-                {
-                    bestScore = score;
-                    bestChunk = new Vector2Int(x, z);
-                }
-            }
-        }
-
-        if (bestScore < 1f)
-        {
-            return new Vector2Int(-1, -1);
-        }
-
-        return bestChunk;
-    }
+    public float GetAge() { return animal.age; }
+    public float GetGrownUpAge() { return animal.grownUpAge; }
 }
