@@ -6,20 +6,19 @@ using UnityEngine;
 public class AnimalNeeds : MonoBehaviour
 
 {
-
-    public float maxHunger = 100f; //so InformationUI works...?
+    public float maxHunger = 100f;
     public float maxThirst = 100f;
     public float maxHealth = 100f;
     public float maxStamina = 100f;
 
-    public float hungerLevel; //so InformationUI works...?
+    public float hungerLevel;
     public float thirstLevel;
     public float healthLevel;
     public float staminaLevel;
     
     [SerializeField] private float hungerDecreaseRate = 2f;
     [SerializeField] private float thirstDecreaseRate = 1f;
-    [SerializeField] public float staminaDecreaseRate = 1f; // Made public so it can be modified by the animals classes
+    [SerializeField] public float staminaDecreaseRate = 1f;
     [SerializeField] private float staminaIncreaseRate = 1.5f;
 
     public float hibernationMultiplier = 1f;
@@ -27,28 +26,25 @@ public class AnimalNeeds : MonoBehaviour
     public bool isHungry => hungerLevel < maxHunger * 0.8f;
     public bool isHungryBearH => hungerLevel < maxHunger * 0.5f; 
     public bool isThirsty => thirstLevel < maxThirst * 0.5f;
-    public bool isTired => staminaLevel < maxStamina * 0.5f;
+    public bool isTired => staminaLevel < maxStamina * 0.1f;
     public bool noMoreStamina { get; private set; }
     public bool isDead => healthLevel <= 0f;
 
-    // 0 is very hungry/thirsty, 1 is full
     public float howHungryInPercent => hungerLevel/maxHunger;
     public float howThirstyInPercent => thirstLevel/maxThirst;
     private bool IsStarving => howHungryInPercent <= 0f;
     private bool IsDehydrated => howThirstyInPercent <= 0f;
 
-
     
     void Start()
     {
-        hungerLevel = maxHunger; // Start fully satisfied
-        thirstLevel = maxThirst; // Start fully hydrated
-        healthLevel = maxHealth; // Start at full health
-        staminaLevel = maxStamina; // Start at full stamina
-        healthLevel = maxHealth; // Set health
+        hungerLevel = maxHunger;
+        thirstLevel = maxThirst;
+        healthLevel = maxHealth;
+        staminaLevel = maxStamina;
+        healthLevel = maxHealth;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (isDead) return; 
@@ -61,7 +57,6 @@ public class AnimalNeeds : MonoBehaviour
 
         hungerLevel -= hungerDecreaseRate * Time.deltaTime * hungerMultiplier * hibernationMultiplier;
         hungerLevel = Mathf.Clamp(hungerLevel, 0f, maxHunger);
-
 
         float thirstMultiplier = 1f;
 
@@ -88,8 +83,6 @@ public class AnimalNeeds : MonoBehaviour
 
         thirstLevel -= thirstDecreaseRate * Time.deltaTime * thirstMultiplier * hibernationMultiplier;
         thirstLevel = Mathf.Clamp(thirstLevel, 0f, maxThirst);
-
-
     }
 
     private void survivalDamage()
@@ -116,10 +109,9 @@ public class AnimalNeeds : MonoBehaviour
 
     public void Eat(float nutritionValue)
     {
-        hungerLevel += nutritionValue; // Increase hunger level by the nutrition value of the food
-        hungerLevel = Mathf.Clamp(hungerLevel, 0f, maxHunger); // Ensure it doesn't exceed max
+        hungerLevel += nutritionValue; 
+        hungerLevel = Mathf.Clamp(hungerLevel, 0f, maxHunger); 
     }
-
     
     public void drinkFromSource(float chunkOfWater)
     {
@@ -130,7 +122,7 @@ public class AnimalNeeds : MonoBehaviour
     public void TakeDamage(float damage)
     {
         healthLevel -= damage;
-        healthLevel = Mathf.Clamp(healthLevel, 0f, maxHealth); // Ensure it doesn't go below 0
+        healthLevel = Mathf.Clamp(healthLevel, 0f, maxHealth);
     }
 
     public void DrainStamina()
@@ -158,7 +150,10 @@ public class AnimalNeeds : MonoBehaviour
         healthLevel += amount;
         healthLevel = Mathf.Clamp(healthLevel, 0f, maxHealth);
     }
-    
 
-
+    public void RegenerateHealth(float amount)
+    {
+        healthLevel += amount;
+        healthLevel = Mathf.Clamp(healthLevel, 0f, maxHealth);
+    }
 }

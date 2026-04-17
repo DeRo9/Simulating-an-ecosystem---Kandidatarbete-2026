@@ -53,6 +53,7 @@ public class InformationUI : MonoBehaviour
             RectTransform healthBar = healthSlider.GetComponent<RectTransform>();
             healthBar.localScale = new Vector3(healthPerctange, 1f, 1f);
 
+            pregnancySlider.maxValue = 30f;
             Mating matingComponent = current.GetComponent<Mating>();
             float pregnancyValue = matingComponent?.GetPregnancyTimer() ?? 0f;
             pregnancySlider.maxValue = matingComponent?.GetGestationDuration() ?? 30f;
@@ -122,6 +123,4 @@ public class InformationUI : MonoBehaviour
             pregnancySlider.gameObject.SetActive(true);
         }
     }
-
-
 }

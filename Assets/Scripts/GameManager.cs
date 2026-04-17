@@ -217,7 +217,7 @@ public class GameManager : MonoBehaviour
 
                 // Randomize stats from species ranges
                 animal.speed = UnityEngine.Random.Range(animal.minSpeed, animal.maxSpeed);
-                animal.runningSpeed = animal.maxSpeed * 1.5f; 
+                animal.runningSpeed = animal.maxSpeed * 1.75f; // Running is significantly faster than walking
                 animal.sightRange = UnityEngine.Random.Range(animal.minSight, animal.maxSight);
                 animal.hearingRange = UnityEngine.Random.Range(animal.minHearing, animal.maxHearing);
 
@@ -228,11 +228,7 @@ public class GameManager : MonoBehaviour
 
                 animal.strength = UnityEngine.Random.Range(animal.minStrength, animal.maxStrength);
 
-                // Attack damage depends on strength
                 animal.CalculateAttackDamage();
-
-
-
             }
 
             yield return new WaitForEndOfFrame();
@@ -288,6 +284,10 @@ public class GameManager : MonoBehaviour
             StopCoroutine(recordingCoroutine);
             recordingCoroutine = null;
         }
+
+        SimulationResultsCalculator.CalculateStateAverages(herbivoresFolder,SimulationResults.mooseStateAverages);
+        SimulationResultsCalculator.CalculateStateAverages(carnivoreFolder,SimulationResults.wolfStateAverages);
+        SimulationResultsCalculator.CalculateStateAverages(omnivoreFolder,SimulationResults.bearStateAverages);
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;

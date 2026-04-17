@@ -969,7 +969,7 @@ Transform:
   m_GameObject: {fileID: 4266865027632842223}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 293.30356, y: 53.402832, z: 265.72092}
+  m_LocalPosition: {x: 293, y: 53, z: 266}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1091,10 +1091,10 @@ MonoBehaviour:
   waterLayer:
     serializedVersion: 2
     m_Bits: 16
+  foodTarget: {fileID: 0}
+  enemy: {fileID: 0}
+  mating: {fileID: 0}
   huntCooldownTimer: 0
-  carcassLayer:
-    serializedVersion: 2
-    m_Bits: 128
   PreyLayer:
     serializedVersion: 2
     m_Bits: 256
@@ -1167,6 +1167,7 @@ MonoBehaviour:
   pregnancyHungerDrainPerSecond: 0.35
   pregnancyThirstDrainPerSecond: 0.45
   pregnancyStaminaDrainPerSecond: 0.25
+  matingRejectionCooldown: 30
 --- !u!114 &-2968540663438234119
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1226,8 +1227,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.22, y: 0.19, z: 0.49}
-  m_Center: {x: 0, y: 0.36, z: 0.03}
+  m_Size: {x: 0.3, y: 0.4, z: 0.7}
+  m_Center: {x: -0.0000073239207, y: 0.5, z: 0.030000001}
 --- !u!135 &4620774494346928479
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1247,7 +1248,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.5
+  m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!195 &8127107587192447712
 NavMeshAgent:

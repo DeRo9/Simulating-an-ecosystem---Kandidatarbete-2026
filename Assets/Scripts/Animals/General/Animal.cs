@@ -35,24 +35,22 @@ public class Animal : MonoBehaviour
     public float sightRange;
     public float hearingRange;
 
-    // Speed
     public float minSpeed;
     public float maxSpeed;
 
-    // Sight
     public float minSight;
     public float maxSight;
 
-    // Hearing
     public float minHearing;
     public float maxHearing;
     public SphereCollider hearingCollider;
 
-    // Strength
+    public SphereCollider hearingCollider;
+
+
     public float minStrength;
     public float maxStrength;
 
-    // Health
     public float minHealth;
     public float maxHealth;
 
@@ -79,10 +77,7 @@ public class Animal : MonoBehaviour
     protected virtual void Update()
     {
         age += Time.deltaTime * agingSpeed;
-
-        hearingCollider.radius = hearingRange / size; // Wolf has scale of 2 , so hearing range is divided by 2 to keep it consistent with other animals
-
-
+        hearingCollider.radius = hearingRange / size;
     }
     
     public virtual void SetMovementState(bool moving, float speed){
@@ -104,17 +99,10 @@ public class Animal : MonoBehaviour
         }
 
         attackDamage = strength * Random.Range(1f, 1.2f);
-        // add size in equation... somehow also affect
     }
 
     public virtual float CalculateHealth(float minHealth, float maxHealth)
     {
         return Random.Range(minHealth, maxHealth);
-        
-        
     }
-
-
-
-
 }

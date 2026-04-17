@@ -10,7 +10,7 @@ public class Mating : MonoBehaviour
     public GameObject heartPrefab;
     public float heartHeight = 2f;
 
-    public float matingRange = 9f;
+    public float matingRange = 1f;
     public float matingCooldown = 18f;
     private float cooldownTimer = 0f;
 
@@ -36,6 +36,10 @@ public class Mating : MonoBehaviour
     private float pendingBabySpeed;
     private float pendingBabySight;
     private float pendingBabyHearing;
+
+    [Header("Failed Mating")]
+    public float matingRejectionCooldown = 30f;
+    private System.Collections.Generic.List<GameObject> rejectedMates = new System.Collections.Generic.List<GameObject>();
 
     public static event Action<string> OnMating;
 
@@ -75,7 +79,6 @@ public class Mating : MonoBehaviour
         if (SeasonManager.Instance.IsWinter && (animal.species == Species.bear || animal.species == Species.moose))
             return;
 
-        TryFindMate();
     }
 
     public float GetPregnancyTimer()
@@ -103,74 +106,103 @@ public class Mating : MonoBehaviour
 
     private void TryFindMate()
     {
-        Collider[] nearby = Physics.OverlapSphere(transform.position, matingRange);
+        return gestationDuration;
+    }
 
-        foreach (Collider col in nearby)
+    private static float GetGestationDurationForSpecies(Species species)
+    {
+        // Use species-specific gestation lengths here.
+        // The values are in game seconds; adjust the scale if needed.
+        return species switch
         {
+            Species.bear => 80f,  // ~8 months in game time
+            Species.moose => 80f, // ~8 months in game time
+            Species.wolf => 20f,   // ~2 months in game time
+        };
+    }
+    
+    public float GetCooldownTimer()
+    {
+        return cooldownTimer;
+    }
 
-            if (col.gameObject == gameObject)
-                continue;
+    public bool IsRejectedMate(GameObject potential)
+    {
+        return potential != null && rejectedMates.Contains(potential);
+    }
 
-            Animal other = col.GetComponent<Animal>();
-            if (other == null)
-                continue;
-
-            AnimalNeeds otherNeeds = col.GetComponent<AnimalNeeds>();
-            if (otherNeeds == null)
-                continue;
-
-            Mating otherMating = col.GetComponent<Mating>();
-            if (otherMating == null)
-                continue;
-
-            if (otherMating.cooldownTimer > 0f)
-                continue;
-
-            if (other.species != animal.species)
-                continue;
-
-            if (other.age < other.grownUpAge)
-                continue;
-
-            if (other.IsMale == animal.IsMale)
-                continue;
-
-            if (!animal.IsMale && behaviour.isPregnant)
-                continue;
-
-            if (!other.IsMale && otherMating.behaviour.isPregnant)
-                continue;
-
-            if (!HasEnoughNeeds(otherNeeds))
-                continue;
-
-            if (gameObject.GetInstanceID() > col.gameObject.GetInstanceID())
-            continue;
-
-            MateWith(col.gameObject);
-            break;
+    private void RejectMate(GameObject mate)
+    {
+        if (mate != null && !rejectedMates.Contains(mate))
+        {
+            rejectedMates.Add(mate);
+            StartCoroutine(RemoveRejectedMateAfterDelay(mate));
         }
+    }
+
+    private System.Collections.IEnumerator RemoveRejectedMateAfterDelay(GameObject mate)
+    {
+        yield return new WaitForSeconds(matingRejectionCooldown);
+        rejectedMates.Remove(mate);
+    }
+
+    public void TryMate(GameObject partner)
+    {
+        if (partner == null) return;
+        MateWith(partner);
+    }
+    
+    public bool HasEnoughNeeds(AnimalNeeds targetNeeds)
+    {
+        float staminaPercent = targetNeeds.maxStamina <= 0f
+            ? 0f
+            : targetNeeds.staminaLevel / targetNeeds.maxStamina;
+
+        return targetNeeds.howHungryInPercent >= minHungerPercentToMate
+            && targetNeeds.howThirstyInPercent >= minThirstPercentToMate
+            && staminaPercent >= minStaminaPercentToMate
+            && !targetNeeds.isDead;
     }
 
     private void MateWith(GameObject partner)
     {
         if (animalPrefab == null || heartPrefab == null)
+        {
+            RejectMate(partner);
             return;
+        }
+        
+        if (animal.age < animal.grownUpAge)
+        {
+            RejectMate(partner);
+            return;
+        }
 
         Animal partnerAnimal = partner.GetComponent<Animal>();
         Mating partnerMating = partner.GetComponent<Mating>();
         if (partnerAnimal == null || partnerMating == null)
+        {
+            RejectMate(partner);
             return;
+        }
+        
+        if (partnerAnimal.age < partnerAnimal.grownUpAge)
+        {
+            RejectMate(partner);
+            partnerMating.RejectMate(gameObject);
+            return;
+        }
 
-        // Female carries the pregnancy.
         Mating motherMating = animal.IsMale ? partnerMating : this;
         Animal fatherAnimal = animal.IsMale ? animal : partnerAnimal;
-
-        // Always use the mother's pregnancy settings for gestation behavior.
         if (motherMating.usePregnancySystem)
         {
             if (!motherMating.TryStartPregnancy(fatherAnimal))
+            {
+                RejectMate(partner);
+                partnerMating.RejectMate(gameObject);
                 return;
+            }
         }
         else
         {
@@ -290,18 +322,6 @@ public class Mating : MonoBehaviour
         AnimalBehaviour babyBehaviour = baby.GetComponent<AnimalBehaviour>();
         if (babyBehaviour != null)
             babyBehaviour.StartWandering();
-    }
-
-    private bool HasEnoughNeeds(AnimalNeeds targetNeeds)
-    {
-        float staminaPercent = targetNeeds.maxStamina <= 0f
-            ? 0f
-            : targetNeeds.staminaLevel / targetNeeds.maxStamina;
-
-        return targetNeeds.howHungryInPercent >= minHungerPercentToMate
-            && targetNeeds.howThirstyInPercent >= minThirstPercentToMate
-            && staminaPercent >= minStaminaPercentToMate
-            && !targetNeeds.isDead;
     }
 
     private void ApplyReproductionCosts(AnimalNeeds targetNeeds)
