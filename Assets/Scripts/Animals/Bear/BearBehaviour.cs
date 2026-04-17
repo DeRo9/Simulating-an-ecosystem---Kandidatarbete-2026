@@ -373,6 +373,7 @@ public class BearBehaviour : AnimalBehaviour
             if (attackTimer >= attackInterval)
             {
                 anim.SetTrigger("Attack");
+                DamageTarget();
                 attackTimer = 0f;
             }
         }

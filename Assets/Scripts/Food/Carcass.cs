@@ -10,9 +10,12 @@ public class Carcass : MonoBehaviour
 
     public float expireTime = 30f;
 
+    private Collider carcassCollider;
+
     void Awake()
     {
         remainingFeeds = maxFeeds;
+        carcassCollider = GetComponent<Collider>();
     }
 
     void Update()
@@ -23,25 +26,6 @@ public class Carcass : MonoBehaviour
             if (expireTime <= 0f)
             {
                 Destroy(gameObject);
-            }
-        }
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        bool canEatCarcass = other.CompareTag("Wolf") || other.CompareTag("Bear");
-
-        if (canEatCarcass && !(other is SphereCollider))
-        {
-            AnimalNeeds needs = other.GetComponentInParent<AnimalNeeds>();
-
-            if (needs != null && needs.isHungry)
-            {
-                float nutrition = ConsumeOneFeed();
-                if (nutrition > 0f)
-                {
-                    needs.Eat(nutrition);
-                }
             }
         }
     }

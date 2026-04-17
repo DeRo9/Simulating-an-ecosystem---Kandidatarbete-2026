@@ -289,6 +289,10 @@ public class GameManager : MonoBehaviour
             recordingCoroutine = null;
         }
 
+        SimulationResultsCalculator.CalculateStateAverages(herbivoresFolder,SimulationResults.mooseStateAverages);
+        SimulationResultsCalculator.CalculateStateAverages(carnivoreFolder,SimulationResults.wolfStateAverages);
+        SimulationResultsCalculator.CalculateStateAverages(omnivoreFolder,SimulationResults.bearStateAverages);
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 

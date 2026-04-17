@@ -11,36 +11,27 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
     public enum State
     {
-        Idle,           // Resting/waiting
-        Wander,         // Moving aimlessly
-        SearchFood,     // Actively looking for food
-        SearchWater,    // Actively looking for water
-        SearchMate,     // Actively looking for a mate
-        Eat,            // Consuming food (or moving to food location)
-        Drink,          // Consuming water (or moving to water location)
-        Mating,         // In mating process
-        Hunt,           // For animals that hunt, wolves and bears
-        Fleeing,        // Running away from threat
-        Defend,         // Fighting back
-        Hibernate,      // Winter dormancy
-        Dead,           // Dead
+        Idle,     
+        Wander,   
+        SearchFood,   
+        SearchWater,   
+        SearchMate,    
+        Eat,            
+        Drink,   
+        Mating,      
+        Hunt,    
+        Fleeing,
+        Defend, 
+        Hibernate,
+        Dead, 
     }
 
-    [System.Serializable]
     public class StateTracker
     {
-        public float totalTimeInState;
-        public float currentSessionTime;
-        
+        public float timeInState;        
         public void Update(float deltaTime)
         {
-            totalTimeInState += deltaTime;
-            currentSessionTime += deltaTime;
-        }
-        
-        public void ResetSession()
-        {
-            currentSessionTime = 0f;
+            timeInState += deltaTime;
         }
     }
 
@@ -83,7 +74,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
     public GameObject foodTarget;
 
-    public GameObject enemy; // For fleeing from wolves and bears
+    public GameObject enemy;
 
     float fleeRepathTimer = 0f;
     float fleeRepathInterval = 2f;
@@ -92,7 +83,10 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
     private bool isMating = false;
 
-    public Mating mating; 
+    public Mating mating;
+    
+    private float wanderCooldown = 0f;
+    private const float wanderChangeInterval = 3f;
     
     protected virtual void Start()
     {
@@ -109,27 +103,23 @@ public abstract class AnimalBehaviour : MonoBehaviour
             agent.speed = animal.speed;
         }
 
-        // Initialize state trackers for all states
         foreach (State state in System.Enum.GetValues(typeof(State)))
         {
             stateTrackers[state] = new StateTracker();
         }
     }
 
-    // Checks if the moose has reached its destination
     protected bool hasArrived()
     {
         if (agent == null || !agent.isActiveAndEnabled || !agent.isOnNavMesh) return false;
         return !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance;
     }
 
-    // Changes the state of the moose and updates behavior accordingly
     protected void ChangeState(State newState)
     {
-        // Reset the session timer for the previous state
-        if (stateTrackers.ContainsKey(CurrentState))
+        if (CurrentState == State.Wander)
         {
-            stateTrackers[CurrentState].ResetSession();
+            wanderCooldown = 0f;
         }
 
         if ((CurrentState == State.SearchMate || CurrentState == State.Mating) && newState != State.Mating)
@@ -142,7 +132,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         if (agent == null)
             agent = GetComponent<NavMeshAgent>();
 
-        if (agent == null || !agent.enabled) // If the animal has no agent or is dead
+        if (agent == null || !agent.enabled) 
             return;
 
         agent.ResetPath();
@@ -150,7 +140,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         switch (CurrentState)
         {
             case State.Idle:
-                waitTime = UnityEngine.Random.Range(minTimeWaiting, maxTimeWaiting); // Random waiting time between min and max
+                waitTime = UnityEngine.Random.Range(minTimeWaiting, maxTimeWaiting);
                 agent.isStopped = true;
                 break;
             case State.Wander:
@@ -200,7 +190,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
                 HibernationState();
                 break;
             case State.Dead:
-                // Do nothing
                 break;
         }
     }
@@ -257,7 +246,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
             animal.SetMovementState (moving,agent.velocity.magnitude);
         }
 
-        bool isRunning = agent.velocity.magnitude > 3f;  // Match running animation threshold
+        bool isRunning = agent.velocity.magnitude > 3f;
 
         if (isRunning)
         {
@@ -307,7 +296,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
                 UpdateDefend();
                 break;
             case State.Dead:
-                // Do nothing i guess? 
                 break;
         }
     }
@@ -399,7 +387,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
         if (animal != null && animal.species == Species.moose)
         {
-            carcass.Initialize(Species.moose, 10, 10f);
+            carcass.Initialize(Species.moose, 10, 100f);
         }
         
         ChangeState(State.Dead);
@@ -426,6 +414,14 @@ public abstract class AnimalBehaviour : MonoBehaviour
     }
     protected virtual void UpdateWander() 
     { 
+        // Periodically change destination for more varied movement
+        wanderCooldown -= Time.deltaTime;
+        if (wanderCooldown <= 0f)
+        {
+            agent.SetDestination(GetRandomPoints());
+            wanderCooldown = wanderChangeInterval;
+        }
+        
         if (hasArrived())
         {
             ChangeState(State.Idle);
@@ -435,25 +431,44 @@ public abstract class AnimalBehaviour : MonoBehaviour
     { 
         if (foodTarget == null)
         {
-            ChangeState(State.Wander);
+            ChangeState(State.SearchFood);
             return;
         }
 
-        if (hasArrived())
+        if (!hasArrived())
         {
-            agent.isStopped = true;
+            agent.isStopped = false;
+            agent.SetDestination(foodTarget.transform.position);
         }
         else
         {
-            agent.isStopped = false;
-            agent.SetDestination(foodTarget.transform.position);  // Always keep moving toward food
+            agent.isStopped = true;
+            
+            Carcass carcass = foodTarget.GetComponent<Carcass>();
+            if (carcass != null && needs.isHungry)
+            {
+                float nutrition = carcass.ConsumeOneFeed();
+                if (nutrition > 0f)
+                {
+                    needs.Eat(nutrition);
+                    foodTarget = null;
+                    ChangeState(State.Wander);
+                    return;
+                }
+                else
+                {
+                    foodTarget = null;
+                    ChangeState(State.SearchFood);
+                    return;
+                }
+            }
         }
-
+        
         if (!needs.isHungry)
         {
             foodTarget = null;
             ChangeState(State.Wander);
-        }; 
+        }
     }
 
     public void OnFinishedDrinking()
@@ -465,20 +480,16 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
     public void UpdateDrink()
     {
-        // If the water target is null, switch back to wandering
         if (waterTarget == null)
         {
             ChangeState(State.Wander);
             return;
         }
 
-        // If the moose has reached the water, stop moving
         if (hasArrived())
         {
             agent.isStopped = true;
 
-
-            // No longer thirsty
             if (!needs.isThirsty)
             {
                 ChangeState(State.Wander);
@@ -492,13 +503,11 @@ public abstract class AnimalBehaviour : MonoBehaviour
         {
             agent.isStopped = false;
         }
- 
     }    
 
     protected virtual void ApplyPregnancyEffects()
     {
         if (agent == null || animal == null || needs == null) return;
-
         if (isPregnant)
         {
             agent.speed = animal.speed * 0.8f;
@@ -514,7 +523,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         if (needs.noMoreStamina)
         {
             agent.speed = animal.speed;
-            ChangeState(State.Idle); // ADD THIS
+            ChangeState(State.Idle); 
             return;
         }
 
@@ -549,7 +558,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
     {
         Vector3 dirAwayFromEnemy = (transform.position - enemy.transform.position).normalized;
 
-        Vector3[] directionTests = new Vector3[] // Which direction is best to flee to (to avoid walking to edge of terrain)
+        Vector3[] directionTests = new Vector3[]
         {
             dirAwayFromEnemy,
             Quaternion.Euler(0,45,0) * dirAwayFromEnemy,
@@ -618,51 +627,58 @@ public abstract class AnimalBehaviour : MonoBehaviour
         return true;
     }
 
-protected float searchMateCooldown = 0f; // Cooldown timer for changing destination while searching
+protected float searchMateCooldown = 0f;
 
+private bool hasSearchDestination = false;
 protected virtual void UpdateSearchMate()
 {
     if (mateTarget == null)
     {
         mateTarget = FindPotentialMate();
 
-        if (mateTarget == null)
+        if (mateTarget != null)
         {
-            // No mate found - wander using cooldown-based destination changes
-            searchMateCooldown -= Time.deltaTime;
-            if (searchMateCooldown <= 0f)
-            {
-                searchMateCooldown = 2f; // Change destination every 2 seconds for varied paths
-                agent.SetDestination(GetRandomPoints());
-            }
-            return;
+            hasSearchDestination = false; 
         }
     }
 
-    AnimalBehaviour otherBehaviour = mateTarget.GetComponent<AnimalBehaviour>();
-
-    if (otherBehaviour == null || otherBehaviour.isDead)
+    if (mateTarget != null)
     {
-        mateTarget = null;
+        AnimalBehaviour otherBehaviour = mateTarget.GetComponent<AnimalBehaviour>();
+        if (otherBehaviour == null || otherBehaviour.isDead)
+        {
+            mateTarget = null;
+            return;
+        }
+
+        float distance = Vector3.Distance(transform.position, mateTarget.transform.position);
+        if (distance > mating.matingRange)
+        {
+            agent.isStopped = false;
+            agent.SetDestination(mateTarget.transform.position);
+            return;
+        }
+
+        Animal other = mateTarget.GetComponent<Animal>();
+        Mating otherMating = mateTarget.GetComponent<Mating>();
+        if (other != null && otherMating != null && IsCompatibleForMating(other, otherBehaviour, otherMating))
+        {
+            otherBehaviour.AcceptMateRequest(gameObject);
+            ChangeState(State.Mating);
+        }
         return;
     }
 
-    float distance = Vector3.Distance(transform.position, mateTarget.transform.position);
-
-    if (distance > mating.matingRange)
+    if (!hasSearchDestination)
     {
-        agent.isStopped = false;
-        agent.SetDestination(mateTarget.transform.position);
-        return;
+        Vector3 destination = GetRandomPoints();
+        agent.SetDestination(destination);
+        hasSearchDestination = true;
     }
 
-    Animal other = mateTarget.GetComponent<Animal>();
-    Mating otherMating = mateTarget.GetComponent<Mating>();
-
-    if (other != null && otherMating != null && IsCompatibleForMating(other, otherBehaviour, otherMating))
+    if (hasArrived())
     {
-        otherBehaviour.AcceptMateRequest(gameObject);
-        ChangeState(State.Mating);
+        hasSearchDestination = false;
     }
 }
     
@@ -671,23 +687,17 @@ protected virtual void UpdateSearchMate()
         Mating mating = GetComponent<Mating>();
         if (mating == null) return null;
         
-        Collider[] nearby = Physics.OverlapSphere(transform.position, 10f);
-        
+        Collider[] nearby = Physics.OverlapSphere(transform.position, 5f);
         foreach (Collider col in nearby)
         {
             if (col.gameObject == gameObject) continue;
-            
             Animal other = col.GetComponent<Animal>();
             if (other == null) continue;
-            
             if (other.species != animal.species) continue;
             
             AnimalBehaviour otherBehaviour = col.GetComponent<AnimalBehaviour>();
             if (otherBehaviour == null || otherBehaviour.isDead) continue;
-            
-            if (otherBehaviour.CurrentState != State.SearchMate) 
-                continue;
-            
+            if (otherBehaviour.CurrentState != State.SearchMate) continue;
             if (other.IsMale == animal.IsMale) continue;
             if (other.age < other.grownUpAge) continue;
             if (otherBehaviour.isPregnant) continue;
@@ -696,12 +706,10 @@ protected virtual void UpdateSearchMate()
             AnimalNeeds otherNeeds = col.GetComponent<AnimalNeeds>();
             if (otherMating == null || otherNeeds == null) continue;
             if (!otherMating.HasEnoughNeeds(otherNeeds)) continue;
-            
             if (mating.IsRejectedMate(col.gameObject)) continue;
             
             return col.gameObject;
         }
-        
         return null;
     }
     
@@ -771,7 +779,6 @@ protected virtual void UpdateSearchMate()
     {
         if (requester == null || isDead) return;
     
-        // Validate distance - only accept if close enough
         float distanceToRequester = Vector3.Distance(transform.position, requester.transform.position);
         Mating requesterMating = requester.GetComponent<Mating>();
         if (requesterMating == null || distanceToRequester > requesterMating.matingRange * 2f)
@@ -781,27 +788,13 @@ protected virtual void UpdateSearchMate()
         ChangeState(State.Mating);
     }
 
-    public float GetStateTime(State state)
-    {
-        if (stateTrackers.ContainsKey(state))
-        {
-            return stateTrackers[state].currentSessionTime;
-        }
-        return 0f;
-    }
-
     public float GetTotalStateTime(State state)
     {
         if (stateTrackers.ContainsKey(state))
         {
-            return stateTrackers[state].totalTimeInState;
+            return stateTrackers[state].timeInState;
         }
         return 0f;
-    }
-
-    public Dictionary<State, StateTracker> GetAllStateTrackers()
-    {
-        return stateTrackers;
     }
 
     public void InflictDamage(float damage)

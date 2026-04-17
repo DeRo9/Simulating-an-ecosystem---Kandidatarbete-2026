@@ -52,6 +52,7 @@ public class MooseBehaviour : AnimalBehaviour
             case State.Drink:
             case State.SearchFood:
             case State.SearchWater:
+            case State.Defend:
                 return;
         }
 
@@ -140,7 +141,7 @@ public class MooseBehaviour : AnimalBehaviour
 
         memoryDecisionCooldown -= Time.deltaTime;
 
-        if (memoryDecisionCooldown <= 0f)
+        if (memoryDecisionCooldown <= 0f && hasArrived())
         {
             memoryDecisionCooldown = 2f;
 
@@ -162,10 +163,6 @@ public class MooseBehaviour : AnimalBehaviour
                     agent.SetDestination(GetRandomPoints());
                 }
             }
-        }
-        else if (hasArrived())
-        {
-            memoryDecisionCooldown = 0f;
         }
     }
 

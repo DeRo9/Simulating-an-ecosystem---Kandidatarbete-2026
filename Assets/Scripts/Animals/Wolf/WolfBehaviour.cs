@@ -163,7 +163,10 @@ public class WolfBehaviour : AnimalBehaviour
             {
                 waitingForDeathAnimation = false;
                 preyTarget = null; // Clear prey target
-                ChangeState(State.SearchFood); // Go search for food (finds the carcass)
+                if (CurrentState != State.SearchFood)
+                {
+                    ChangeState(State.SearchFood);
+                }
             }
             return;
         }
@@ -367,51 +370,53 @@ public class WolfBehaviour : AnimalBehaviour
             return;
         }
 
+        if (preyTarget != null)
+        {
+            MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
+            if (moose != null && moose.isDead)
+            {
+                notifyDeath();
+                return;
+            }
+        }
+
         if (preyTarget == null)
         {
+            if (waitingForDeathAnimation && deathWaitTimer <= 0f)
+            {
+                waitingForDeathAnimation = false;
+            }
+
             if (waitingForDeathAnimation)
                 return;
             
-            ChangeState(State.Wander);
+            ChangeState(State.Wander); 
             return;
         }
 
-        MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
-        if (moose != null && moose.isDead)
+        agent.speed = animal.runningSpeed;
+        float distance = Vector3.Distance(transform.position, preyTarget.transform.position);
+        
+        if (distance > animal.sightRange)
         {
-            notifyDeath();
+            LostPrey();
             return;
         }
 
-        if (preyTarget != null)
+        if (distance <= attackRange)
         {
-            agent.speed = animal.runningSpeed;
-            float distance = Vector3.Distance(transform.position, preyTarget.transform.position);
-
-            if (distance > animal.sightRange)
-            {
-                LostPrey();
-                return;
-            }
-
-            if (distance <= attackRange)
+            agent.SetDestination(preyTarget.transform.position);
+            AttackOnContact();
+        }
+        else
+        {
+            agent.isStopped = false;
+            repathTimer += Time.deltaTime;
+            if (repathTimer >= repathInterval)
             {
                 agent.SetDestination(preyTarget.transform.position);
-                AttackOnContact();
+                repathTimer = 0f;
             }
-            else
-            {
-                agent.isStopped = false;
-                repathTimer += Time.deltaTime;
-
-                if (repathTimer >= repathInterval)
-                {
-                    agent.SetDestination(preyTarget.transform.position);
-                    repathTimer = 0f;
-                }
-
-            }
-
         }
 
         if (needs.noMoreStamina)
@@ -436,6 +441,7 @@ public class WolfBehaviour : AnimalBehaviour
             if (attackTimer >= attackInterval)
             {
                 anim.SetTrigger("Attack");
+                    
                 attackTimer = 0f;
             }
         }
@@ -445,15 +451,20 @@ public class WolfBehaviour : AnimalBehaviour
         }
     }
 
-    public void DamageMoose()
+    public void DamageTarget()
     {
-        if (preyTarget != null)
+        if (preyTarget == null) return;
+
+        MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
+        if (moose != null && !moose.isDead)
         {
-            MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
-            if (moose != null)
-            {
-                moose.InflictDamage(animal.attackDamage);
-            }
+            moose?.InflictDamage(animal.attackDamage);
+        }
+
+        BearBehaviour bear = preyTarget.GetComponentInParent<BearBehaviour>();
+        if (bear != null && !bear.isDead)
+        {
+            bear?.InflictDamage(animal.attackDamage);
         }
     }
 
@@ -521,10 +532,6 @@ public class WolfBehaviour : AnimalBehaviour
                 }
             }
         }
-        else if (hasArrived())
-        {
-            memoryDecisionCooldown = 0f;
-        }
     }
 
     private Collider[] hits = new Collider[10];
@@ -578,18 +585,25 @@ public class WolfBehaviour : AnimalBehaviour
     public void notifyDeath()
     {
         if (preyTarget == null) return;
+
         MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
         if (moose != null)
         {
             moose.UnregisterWolfAttacker(this);
         }
+
         pendingCarcass = preyTarget.GetComponentInParent<AnimalBehaviour>().gameObject;
-        foodTarget = pendingCarcass; 
+
         preyTarget = null;
         agent.isStopped = true;
+
         waitingForDeathAnimation = true;
         deathWaitTimer = deathWaitDuration;
 
+        if (pendingCarcass != null)
+        {
+           foodTarget = pendingCarcass;
+        }
     }
 
     GameObject GetCarcassRoot(GameObject obj)
@@ -725,7 +739,7 @@ public class WolfBehaviour : AnimalBehaviour
             if (attackTimer >= attackInterval)
             {
                 anim.SetTrigger("Attack");
-                DamageBear();
+                DamageTarget();
                 attackTimer = 0;
             }
         }
@@ -736,19 +750,6 @@ public class WolfBehaviour : AnimalBehaviour
         }
 
     }
-
-    void DamageBear()
-    {
-        if (enemy != null)
-        {
-            BearBehaviour bear = enemy.GetComponentInParent<BearBehaviour>();
-            if (bear != null && !bear.isDead)
-            {
-                bear.InflictDamage(animal.attackDamage);
-            }
-        }
-    }
-
     public override void OnDeath()
     {
         bool bearKill = bearAttackers.Count > 0;

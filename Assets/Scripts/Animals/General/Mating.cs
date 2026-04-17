@@ -134,12 +134,26 @@ public class Mating : MonoBehaviour
             RejectMate(partner);
             return;
         }
+        
+        // Safety check: ensure animals are old enough to mate
+        if (animal.age < animal.grownUpAge)
+        {
+            RejectMate(partner);
+            return;
+        }
 
         Animal partnerAnimal = partner.GetComponent<Animal>();
         Mating partnerMating = partner.GetComponent<Mating>();
         if (partnerAnimal == null || partnerMating == null)
         {
             RejectMate(partner);
+            return;
+        }
+        
+        if (partnerAnimal.age < partnerAnimal.grownUpAge)
+        {
+            RejectMate(partner);
+            partnerMating.RejectMate(gameObject);
             return;
         }
 
