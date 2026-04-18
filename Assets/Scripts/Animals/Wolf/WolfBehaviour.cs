@@ -541,10 +541,10 @@ public class WolfBehaviour : AnimalBehaviour
     private Collider[] hits = new Collider[10];
     bool FindFood()
     {
-        if (foodSearchingCooldown > 0f)
+        if (foodSearchingCooldown > 0f && foodTarget != null)
         {
             foodSearchingCooldown -= Time.deltaTime;
-            return foodTarget != null;
+            return true;
         }
 
         foodSearchingCooldown = 1.5f;
