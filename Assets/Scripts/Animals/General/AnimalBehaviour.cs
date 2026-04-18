@@ -9,6 +9,9 @@ using UnityEngine.AI;
 public abstract class AnimalBehaviour : MonoBehaviour
 {
 
+    public float attackTimer = 0f;
+    public float attackInterval = 1f;
+
     public enum State
     {
         Idle,     
@@ -313,7 +316,10 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
     public bool FindWater()
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange, waterLayer);
+        // Compensate because animals sometimes are too far away from water and never finding it.
+        // If it never finds water, it can never allocate to memory
+        float waterSearchingRadius = animal.sightRange * 2f;
+        Collider[] hits = Physics.OverlapSphere(transform.position, waterSearchingRadius, waterLayer);
 
         float closestDistance = Mathf.Infinity;
         GameObject closestWater = null;
@@ -438,7 +444,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         else
         {
             agent.isStopped = true;
-            
+
             Carcass carcass = foodTarget.GetComponent<Carcass>();
             if (carcass != null && needs.isHungry)
             {
@@ -458,8 +464,21 @@ public abstract class AnimalBehaviour : MonoBehaviour
                     return;
                 }
             }
+            else
+            {
+                foodTarget = null;
+                ChangeState(State.SearchFood);
+                return;
+            }
+        }
+        if (!needs.isHungry)
+        {
+            foodTarget = null;
+            ChangeState(State.Wander);
+        }
 
             //Unsure if this is good but handles cases when the animal for some reason cannot eat food!!!!
+            /*
             else if (carcass == null && needs.isHungry && foodTarget != null)
             {
                 needs.Eat(20f);
@@ -468,20 +487,8 @@ public abstract class AnimalBehaviour : MonoBehaviour
                 needs.RegenerateHealth(20f);
                 ChangeState(State.Wander);
                 return;
-            }
-            else
-            {
-                foodTarget = null;
-                ChangeState(State.SearchFood);
-                return;
-            }
-        }
-        
-        if (!needs.isHungry)
-        {
-            foodTarget = null;
-            ChangeState(State.Wander);
-        }
+            }*/
+   
     }
 
     public void OnFinishedDrinking()
@@ -809,7 +816,7 @@ protected virtual void UpdateSearchMate()
         return 0f;
     }
 
-    public void InflictDamage(float damage)
+    public virtual void InflictDamage(float damage)
     {
         needs.TakeDamage(damage);
     }

@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 public class MooseBehaviour : AnimalBehaviour
 {
@@ -38,9 +37,6 @@ public class MooseBehaviour : AnimalBehaviour
         base.Update();
 
         if (isDead) return;
-
-        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f);
-        anim.SetBool("isRunning", agent.velocity.magnitude > 3f);
 
         if (CheckForThreats()) return;
         // Update animation based on movement
@@ -160,32 +156,12 @@ public class MooseBehaviour : AnimalBehaviour
                 else
                 {
                     agent.SetDestination(GetRandomPoints());
-                    memoryDecisionCooldown = 2f; // decide every 2 sec
 
                     if (UnityEngine.Random.value < 0.2f) // 20% chance for exploration instead of memory
                     {
                         ChangeState(State.Wander);
                         return;
-                    }
-
-            
-
-                    Vector2Int targetChunk = DecideFoodTargetChunk();
-
-                    if (targetChunk.x != -1)
-                    {
-                        Vector3 targetPos = memory.GetRandomPointInChunk(targetChunk);
-
-                        if (agent.isOnNavMesh)
-                        {
-                            agent.SetDestination(targetPos);
-                            ChangeState(State.Wander);
-                        }
-                    }
-                    else
-                    {
-                        ChangeState(State.Wander); 
-                    }
+                    }     
                 }
             }
         }
@@ -239,6 +215,79 @@ public class MooseBehaviour : AnimalBehaviour
     {
         enemy = predator;
         ChangeState(State.Fleeing);
+    }
+
+    public override void InflictDamage(float damage)
+    {
+        base.InflictDamage(damage);
+
+        if (animal.age < animal.grownUpAge) return; // Calves should not attack back
+        if (wolfAttackers.Count >= 5) return; // If there are multiple wolves attacking, the moose should focus on escaping rather than fighting back
+
+        if (CurrentState == State.Fleeing) // Only fight back if there is under 5 wolf attacking, if there are more, focus on escaping
+            ChangeState(State.Defend);
+    }
+
+    protected override void DefendState()
+    {
+        agent.isStopped = false;
+        agent.speed = animal.runningSpeed;
+    }
+
+    protected override void UpdateDefend()
+    {
+        if(wolfAttackers.Count >= 5) // More than 5 wolves attacking, focus on fleeing
+        {
+            ChangeState(State.Fleeing);
+            return;
+        }
+
+        if (enemy == null || wolfAttackers.Count == 0) // No more attackers, go back to normal behavior
+        {
+            ChangeState(State.Wander);
+            return;
+        }
+
+        WolfBehaviour wolf = enemy.GetComponentInParent<WolfBehaviour>();
+        if (wolf != null && wolf.isDead) 
+        {
+            enemy = null;
+            ChangeState(State.Wander);
+            return;
+        }
+
+
+        float distanceToWolf = Vector3.Distance(transform.position, enemy.transform.position);
+
+        if (distanceToWolf < 3.5f)  // Hard coded attack range
+        { 
+            agent.isStopped = true;
+            attackTimer += Time.deltaTime;
+
+            if(attackTimer >= attackInterval)
+            {
+                anim.SetTrigger("Attack");
+                DamageTarget();
+                attackTimer = 0f;
+            }
+        } else
+        {
+            agent.isStopped = false;
+            agent.SetDestination(enemy.transform.position);
+        }
+
+    }
+
+    public void DamageTarget()
+    {
+        if (isDead) return;
+        if (enemy == null) return;
+
+        WolfBehaviour wolf = enemy.GetComponentInParent<WolfBehaviour>();
+        if (wolf != null && !wolf.isDead)
+        {
+            wolf?.InflictDamage(animal.attackDamage);
+        }
     }
 
     public void OnNoLongerHunted(GameObject predator)

@@ -20,9 +20,6 @@ public class WolfBehaviour : AnimalBehaviour
     float repathTimer = 0f;
     float repathInterval = 0.5f;
 
-    float attackTimer = 0f;
-    float attackInterval = 1f;
-
     float foodSearchingCooldown;
     float needsEvalCooldown = 0f;
 
@@ -187,6 +184,9 @@ public class WolfBehaviour : AnimalBehaviour
 
         if (CheckForThreats()) return;
 
+        if (huntCooldownTimer > 0)
+            huntCooldownTimer -= Time.deltaTime;
+
         switch (CurrentState)
         {
             case State.Hunt:
@@ -206,6 +206,7 @@ public class WolfBehaviour : AnimalBehaviour
             needsEvalCooldown = 1f;
             EvaluateNeeds();
         }
+
     }
 
     private bool CheckForThreats()
@@ -364,6 +365,8 @@ public class WolfBehaviour : AnimalBehaviour
     protected override void UpdateHunt()
     {
 
+        if (isDead) return;
+
         if (needs.noMoreStamina)
         {
             LostPrey();
@@ -454,6 +457,7 @@ public class WolfBehaviour : AnimalBehaviour
 
     public void DamageTarget()
     {
+        if (isDead) return;
         if (preyTarget == null) return;
 
         MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
@@ -526,8 +530,6 @@ public class WolfBehaviour : AnimalBehaviour
                 {
                     Vector3 targetPos = memory.GetRandomPointInChunk(targetChunk);
                     agent.SetDestination(targetPos);
-                    needs.Eat(nutrition);
-                    needs.RegenerateHealth(20f); // Regenerate some health upon eating carcass
                 }
                 else
                 {
@@ -540,10 +542,10 @@ public class WolfBehaviour : AnimalBehaviour
     private Collider[] hits = new Collider[10];
     bool FindFood()
     {
-        if (foodSearchingCooldown > 0f)
+        if (foodSearchingCooldown > 0f && foodTarget != null)
         {
             foodSearchingCooldown -= Time.deltaTime;
-            return foodTarget != null;
+            return true;
         }
 
         foodSearchingCooldown = 1.5f;
@@ -662,6 +664,7 @@ public class WolfBehaviour : AnimalBehaviour
         if (bear != null && bear.isDead)
         {
             enemy = null;
+            preyTarget = null;
             agent.speed = animal.speed;
             ChangeState(State.Wander);
             return;
@@ -672,6 +675,8 @@ public class WolfBehaviour : AnimalBehaviour
             ChangeState(State.Fleeing);
             return;
         }
+
+        preyTarget = enemy;
 
         float distanceToBear = Vector3.Distance(transform.position, enemy.transform.position);
 

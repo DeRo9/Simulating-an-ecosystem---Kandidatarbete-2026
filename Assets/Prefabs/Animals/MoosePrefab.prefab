@@ -578,7 +578,7 @@ MonoBehaviour:
   viewAngle: 150
   viewLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1
 --- !u!114 &4130331568563197886
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -630,6 +630,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43822846721fc00429de0d4e4ddf67a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MooseBehaviour
+  attackTimer: 0
+  attackInterval: 1
   CurrentState: 0
   minTimeWaiting: 2
   maxTimeWaiting: 5

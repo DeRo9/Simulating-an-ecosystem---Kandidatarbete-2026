@@ -72,7 +72,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a0df2e1b7fa199469a324bd22d04c32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FoodItem
-  nutritionValue: 25
+  nutritionValue: 50
 --- !u!1001 &656853691868448514
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -150,10 +150,4 @@ public class AnimalNeeds : MonoBehaviour
         healthLevel += amount;
         healthLevel = Mathf.Clamp(healthLevel, 0f, maxHealth);
     }
-
-    public void RegenerateHealth(float amount)
-    {
-        healthLevel += amount;
-        healthLevel = Mathf.Clamp(healthLevel, 0f, maxHealth);
-    }
 }
