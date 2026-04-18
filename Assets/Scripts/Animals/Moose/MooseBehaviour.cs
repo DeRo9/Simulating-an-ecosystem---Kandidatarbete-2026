@@ -263,6 +263,10 @@ public class MooseBehaviour : AnimalBehaviour
     public override void OnDeath(bool killedByPredator = false)
     {
         bool wolfKill = wolfAttackers.Count > 0;
+        bool packKill = wolfAttackers.Exists(w => {
+            Wolf wolfComp = w?.GetComponent<Wolf>();
+            return wolfComp != null && wolfComp.pack != null && wolfComp.pack.countCurrentPackSize() > 1;
+        });
 
         foreach (WolfBehaviour wolf in wolfAttackers.ToList())
         {
@@ -275,7 +279,10 @@ public class MooseBehaviour : AnimalBehaviour
         wolfAttackers.Clear();
 
         if (wolfKill)
+        {
             StatisticsTableManager.instance.WolfSuccessfulHuntsCount++;
+            if (packKill) StatisticsTableManager.instance.PackHuntSuccessCount++;
+        }
 
         bool bearKill = bearAttackers.Count > 0; 
         

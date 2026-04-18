@@ -34,6 +34,12 @@ public class AdvancedStatsUI : MonoBehaviour
     public TextMeshProUGUI moosePlantMealsLabel;
     public TextMeshProUGUI wolfCarcassLabel;
 
+    [Header("Pack Behavior")]
+    public TextMeshProUGUI packsFormedLabel;
+    public TextMeshProUGUI packHuntAttemptsLabel;
+    public TextMeshProUGUI packHuntSuccessLabel;
+    public TextMeshProUGUI packHuntSuccessRateLabel;
+
     void Start()
     {
         int finalBears = SimulationResults.bearsHistory.Count > 0 ? SimulationResults.bearsHistory[SimulationResults.bearsHistory.Count - 1] : 0;
@@ -66,5 +72,14 @@ public class AdvancedStatsUI : MonoBehaviour
         if (bearAnimalPreyLabel != null) bearAnimalPreyLabel.SetText("{0}", StatisticsTableManager.instance.BearAnimalPreyCount);
         if (moosePlantMealsLabel != null) moosePlantMealsLabel.SetText("{0}", StatisticsTableManager.instance.MoosePlantMealsCount);
         if (wolfCarcassLabel != null) wolfCarcassLabel.SetText("{0}", StatisticsTableManager.instance.WolfCarcassCount);
+
+        if (packsFormedLabel != null) packsFormedLabel.SetText("{0}", StatisticsTableManager.instance.PacksFormedCount);
+        if (packHuntAttemptsLabel != null) packHuntAttemptsLabel.SetText("{0}", StatisticsTableManager.instance.PackHuntAttemptsCount);
+        if (packHuntSuccessLabel != null) packHuntSuccessLabel.SetText("{0}", StatisticsTableManager.instance.PackHuntSuccessCount);
+
+        float packSuccessRate = StatisticsTableManager.instance.PackHuntAttemptsCount > 0
+            ? Mathf.Round(((float)StatisticsTableManager.instance.PackHuntSuccessCount / StatisticsTableManager.instance.PackHuntAttemptsCount) * 100f)
+            : 0f;
+        if (packHuntSuccessRateLabel != null) packHuntSuccessRateLabel.SetText("{0}%", packSuccessRate);
     }
 }
