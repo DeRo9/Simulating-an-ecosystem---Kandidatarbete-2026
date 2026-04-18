@@ -40,6 +40,17 @@ public class AdvancedStatsUI : MonoBehaviour
     public TextMeshProUGUI packHuntSuccessLabel;
     public TextMeshProUGUI packHuntSuccessRateLabel;
 
+    [Header("Average Needs at End (%)")]
+    public TextMeshProUGUI bearAvgHungerLabel;
+    public TextMeshProUGUI bearAvgThirstLabel;
+    public TextMeshProUGUI bearAvgStaminaLabel;
+    public TextMeshProUGUI wolfAvgHungerLabel;
+    public TextMeshProUGUI wolfAvgThirstLabel;
+    public TextMeshProUGUI wolfAvgStaminaLabel;
+    public TextMeshProUGUI mooseAvgHungerLabel;
+    public TextMeshProUGUI mooseAvgThirstLabel;
+    public TextMeshProUGUI mooseAvgStaminaLabel;
+
     void Start()
     {
         int finalBears = SimulationResults.bearsHistory.Count > 0 ? SimulationResults.bearsHistory[SimulationResults.bearsHistory.Count - 1] : 0;
@@ -81,5 +92,17 @@ public class AdvancedStatsUI : MonoBehaviour
             ? Mathf.Round(((float)StatisticsTableManager.instance.PackHuntSuccessCount / StatisticsTableManager.instance.PackHuntAttemptsCount) * 100f)
             : 0f;
         if (packHuntSuccessRateLabel != null) packHuntSuccessRateLabel.SetText("{0}%", packSuccessRate);
+
+        if (bearAvgHungerLabel != null) bearAvgHungerLabel.SetText("{0}%", SimulationResults.bearAvgHunger);
+        if (bearAvgThirstLabel != null) bearAvgThirstLabel.SetText("{0}%", SimulationResults.bearAvgThirst);
+        if (bearAvgStaminaLabel != null) bearAvgStaminaLabel.SetText("{0}%", SimulationResults.bearAvgStamina);
+
+        if (wolfAvgHungerLabel != null) wolfAvgHungerLabel.SetText("{0}%", SimulationResults.wolfAvgHunger);
+        if (wolfAvgThirstLabel != null) wolfAvgThirstLabel.SetText("{0}%", SimulationResults.wolfAvgThirst);
+        if (wolfAvgStaminaLabel != null) wolfAvgStaminaLabel.SetText("{0}%", SimulationResults.wolfAvgStamina);
+
+        if (mooseAvgHungerLabel != null) mooseAvgHungerLabel.SetText("{0}%", SimulationResults.mooseAvgHunger);
+        if (mooseAvgThirstLabel != null) mooseAvgThirstLabel.SetText("{0}%", SimulationResults.mooseAvgThirst);
+        if (mooseAvgStaminaLabel != null) mooseAvgStaminaLabel.SetText("{0}%", SimulationResults.mooseAvgStamina);
     }
 }

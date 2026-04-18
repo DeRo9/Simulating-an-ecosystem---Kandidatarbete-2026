@@ -289,6 +289,20 @@ public class GameManager : MonoBehaviour
         SimulationResultsCalculator.CalculateStateAverages(carnivoreFolder,SimulationResults.wolfStateAverages);
         SimulationResultsCalculator.CalculateStateAverages(omnivoreFolder,SimulationResults.bearStateAverages);
 
+        SimulationResultsCalculator.CalculateNeedsAverages(omnivoreFolder, out SimulationResults.bearAvgHunger, out SimulationResults.bearAvgThirst, out SimulationResults.bearAvgStamina);
+        SimulationResultsCalculator.CalculateNeedsAverages(carnivoreFolder, out SimulationResults.wolfAvgHunger, out SimulationResults.wolfAvgThirst, out SimulationResults.wolfAvgStamina);
+        SimulationResultsCalculator.CalculateNeedsAverages(herbivoresFolder, out SimulationResults.mooseAvgHunger, out SimulationResults.mooseAvgThirst, out SimulationResults.mooseAvgStamina);
+
+        SimulationResults.bearAvgHunger = Average(SimulationResults.bearHungerSamples);
+        SimulationResults.bearAvgThirst = Average(SimulationResults.bearThirstSamples);
+        SimulationResults.bearAvgStamina = Average(SimulationResults.bearStaminaSamples);
+        SimulationResults.wolfAvgHunger = Average(SimulationResults.wolfHungerSamples);
+        SimulationResults.wolfAvgThirst = Average(SimulationResults.wolfThirstSamples);
+        SimulationResults.wolfAvgStamina = Average(SimulationResults.wolfStaminaSamples);
+        SimulationResults.mooseAvgHunger = Average(SimulationResults.mooseHungerSamples);
+        SimulationResults.mooseAvgThirst = Average(SimulationResults.mooseThirstSamples);
+        SimulationResults.mooseAvgStamina = Average(SimulationResults.mooseStaminaSamples);
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
@@ -304,6 +318,30 @@ public class GameManager : MonoBehaviour
         SimulationResults.bearsHistory.Add(omnivoreFolder.childCount);
         SimulationResults.wolvesHistory.Add(carnivoreFolder.childCount);
         SimulationResults.mooseHistory.Add(herbivoresFolder.childCount);
+
+        float h, t, s;
+        SimulationResultsCalculator.CalculateNeedsAverages(omnivoreFolder, out h, out t, out s);
+        SimulationResults.bearHungerSamples.Add(h);
+        SimulationResults.bearThirstSamples.Add(t);
+        SimulationResults.bearStaminaSamples.Add(s);
+
+        SimulationResultsCalculator.CalculateNeedsAverages(carnivoreFolder, out h, out t, out s);
+        SimulationResults.wolfHungerSamples.Add(h);
+        SimulationResults.wolfThirstSamples.Add(t);
+        SimulationResults.wolfStaminaSamples.Add(s);
+
+        SimulationResultsCalculator.CalculateNeedsAverages(herbivoresFolder, out h, out t, out s);
+        SimulationResults.mooseHungerSamples.Add(h);
+        SimulationResults.mooseThirstSamples.Add(t);
+        SimulationResults.mooseStaminaSamples.Add(s);
+    }
+
+    float Average(System.Collections.Generic.List<float> list)
+    {
+        if (list.Count == 0) return 0f;
+        float sum = 0f;
+        foreach (float v in list) sum += v;
+        return Mathf.Round(sum / list.Count);
     }
 
     private IEnumerator RecordPopulationCoroutine()
