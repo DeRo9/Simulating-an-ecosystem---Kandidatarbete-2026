@@ -260,7 +260,7 @@ public class MooseBehaviour : AnimalBehaviour
         bearAttackers.Remove(bear);
     }
 
-    public override void OnDeath()
+    public override void OnDeath(bool killedByPredator = false)
     {
         bool wolfKill = wolfAttackers.Count > 0;
 
@@ -291,7 +291,7 @@ public class MooseBehaviour : AnimalBehaviour
         if (bearKill) 
             StatisticsTableManager.instance.BearSuccessfulHuntsCount++;
 
-        base.OnDeath();
+        base.OnDeath(killedByPredator: wolfKill || bearKill);
     }
 
     public float GetAge() { return animal.age; }

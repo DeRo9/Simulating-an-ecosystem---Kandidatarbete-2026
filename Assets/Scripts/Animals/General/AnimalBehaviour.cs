@@ -355,10 +355,32 @@ public abstract class AnimalBehaviour : MonoBehaviour
         }
     }
 
-    public virtual void OnDeath() 
+    public virtual void OnDeath(bool killedByPredator = false) 
     {
         if (isDead) return;
         isDead = true;
+
+        if (StatisticsTableManager.instance != null)
+        {
+            if (animal.species == Species.bear)
+            {
+                StatisticsTableManager.instance.BearDeathCount++;
+                if (killedByPredator) StatisticsTableManager.instance.BearPredationCount++;
+                else StatisticsTableManager.instance.BearStarvationCount++;
+            }
+            else if (animal.species == Species.wolf)
+            {
+                StatisticsTableManager.instance.WolfDeathCount++;
+                if (killedByPredator) StatisticsTableManager.instance.WolfPredationCount++;
+                else StatisticsTableManager.instance.WolfStarvationCount++;
+            }
+            else if (animal.species == Species.moose)
+            {
+                StatisticsTableManager.instance.MooseDeathCount++;
+                if (killedByPredator) StatisticsTableManager.instance.MoosePredationCount++;
+                else StatisticsTableManager.instance.MooseStarvationCount++;
+            }
+        }
 
         agent.isStopped = true;
         agent.enabled = false;

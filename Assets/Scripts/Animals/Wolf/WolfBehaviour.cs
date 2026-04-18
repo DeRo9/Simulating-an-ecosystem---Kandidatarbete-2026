@@ -698,7 +698,7 @@ public class WolfBehaviour : AnimalBehaviour
         }
 
     }
-    public override void OnDeath()
+    public override void OnDeath(bool killedByPredator = false)
     {
         bool bearKill = bearAttackers.Count > 0;
 
@@ -727,7 +727,7 @@ public class WolfBehaviour : AnimalBehaviour
         wolf.pack = null;
         wolf.isLeader = false;
 
-        base.OnDeath();
+        base.OnDeath(killedByPredator: bearKill);
     }
 
     public void RegisterBearAttacker(BearBehaviour bear)
