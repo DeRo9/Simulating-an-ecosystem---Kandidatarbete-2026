@@ -101,6 +101,9 @@ public class WolfPackFormation : MonoBehaviour
 
         wolf.isLeader = true;
         memberWolf.isLeader = false;
+
+        if (StatisticsTableManager.instance != null)
+            StatisticsTableManager.instance.PacksFormedCount++;
     }
 
     private void JoinPack(WolfPackManager existingPack)

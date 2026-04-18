@@ -16,7 +16,9 @@ public class FoodTree : MonoBehaviour
             if (needs != null && needs.isHungry)
             {
                 needs.Eat(nutritionValue);
-                
+
+                if (StatisticsTableManager.instance != null)
+                    StatisticsTableManager.instance.MoosePlantMealsCount++;
             }
             
         }

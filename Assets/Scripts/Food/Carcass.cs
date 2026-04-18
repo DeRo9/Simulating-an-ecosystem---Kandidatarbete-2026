@@ -4,15 +4,18 @@ public class Carcass : MonoBehaviour
 {
     public Species species;
     public int maxFeeds = 10;
-    public float nutritionPerFeed = 50f;
+    public float nutritionPerFeed = 100f;
 
     public int remainingFeeds;
 
     public float expireTime = 30f;
 
+    private Collider carcassCollider;
+
     void Awake()
     {
         remainingFeeds = maxFeeds;
+        carcassCollider = GetComponent<Collider>();
     }
 
     void Update()

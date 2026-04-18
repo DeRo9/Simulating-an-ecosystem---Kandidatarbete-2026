@@ -3926,6 +3926,25 @@ MonoBehaviour:
   BearhuntFailuresCount: 0
   BearSuccessfulHuntsCount: 0
   MooseSuccessfulEscapeCount: 0
+  BearBirthCount: 0
+  WolfBirthCount: 0
+  MooseBirthCount: 0
+  BearDeathCount: 0
+  WolfDeathCount: 0
+  MooseDeathCount: 0
+  BearStarvationCount: 0
+  WolfStarvationCount: 0
+  MooseStarvationCount: 0
+  BearPredationCount: 0
+  WolfPredationCount: 0
+  MoosePredationCount: 0
+  BearPlantMealsCount: 0
+  BearAnimalPreyCount: 0
+  MoosePlantMealsCount: 0
+  WolfCarcassCount: 0
+  PacksFormedCount: 0
+  PackHuntAttemptsCount: 0
+  PackHuntSuccessCount: 0
 --- !u!1 &307446135
 GameObject:
   m_ObjectHideFlags: 0
