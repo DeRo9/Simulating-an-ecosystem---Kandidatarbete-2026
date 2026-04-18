@@ -1621,6 +1621,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 181f1ed6efdce1949bfc732169fb1f4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BearBehaviour
+  attackTimer: 0
+  attackInterval: 1
   CurrentState: 0
   minTimeWaiting: 2
   maxTimeWaiting: 5
@@ -1630,13 +1632,10 @@ MonoBehaviour:
   waterLayer:
     serializedVersion: 2
     m_Bits: 16
+  foodTarget: {fileID: 0}
+  enemy: {fileID: 0}
+  mating: {fileID: 0}
   huntCooldownTimer: 0
-  foodLayer:
-    serializedVersion: 2
-    m_Bits: 1024
-  carcassLayer:
-    serializedVersion: 2
-    m_Bits: 128
   PreyLayer:
     serializedVersion: 2
     m_Bits: 320
@@ -1708,6 +1707,7 @@ MonoBehaviour:
   pregnancyHungerDrainPerSecond: 0.35
   pregnancyThirstDrainPerSecond: 0.45
   pregnancyStaminaDrainPerSecond: 0.25
+  matingRejectionCooldown: 30
 --- !u!114 &-9080538929342593657
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1840,7 +1840,7 @@ MonoBehaviour:
   viewAngle: 120
   viewLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1
 --- !u!1 &8881512897072243634
 GameObject:
   m_ObjectHideFlags: 0

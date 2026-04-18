@@ -9,6 +9,9 @@ using UnityEngine.AI;
 public abstract class AnimalBehaviour : MonoBehaviour
 {
 
+    public float attackTimer = 0f;
+    public float attackInterval = 1f;
+
     public enum State
     {
         Idle,     
@@ -813,7 +816,7 @@ protected virtual void UpdateSearchMate()
         return 0f;
     }
 
-    public void InflictDamage(float damage)
+    public virtual void InflictDamage(float damage)
     {
         needs.TakeDamage(damage);
     }

@@ -22,9 +22,6 @@ public class BearBehaviour : AnimalBehaviour
     float repathTimer = 0f;
     float repathInterval = 0.3f;
 
-    float attackTimer = 0f;
-    float attackInterval = 1f;
-
     float foodSearchingCooldown;
     float needsEvalCooldown = 0f;
 
@@ -90,7 +87,10 @@ public class BearBehaviour : AnimalBehaviour
         }
 
         if (CheckForThreats()) return;
-        
+
+        if (huntCooldownTimer > 0)
+            huntCooldownTimer -= Time.deltaTime;
+
         switch (CurrentState)
         {
             case State.Hunt:
@@ -110,9 +110,6 @@ public class BearBehaviour : AnimalBehaviour
             needsEvalCooldown = 1f;
             EvaluateNeeds();
         }
-
-        if (huntCooldownTimer > 0)
-            huntCooldownTimer -= Time.deltaTime;
     }
 
     private bool CheckForThreats()
@@ -431,6 +428,7 @@ public class BearBehaviour : AnimalBehaviour
 
     public void DamageTarget()
     {
+        if (isDead) return;
         if (preyTarget == null) return;
 
         MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
