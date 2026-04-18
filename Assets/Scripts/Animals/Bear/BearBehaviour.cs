@@ -248,7 +248,7 @@ public class BearBehaviour : AnimalBehaviour
 
     bool FindPrey()
     {
-
+        if (huntCooldownTimer > 0f) return false;
         if (preyTarget != null) return true;
 
         Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange, PreyLayer);
@@ -506,8 +506,6 @@ public class BearBehaviour : AnimalBehaviour
                 {
                     Vector3 targetPos = memory.GetRandomPointInChunk(targetChunk);
                     agent.SetDestination(targetPos);
-                    needs.Eat(nutrition);
-                    needs.RegenerateHealth(20f); // Regenerate some health upon eating carcass
                 }
                 else
                 {

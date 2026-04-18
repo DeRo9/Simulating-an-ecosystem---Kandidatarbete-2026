@@ -206,6 +206,9 @@ public class WolfBehaviour : AnimalBehaviour
             needsEvalCooldown = 1f;
             EvaluateNeeds();
         }
+
+        if (huntCooldownTimer > 0)
+            huntCooldownTimer -= Time.deltaTime;
     }
 
     private bool CheckForThreats()
@@ -526,8 +529,6 @@ public class WolfBehaviour : AnimalBehaviour
                 {
                     Vector3 targetPos = memory.GetRandomPointInChunk(targetChunk);
                     agent.SetDestination(targetPos);
-                    needs.Eat(nutrition);
-                    needs.RegenerateHealth(20f); // Regenerate some health upon eating carcass
                 }
                 else
                 {
@@ -662,6 +663,7 @@ public class WolfBehaviour : AnimalBehaviour
         if (bear != null && bear.isDead)
         {
             enemy = null;
+            preyTarget = null;
             agent.speed = animal.speed;
             ChangeState(State.Wander);
             return;
@@ -672,6 +674,8 @@ public class WolfBehaviour : AnimalBehaviour
             ChangeState(State.Fleeing);
             return;
         }
+
+        preyTarget = enemy;
 
         float distanceToBear = Vector3.Distance(transform.position, enemy.transform.position);
 

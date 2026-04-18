@@ -93,7 +93,7 @@ public class Mating : MonoBehaviour
 
     private static float GetGestationDurationForSpecies(Species species)
     {
-        // Use species-specific gestation lengths here.
+        // Uses species-specific gestation lengths here.
         // The values are in game seconds; adjust the scale if needed.
         return species switch
         {
@@ -104,21 +104,9 @@ public class Mating : MonoBehaviour
         };
     }
 
-    private void TryFindMate()
+    private float TryFindMate()
     {
         return gestationDuration;
-    }
-
-    private static float GetGestationDurationForSpecies(Species species)
-    {
-        // Use species-specific gestation lengths here.
-        // The values are in game seconds; adjust the scale if needed.
-        return species switch
-        {
-            Species.bear => 80f,  // ~8 months in game time
-            Species.moose => 80f, // ~8 months in game time
-            Species.wolf => 20f,   // ~2 months in game time
-        };
     }
     
     public float GetCooldownTimer()

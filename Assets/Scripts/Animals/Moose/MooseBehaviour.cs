@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 public class MooseBehaviour : AnimalBehaviour
 {
@@ -38,9 +37,6 @@ public class MooseBehaviour : AnimalBehaviour
         base.Update();
 
         if (isDead) return;
-
-        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < 3f);
-        anim.SetBool("isRunning", agent.velocity.magnitude > 3f);
 
         if (CheckForThreats()) return;
         // Update animation based on movement
@@ -160,32 +156,12 @@ public class MooseBehaviour : AnimalBehaviour
                 else
                 {
                     agent.SetDestination(GetRandomPoints());
-                    memoryDecisionCooldown = 2f; // decide every 2 sec
 
                     if (UnityEngine.Random.value < 0.2f) // 20% chance for exploration instead of memory
                     {
                         ChangeState(State.Wander);
                         return;
-                    }
-
-            
-
-                    Vector2Int targetChunk = DecideFoodTargetChunk();
-
-                    if (targetChunk.x != -1)
-                    {
-                        Vector3 targetPos = memory.GetRandomPointInChunk(targetChunk);
-
-                        if (agent.isOnNavMesh)
-                        {
-                            agent.SetDestination(targetPos);
-                            ChangeState(State.Wander);
-                        }
-                    }
-                    else
-                    {
-                        ChangeState(State.Wander); 
-                    }
+                    }     
                 }
             }
         }
