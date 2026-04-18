@@ -20,9 +20,6 @@ public class WolfBehaviour : AnimalBehaviour
     float repathTimer = 0f;
     float repathInterval = 0.5f;
 
-    float attackTimer = 0f;
-    float attackInterval = 1f;
-
     float foodSearchingCooldown;
     float needsEvalCooldown = 0f;
 
@@ -187,6 +184,9 @@ public class WolfBehaviour : AnimalBehaviour
 
         if (CheckForThreats()) return;
 
+        if (huntCooldownTimer > 0)
+            huntCooldownTimer -= Time.deltaTime;
+
         switch (CurrentState)
         {
             case State.Hunt:
@@ -207,8 +207,6 @@ public class WolfBehaviour : AnimalBehaviour
             EvaluateNeeds();
         }
 
-        if (huntCooldownTimer > 0)
-            huntCooldownTimer -= Time.deltaTime;
     }
 
     private bool CheckForThreats()
@@ -370,6 +368,8 @@ public class WolfBehaviour : AnimalBehaviour
     protected override void UpdateHunt()
     {
 
+        if (isDead) return;
+
         if (needs.noMoreStamina)
         {
             LostPrey();
@@ -460,6 +460,7 @@ public class WolfBehaviour : AnimalBehaviour
 
     public void DamageTarget()
     {
+        if (isDead) return;
         if (preyTarget == null) return;
 
         MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();

@@ -7,7 +7,7 @@ public class Moose : Animal
     {
         species = Species.moose;
 
-        canAttack = false;
+        canAttack = true;
 
         grownUpAge = 4f;
         oldAge = 8f;
