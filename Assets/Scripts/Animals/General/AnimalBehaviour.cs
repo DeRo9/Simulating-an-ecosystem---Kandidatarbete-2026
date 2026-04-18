@@ -471,6 +471,11 @@ public abstract class AnimalBehaviour : MonoBehaviour
                 if (nutrition > 0f)
                 {
                     needs.Eat(nutrition);
+                    if (StatisticsTableManager.instance != null)
+                    {
+                        if (animal.species == Species.wolf) StatisticsTableManager.instance.WolfCarcassCount++;
+                        else if (animal.species == Species.bear) StatisticsTableManager.instance.BearAnimalPreyCount++;
+                    }
                     foodTarget = null;
                     needs.RegenerateHealth(20f);
                     ChangeState(State.Wander);

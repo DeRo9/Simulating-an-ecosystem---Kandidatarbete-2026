@@ -38,6 +38,12 @@ public class StatisticsTableManager : MonoBehaviour
     public int WolfPredationCount;
     public int MoosePredationCount;
 
+    [Header("Feeding")]
+    public int BearPlantMealsCount;
+    public int BearAnimalPreyCount;
+    public int MoosePlantMealsCount;
+    public int WolfCarcassCount;
+
 
     public static StatisticsTableManager instance { get; private set; } // Persists across scene so that animals can report information.
 
@@ -85,6 +91,11 @@ public class StatisticsTableManager : MonoBehaviour
         BearPredationCount = 0;
         WolfPredationCount = 0;
         MoosePredationCount = 0;
+
+        BearPlantMealsCount = 0;
+        BearAnimalPreyCount = 0;
+        MoosePlantMealsCount = 0;
+        WolfCarcassCount = 0;
     }
 
 }

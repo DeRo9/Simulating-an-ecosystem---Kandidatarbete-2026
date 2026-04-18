@@ -28,6 +28,12 @@ public class AdvancedStatsUI : MonoBehaviour
     public TextMeshProUGUI wolfPredationLabel;
     public TextMeshProUGUI moosePredationLabel;
 
+    [Header("Feeding")]
+    public TextMeshProUGUI bearPlantMealsLabel;
+    public TextMeshProUGUI bearAnimalPreyLabel;
+    public TextMeshProUGUI moosePlantMealsLabel;
+    public TextMeshProUGUI wolfCarcassLabel;
+
     void Start()
     {
         int finalBears = SimulationResults.bearsHistory.Count > 0 ? SimulationResults.bearsHistory[SimulationResults.bearsHistory.Count - 1] : 0;
@@ -55,5 +61,10 @@ public class AdvancedStatsUI : MonoBehaviour
         if (bearPredationLabel != null) bearPredationLabel.SetText("{0}", StatisticsTableManager.instance.BearPredationCount);
         if (wolfPredationLabel != null) wolfPredationLabel.SetText("{0}", StatisticsTableManager.instance.WolfPredationCount);
         if (moosePredationLabel != null) moosePredationLabel.SetText("{0}", StatisticsTableManager.instance.MoosePredationCount);
+
+        if (bearPlantMealsLabel != null) bearPlantMealsLabel.SetText("{0}", StatisticsTableManager.instance.BearPlantMealsCount);
+        if (bearAnimalPreyLabel != null) bearAnimalPreyLabel.SetText("{0}", StatisticsTableManager.instance.BearAnimalPreyCount);
+        if (moosePlantMealsLabel != null) moosePlantMealsLabel.SetText("{0}", StatisticsTableManager.instance.MoosePlantMealsCount);
+        if (wolfCarcassLabel != null) wolfCarcassLabel.SetText("{0}", StatisticsTableManager.instance.WolfCarcassCount);
     }
 }

@@ -24,6 +24,12 @@ public class FoodItem : MonoBehaviour
                 needs.Eat(nutritionValue);
                 needs.RegenerateHealth(20f);
 
+                if (StatisticsTableManager.instance != null)
+                {
+                    if (other.CompareTag("Bear")) StatisticsTableManager.instance.BearPlantMealsCount++;
+                    else if (other.CompareTag("Moose")) StatisticsTableManager.instance.MoosePlantMealsCount++;
+                }
+
                 if (spawner != null)
                 {
                     spawner.RemoveMushroom(gameObject);
