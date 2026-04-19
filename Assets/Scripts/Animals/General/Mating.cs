@@ -173,6 +173,10 @@ public class Mating : MonoBehaviour
             RejectMate(partner);
             return;
         }
+
+        // Guard against multiple males mating with the same female in the same frame
+        if (cooldownTimer > 0f || partnerMating.cooldownTimer > 0f)
+            return;
         
         if (partnerAnimal.age < partnerAnimal.grownUpAge)
         {
