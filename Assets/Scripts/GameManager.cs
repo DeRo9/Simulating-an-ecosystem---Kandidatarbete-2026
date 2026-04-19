@@ -215,19 +215,7 @@ public class GameManager : MonoBehaviour
             
                 animal.age = (float)System.Math.Round(UnityEngine.Random.Range(0f, animal.startingMaxAge), 2);               
 
-                // Randomize stats from species ranges
-                animal.speed = UnityEngine.Random.Range(animal.minSpeed, animal.maxSpeed);
-                animal.runningSpeed = animal.maxSpeed * 1.75f; // Running is significantly faster than walking
-                animal.sightRange = UnityEngine.Random.Range(animal.minSight, animal.maxSight);
-                animal.hearingRange = UnityEngine.Random.Range(animal.minHearing, animal.maxHearing);
-
-                float randomizedHealth = animal.CalculateHealth(animal.minHealth, animal.maxHealth);
-                animal.needs.maxHealth = randomizedHealth;
-                animal.needs.healthLevel = randomizedHealth;
-
-
-                animal.strength = UnityEngine.Random.Range(animal.minStrength, animal.maxStrength);
-
+                animal.InitializeAttributes();
                 animal.CalculateAttackDamage();
             }
 

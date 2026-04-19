@@ -10,30 +10,23 @@ public class Wolf : Animal
     protected override void Awake()
     {
         species = Species.wolf;
+        gameObject.tag = "Wolf";
 
         canAttack = true;
 
         grownUpAge = 2f;
         oldAge = 4f;
 
-        size = 1f;
+        baseSpeed = 1.8f;
 
-        speed = 1.8f;
+        baseSight = 30f;
 
-        minSight = 30f;
-        maxSight = 35f;
+        baseHearing = 45f;
 
-        minHearing = 40f;
-        maxHearing = 45f;
+        baseHealth = 30f;
+        baseStrength = 10f;
 
-        minHealth = 20f;
-        maxHealth = 40f;
-
-        strength = 10f;
-
-        needs.staminaDecreaseRate = 4f;
-
-        gameObject.tag = "Wolf";
+        staminaDecreaseRate = 4f;
 
         base.Awake();
     }   

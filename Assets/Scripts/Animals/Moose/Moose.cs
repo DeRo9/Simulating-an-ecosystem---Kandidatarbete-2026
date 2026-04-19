@@ -6,27 +6,21 @@ public class Moose : Animal
     protected override void Awake()
     {
         species = Species.moose;
+        gameObject.tag = "Moose";
 
         canAttack = true;
 
         grownUpAge = 4f;
         oldAge = 8f;
 
-        size = 1f; 
+        baseSpeed = 2f;
+        baseSight = 25f;
+        baseHearing = 30f;
 
-        speed = 2f;
+        baseHealth = 90f;
+        baseStrength = 14f;
 
-        minSight = 20f;
-        maxSight = 25f;
-
-        minHearing = 25f;
-        maxHearing = 30f;
-
-        health = 90f;
-
-        strength = 14f;
-
-        needs.staminaDecreaseRate = 5f;
+        staminaDecreaseRate = 5f;
 
         base.Awake();
     }

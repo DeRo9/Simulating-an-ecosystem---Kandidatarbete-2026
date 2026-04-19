@@ -6,29 +6,25 @@ public class Bear : Animal
     protected override void Awake()
     {
         species = Species.bear;
+        gameObject.tag = "Bear";
 
         canAttack = true;
 
         grownUpAge = 8f;
         oldAge = 16f;
 
-        size = 1f;
+        baseSpeed = 2f;
 
-        speed = 1.9f;
+        baseSight = 25f;
 
-        minSight = 20f;
-        maxSight = 30f;
+        baseHearing = 40f;
 
-        minHearing = 35f;
-        maxHearing = 40f;
+        baseHealth = 110f;
+        baseStrength = 24f;
 
-        health = 110f;
+        staminaDecreaseRate = 8f;
 
-        strength = 24f;
-
-        needs.staminaDecreaseRate = 8f;
-
-        base.Awake();
+        base.Awake();    
     }   
 
 }

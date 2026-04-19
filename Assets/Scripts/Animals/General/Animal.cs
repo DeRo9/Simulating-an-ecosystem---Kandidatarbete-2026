@@ -33,28 +33,22 @@ public class Animal : MonoBehaviour
     public float sightRange;
     public float hearingRange;
 
-    public float minSpeed;
-    public float maxSpeed;
-
-    public float minSight;
-    public float maxSight;
-
-    public float minHearing;
-    public float maxHearing;
+    public float baseSpeed;
+    public float baseStrength;
+    public float baseHealth;
+    public float baseSight;
+    public float baseHearing;
     public SphereCollider hearingCollider;
 
-
-    public float minStrength;
-    public float maxStrength;
-
-    public float minHealth;
-    public float maxHealth;
 
     [Header("Forces")]
     public float speed;
     public float runningSpeed;
     public float size = 1f;
     public float strength;
+    public float health;
+
+    public float staminaDecreaseRate;
    
 
     [Header("Hearing")]
@@ -68,14 +62,68 @@ public class Animal : MonoBehaviour
     {
         IsMale = Random.value > 0.5f;
         needs = GetComponent<AnimalNeeds>();
+        needs.staminaDecreaseRate = staminaDecreaseRate;
     }
+
+    float attributeUpdateTimer;
 
     protected virtual void Update()
     {
         age += Time.deltaTime * agingSpeed;
-        hearingCollider.radius = hearingRange / size;
+        attributeUpdateTimer += Time.deltaTime;
+
+        if(attributeUpdateTimer >= 3f)
+        {
+            UpdateAttributes();
+            hearingCollider.radius = hearingRange / size;
+            attributeUpdateTimer = 0f;
+        }
     }
-    
+
+    public virtual void UpdateAttributes()
+    {
+        float ageModifier = GetAgeModifier();
+
+        strength = baseStrength * ageModifier * size;
+        health = baseHealth * ageModifier * size;
+        speed = baseSpeed * ageModifier * size;
+        runningSpeed = speed * 1.75f;
+        needs.staminaDecreaseRate = staminaDecreaseRate * size; //smaller animal does net get as tired
+    }
+
+    protected float GetAgeModifier()
+    {
+        if (age < grownUpAge)
+        {
+            return Mathf.Lerp(0.5f, 1f, age / grownUpAge);
+        }
+        else if (age > oldAge)
+        {
+            return 0.8f; 
+        }
+        return 1f;
+    }
+
+    public void InitializeAttributes()
+    {
+        baseHealth *= getVariation();
+        baseStrength *= getVariation();
+        baseSpeed *= getVariation();
+        hearingRange = baseHearing * getVariation();
+        sightRange = baseSight * getVariation();
+        needs.staminaDecreaseRate = staminaDecreaseRate;
+
+        UpdateAttributes();
+
+        needs.healthLevel = health;
+        needs.maxHealth = health;
+    }
+
+    public float getVariation()
+    {
+        return Random.Range(0.85f, 1.15f);
+    }
+
     public virtual void SetMovementState(bool moving, float speed){
         isMoving = moving;
         currentSpeed = speed;
@@ -86,7 +134,6 @@ public class Animal : MonoBehaviour
         return needs.healthLevel;
     }
 
-    float ageModifier = 1f;
     public virtual float CalculateAttackDamage()
     {
         if (!canAttack)
@@ -95,51 +142,6 @@ public class Animal : MonoBehaviour
             return attackDamage;
         }
 
-        float sizeModifier = size;
-
-        if (age < grownUpAge)
-        {
-            ageModifier = 0.8f;
-        }
-        else if (age > oldAge)
-        {
-            ageModifier = 0.8f;
-        }
-
-        float randomRange = Random.Range(0.8f, 1.2f);
-
-        return attackDamage = strength * sizeModifier * ageModifier * randomRange;
+        return attackDamage = strength;
     }
-
-    public virtual float GetMaxHealth()
-    {
-        if (age < grownUpAge)
-        {
-            ageModifier = 0.8f;
-        }
-        else if (age > oldAge)
-        {
-            ageModifier = 0.8f; 
-        }
-
-        float sizeModifier = size;
-        return health * ageModifier * sizeModifier;
-    }
-
-    public virtual float GetSpeed()
-    {
-        if (age < grownUpAge)
-        {
-            ageModifier = 0.8f;
-        }
-        else if (age > oldAge)
-        {
-            ageModifier = 0.8f; 
-        }
-
-        float sizeModifier = size;
-        return speed * ageModifier * sizeModifier;
-    }
-
-    
 }
