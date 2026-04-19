@@ -281,10 +281,7 @@ public class Mating : MonoBehaviour
             return;
 
         babyAnimal.age = 0f;
-        babyAnimal.size = pendingBabySize;
-        babyAnimal.speed = pendingBabySpeed;
-        babyAnimal.sightRange = pendingBabySight;
-        babyAnimal.hearingRange = pendingBabyHearing;
+        babyAnimal.size = Mathf.Max(0.1f, pendingBabySize);
         babyAnimal.sightRange = Mathf.Max(1f, pendingBabySight);
         babyAnimal.hearingRange = Mathf.Max(1f, pendingBabyHearing);
         babyAnimal.speed = Mathf.Max(0.5f, pendingBabySpeed);
