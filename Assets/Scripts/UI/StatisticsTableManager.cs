@@ -49,6 +49,17 @@ public class StatisticsTableManager : MonoBehaviour
     public int PackHuntAttemptsCount;
     public int PackHuntSuccessCount;
 
+    [Header("Lifespan")]
+    public float BearTotalAgeAtDeath;
+    public float WolfTotalAgeAtDeath;
+    public float MooseTotalAgeAtDeath;
+    public float BearSurvivorTotalAge;
+    public int BearSurvivorCount;
+    public float WolfSurvivorTotalAge;
+    public int WolfSurvivorCount;
+    public float MooseSurvivorTotalAge;
+    public int MooseSurvivorCount;
+
 
     public static StatisticsTableManager instance { get; private set; } // Persists across scene so that animals can report information.
 
@@ -105,6 +116,16 @@ public class StatisticsTableManager : MonoBehaviour
         PacksFormedCount = 0;
         PackHuntAttemptsCount = 0;
         PackHuntSuccessCount = 0;
+
+        BearTotalAgeAtDeath = 0f;
+        WolfTotalAgeAtDeath = 0f;
+        MooseTotalAgeAtDeath = 0f;
+        BearSurvivorTotalAge = 0f;
+        BearSurvivorCount = 0;
+        WolfSurvivorTotalAge = 0f;
+        WolfSurvivorCount = 0;
+        MooseSurvivorTotalAge = 0f;
+        MooseSurvivorCount = 0;
     }
 
 }

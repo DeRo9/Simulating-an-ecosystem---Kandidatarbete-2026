@@ -368,18 +368,21 @@ public abstract class AnimalBehaviour : MonoBehaviour
             if (animal.species == Species.bear)
             {
                 StatisticsTableManager.instance.BearDeathCount++;
+                StatisticsTableManager.instance.BearTotalAgeAtDeath += animal.age;
                 if (killedByPredator) StatisticsTableManager.instance.BearPredationCount++;
                 else StatisticsTableManager.instance.BearStarvationCount++;
             }
             else if (animal.species == Species.wolf)
             {
                 StatisticsTableManager.instance.WolfDeathCount++;
+                StatisticsTableManager.instance.WolfTotalAgeAtDeath += animal.age;
                 if (killedByPredator) StatisticsTableManager.instance.WolfPredationCount++;
                 else StatisticsTableManager.instance.WolfStarvationCount++;
             }
             else if (animal.species == Species.moose)
             {
                 StatisticsTableManager.instance.MooseDeathCount++;
+                StatisticsTableManager.instance.MooseTotalAgeAtDeath += animal.age;
                 if (killedByPredator) StatisticsTableManager.instance.MoosePredationCount++;
                 else StatisticsTableManager.instance.MooseStarvationCount++;
             }

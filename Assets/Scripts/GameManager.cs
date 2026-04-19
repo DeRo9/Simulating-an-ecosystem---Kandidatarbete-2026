@@ -310,6 +310,13 @@ public class GameManager : MonoBehaviour
 
         SimulationResults.simulationLength = simulationTime;
 
+        if (StatisticsTableManager.instance != null)
+        {
+            RecordSurvivorAges(omnivoreFolder, Species.bear);
+            RecordSurvivorAges(carnivoreFolder, Species.wolf);
+            RecordSurvivorAges(herbivoresFolder, Species.moose);
+        }
+
         SceneManager.LoadScene("SimOver");
     }
 
@@ -342,6 +349,20 @@ public class GameManager : MonoBehaviour
         float sum = 0f;
         foreach (float v in list) sum += v;
         return Mathf.Round(sum / list.Count);
+    }
+
+    void RecordSurvivorAges(Transform folder, Species species)
+    {
+        var sm = StatisticsTableManager.instance;
+        foreach (Transform child in folder)
+        {
+            if (child.CompareTag("carcass")) continue;
+            Animal a = child.GetComponent<Animal>();
+            if (a == null) continue;
+            if (species == Species.bear)  { sm.BearSurvivorTotalAge += a.age; sm.BearSurvivorCount++; }
+            else if (species == Species.wolf)  { sm.WolfSurvivorTotalAge += a.age; sm.WolfSurvivorCount++; }
+            else if (species == Species.moose) { sm.MooseSurvivorTotalAge += a.age; sm.MooseSurvivorCount++; }
+        }
     }
 
     private IEnumerator RecordPopulationCoroutine()

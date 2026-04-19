@@ -51,6 +51,11 @@ public class AdvancedStatsUI : MonoBehaviour
     public TextMeshProUGUI mooseAvgThirstLabel;
     public TextMeshProUGUI mooseAvgStaminaLabel;
 
+    [Header("Average Lifespan")]
+    public TextMeshProUGUI bearAvgLifespanLabel;
+    public TextMeshProUGUI wolfAvgLifespanLabel;
+    public TextMeshProUGUI mooseAvgLifespanLabel;
+
     void Start()
     {
         int finalBears = SimulationResults.bearsHistory.Count > 0 ? SimulationResults.bearsHistory[SimulationResults.bearsHistory.Count - 1] : 0;
@@ -104,5 +109,19 @@ public class AdvancedStatsUI : MonoBehaviour
         if (mooseAvgHungerLabel != null) mooseAvgHungerLabel.SetText("{0}%", SimulationResults.mooseAvgHunger);
         if (mooseAvgThirstLabel != null) mooseAvgThirstLabel.SetText("{0}%", SimulationResults.mooseAvgThirst);
         if (mooseAvgStaminaLabel != null) mooseAvgStaminaLabel.SetText("{0}%", SimulationResults.mooseAvgStamina);
+
+        float bearAvgLifespan = (StatisticsTableManager.instance.BearDeathCount + StatisticsTableManager.instance.BearSurvivorCount) > 0
+            ? (StatisticsTableManager.instance.BearTotalAgeAtDeath + StatisticsTableManager.instance.BearSurvivorTotalAge)
+              / (StatisticsTableManager.instance.BearDeathCount + StatisticsTableManager.instance.BearSurvivorCount) : 0f;
+        float wolfAvgLifespan = (StatisticsTableManager.instance.WolfDeathCount + StatisticsTableManager.instance.WolfSurvivorCount) > 0
+            ? (StatisticsTableManager.instance.WolfTotalAgeAtDeath + StatisticsTableManager.instance.WolfSurvivorTotalAge)
+              / (StatisticsTableManager.instance.WolfDeathCount + StatisticsTableManager.instance.WolfSurvivorCount) : 0f;
+        float mooseAvgLifespan = (StatisticsTableManager.instance.MooseDeathCount + StatisticsTableManager.instance.MooseSurvivorCount) > 0
+            ? (StatisticsTableManager.instance.MooseTotalAgeAtDeath + StatisticsTableManager.instance.MooseSurvivorTotalAge)
+              / (StatisticsTableManager.instance.MooseDeathCount + StatisticsTableManager.instance.MooseSurvivorCount) : 0f;
+
+        if (bearAvgLifespanLabel != null) bearAvgLifespanLabel.text = $"{bearAvgLifespan:F1}s";
+        if (wolfAvgLifespanLabel != null) wolfAvgLifespanLabel.text = $"{wolfAvgLifespan:F1}s";
+        if (mooseAvgLifespanLabel != null) mooseAvgLifespanLabel.text = $"{mooseAvgLifespan:F1}s";
     }
 }
