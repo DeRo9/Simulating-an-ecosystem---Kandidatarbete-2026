@@ -506,18 +506,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
             foodTarget = null;
             ChangeState(State.Wander);
         }
-
-            //Unsure if this is good but handles cases when the animal for some reason cannot eat food!!!!
-            /*
-            else if (carcass == null && needs.isHungry && foodTarget != null)
-            {
-                needs.Eat(20f);
-                Destroy(foodTarget);
-                foodTarget = null;
-                needs.RegenerateHealth(20f);
-                ChangeState(State.Wander);
-                return;
-            }*/
    
     }
 

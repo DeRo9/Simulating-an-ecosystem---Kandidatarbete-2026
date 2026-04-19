@@ -40,7 +40,6 @@ public class AnimalNeeds : MonoBehaviour
     {
         hungerLevel = maxHunger;
         thirstLevel = maxThirst;
-        healthLevel = maxHealth;
         staminaLevel = maxStamina;
         healthLevel = maxHealth;
     }

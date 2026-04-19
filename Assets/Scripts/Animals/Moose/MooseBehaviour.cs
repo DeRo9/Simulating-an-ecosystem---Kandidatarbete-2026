@@ -10,6 +10,8 @@ public class MooseBehaviour : AnimalBehaviour
 
     AnimalFOV fov;
     AnimalHearing hearing;
+
+    Moose moose;
     float foodSearchingCooldown;
 
     float memoryDecisionCooldown = 0f;
@@ -27,6 +29,7 @@ public class MooseBehaviour : AnimalBehaviour
         base.Start();
         fov = GetComponent<AnimalFOV>();
         hearing = GetComponent<AnimalHearing>();
+        moose = GetComponent<Moose>();
     }
 
     protected override void Update()
@@ -286,7 +289,7 @@ public class MooseBehaviour : AnimalBehaviour
         WolfBehaviour wolf = enemy.GetComponentInParent<WolfBehaviour>();
         if (wolf != null && !wolf.isDead)
         {
-            wolf?.InflictDamage(animal.attackDamage);
+            wolf?.InflictDamage(moose.CalculateAttackDamage());
         }
     }
 

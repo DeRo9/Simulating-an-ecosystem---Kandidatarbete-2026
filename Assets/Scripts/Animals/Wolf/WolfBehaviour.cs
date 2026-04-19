@@ -463,16 +463,17 @@ public class WolfBehaviour : AnimalBehaviour
         if (isDead) return;
         if (preyTarget == null) return;
 
+
         MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
         if (moose != null && !moose.isDead)
         {
-            moose?.InflictDamage(animal.attackDamage);
+            moose?.InflictDamage(wolf.CalculateAttackDamage());
         }
 
         BearBehaviour bear = preyTarget.GetComponentInParent<BearBehaviour>();
         if (bear != null && !bear.isDead)
         {
-            bear?.InflictDamage(animal.attackDamage);
+            bear?.InflictDamage(wolf.CalculateAttackDamage());
         }
     }
 
