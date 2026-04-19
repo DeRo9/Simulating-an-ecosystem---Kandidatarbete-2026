@@ -824,7 +824,10 @@ protected virtual void UpdateSearchMate()
     public void AcceptMateRequest(GameObject requester)
     {
         if (requester == null || isDead) return;
-    
+        if (isPregnant) return;
+
+        if (mating != null && mating.GetCooldownTimer() > 0f) return;
+
         float distanceToRequester = Vector3.Distance(transform.position, requester.transform.position);
         Mating requesterMating = requester.GetComponent<Mating>();
         if (requesterMating == null || distanceToRequester > requesterMating.matingRange * 2f)

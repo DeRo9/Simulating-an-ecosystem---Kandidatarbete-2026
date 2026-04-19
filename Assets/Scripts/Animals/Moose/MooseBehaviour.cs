@@ -224,8 +224,8 @@ public class MooseBehaviour : AnimalBehaviour
         if (animal.age < animal.grownUpAge) return; // Calves should not attack back
         if (wolfAttackers.Count >= 5) return; // If there are multiple wolves attacking, the moose should focus on escaping rather than fighting back
 
-        //if (CurrentState == State.Fleeing) // Only fight back if there is under 5 wolf attacking, if there are more, focus on escaping
-            //ChangeState(State.Defend);
+        if (CurrentState == State.Fleeing) // Only fight back if there is under 5 wolf attacking, if there are more, focus on escaping
+            ChangeState(State.Defend);
     }
 
     protected override void DefendState()
@@ -337,6 +337,8 @@ public class MooseBehaviour : AnimalBehaviour
     {
         bool wolfKill = wolfAttackers.Count > 0;
         bool packKill = wolfAttackers.Exists(w => {
+            if (!w) return false;
+
             Wolf wolfComp = w?.GetComponent<Wolf>();
             return wolfComp != null && wolfComp.pack != null && wolfComp.pack.countCurrentPackSize() > 1;
         });
@@ -373,6 +375,7 @@ public class MooseBehaviour : AnimalBehaviour
 
         base.OnDeath(killedByPredator: wolfKill || bearKill);
     }
+
 
     public float GetAge() { return animal.age; }
     public float GetGrownUpAge() { return animal.grownUpAge; }

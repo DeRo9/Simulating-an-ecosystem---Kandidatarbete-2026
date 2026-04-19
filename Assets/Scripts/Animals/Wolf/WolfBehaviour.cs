@@ -365,6 +365,7 @@ public class WolfBehaviour : AnimalBehaviour
         }
     }
 
+
     protected override void UpdateHunt()
     {
 
@@ -702,6 +703,7 @@ public class WolfBehaviour : AnimalBehaviour
         }
 
     }
+
     public override void OnDeath(bool killedByPredator = false)
     {
         bool bearKill = bearAttackers.Count > 0;

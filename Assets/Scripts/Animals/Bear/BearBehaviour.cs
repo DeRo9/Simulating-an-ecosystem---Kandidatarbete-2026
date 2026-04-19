@@ -550,7 +550,7 @@ public class BearBehaviour : AnimalBehaviour
         anim.SetBool("isSleeping", true);
     }
 
-    public void InflictDamage(float damage)
+    public override void InflictDamage(float damage)
     {
         needs.TakeDamage(damage);
     }
