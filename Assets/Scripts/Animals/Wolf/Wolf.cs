@@ -34,7 +34,14 @@ public class Wolf : Animal
         minHealth = 20f;
         maxHealth = 40f;
 
-        needs.staminaDecreaseRate = 4.5f;
+        minStaminaUsage = 4f;
+        maxStaminaUsage = 4.5f;
+
+        minHunger = 50f;
+        maxHunger = 70f;
+
+        minThirst = 50f;
+        maxThirst = 70f;
 
         gameObject.tag = "Wolf";
 

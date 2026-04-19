@@ -218,6 +218,7 @@ public class GameManager : MonoBehaviour
                 // Randomize stats from species ranges
                 animal.speed = UnityEngine.Random.Range(animal.minSpeed, animal.maxSpeed);
                 animal.runningSpeed = animal.maxSpeed * 1.75f; // Running is significantly faster than walking
+                animal.needs.staminaDecreaseRate = UnityEngine.Random.Range(animal.minStaminaUsage, animal.maxStaminaUsage);
                 animal.sightRange = UnityEngine.Random.Range(animal.minSight, animal.maxSight);
                 animal.hearingRange = UnityEngine.Random.Range(animal.minHearing, animal.maxHearing);
 
@@ -225,9 +226,10 @@ public class GameManager : MonoBehaviour
                 animal.needs.maxHealth = randomizedHealth;
                 animal.needs.healthLevel = randomizedHealth;
 
+                animal.needs.maxHunger = UnityEngine.Random.Range(animal.minHunger, animal.maxHunger);
+                animal.needs.maxThirst = UnityEngine.Random.Range(animal.minThirst, animal.maxThirst);
 
                 animal.strength = UnityEngine.Random.Range(animal.minStrength, animal.maxStrength);
-
                 animal.CalculateAttackDamage();
             }
 

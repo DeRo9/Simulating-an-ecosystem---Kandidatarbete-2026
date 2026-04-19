@@ -45,12 +45,20 @@ public class Animal : MonoBehaviour
     public float maxHearing;
     public SphereCollider hearingCollider;
 
-
     public float minStrength;
     public float maxStrength;
 
     public float minHealth;
     public float maxHealth;
+
+    public float minStaminaUsage;
+    public float maxStaminaUsage;
+
+    public float minHunger;
+    public float maxHunger;
+
+    public float minThirst;
+    public float maxThirst;
 
     [Header("Forces")]
     public float speed;
