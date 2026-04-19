@@ -10,7 +10,6 @@ public enum Species
 
 public class Animal : MonoBehaviour
 {
-
     [Header("Species")]
     public Species species;
 
@@ -21,7 +20,6 @@ public class Animal : MonoBehaviour
     [Header("Aging")]
     public float age = 0f;
     public float agingSpeed = 0.1f;
-
     public float startingMaxAge = 15f;
 
     [Header("Life Stages")]
@@ -88,19 +86,60 @@ public class Animal : MonoBehaviour
         return needs.healthLevel;
     }
 
-    public virtual void CalculateAttackDamage()
+    float ageModifier = 1f;
+    public virtual float CalculateAttackDamage()
     {
         if (!canAttack)
         {
             attackDamage = 0f;
-            return;
+            return attackDamage;
         }
 
-        attackDamage = strength * Random.Range(1f, 1.2f);
+        float sizeModifier = size;
+
+        if (age < grownUpAge)
+        {
+            ageModifier = 0.8f;
+        }
+        else if (age > oldAge)
+        {
+            ageModifier = 0.8f;
+        }
+
+        float randomRange = Random.Range(0.8f, 1.2f);
+
+        return attackDamage = strength * sizeModifier * ageModifier * randomRange;
     }
 
-    public virtual float CalculateHealth(float minHealth, float maxHealth)
+    public virtual float GetMaxHealth()
     {
-        return Random.Range(minHealth, maxHealth);
+        if (age < grownUpAge)
+        {
+            ageModifier = 0.8f;
+        }
+        else if (age > oldAge)
+        {
+            ageModifier = 0.8f; 
+        }
+
+        float sizeModifier = size;
+        return health * ageModifier * sizeModifier;
     }
+
+    public virtual float GetSpeed()
+    {
+        if (age < grownUpAge)
+        {
+            ageModifier = 0.8f;
+        }
+        else if (age > oldAge)
+        {
+            ageModifier = 0.8f; 
+        }
+
+        float sizeModifier = size;
+        return speed * ageModifier * sizeModifier;
+    }
+
+    
 }

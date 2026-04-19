@@ -14,8 +14,7 @@ public class Moose : Animal
 
         size = 1f; 
 
-        minSpeed = 1.65f;
-        maxSpeed = 1.8f;
+        speed = 2f;
 
         minSight = 20f;
         maxSight = 25f;
@@ -23,11 +22,9 @@ public class Moose : Animal
         minHearing = 25f;
         maxHearing = 30f;
 
-        minStrength = 13f;
-        maxStrength = 15f;
+        health = 90f;
 
-        minHealth = 80f;
-        maxHealth = 100f;
+        strength = 14f;
 
         needs.staminaDecreaseRate = 5f;
 

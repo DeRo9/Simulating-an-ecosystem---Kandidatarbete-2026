@@ -16,25 +16,22 @@ public class Wolf : Animal
         grownUpAge = 2f;
         oldAge = 4f;
 
-        size = 2f;
+        size = 1f;
 
-        minSpeed = 1.5f;
-        maxSpeed = 1.8f;
+        speed = 1.8f;
 
         minSight = 30f;
         maxSight = 35f;
 
-        // Hearing
         minHearing = 40f;
         maxHearing = 45f;
-
-        minStrength = 9f;
-        maxStrength = 11f;
 
         minHealth = 20f;
         maxHealth = 40f;
 
-        needs.staminaDecreaseRate = 4.5f;
+        strength = 10f;
+
+        needs.staminaDecreaseRate = 4f;
 
         gameObject.tag = "Wolf";
 
