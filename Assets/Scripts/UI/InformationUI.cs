@@ -11,6 +11,12 @@ public class InformationUI : MonoBehaviour
     public Slider healthSlider;
     public Slider pregnancySlider;
 
+    [Header("NumberTexts")]
+    public TextMeshProUGUI hungerText;
+    public TextMeshProUGUI thirstText;
+    public TextMeshProUGUI staminaText;
+    public TextMeshProUGUI healthText;
+
     [Header("UI")]
     public TMP_Text animalType;
     public GameObject panel;
@@ -29,7 +35,7 @@ public class InformationUI : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-       panel.SetActive(false);
+        panel.SetActive(false);
     }
 
     // Update is called once per frame
@@ -39,24 +45,26 @@ public class InformationUI : MonoBehaviour
         {
             hungerSlider.maxValue = current.maxHunger;
             hungerSlider.value = current.hungerLevel;
+            hungerText.SetText(Mathf.FloorToInt(hungerSlider.value).ToString());
 
             thirstSlider.maxValue = current.maxThirst;
             thirstSlider.value = current.thirstLevel;
+            thirstText.SetText(Mathf.FloorToInt(thirstSlider.value).ToString());
 
             healthSlider.maxValue = current.maxHealth;
             healthSlider.value = current.healthLevel;
+            healthText.SetText(Mathf.FloorToInt(healthSlider.value).ToString() + " HP");
 
             staminaSlider.maxValue = current.maxStamina;
             staminaSlider.value = current.staminaLevel;
+            staminaText.SetText(Mathf.FloorToInt(staminaSlider.value).ToString());
 
             float healthPerctange = current.maxHealth / baseHealthBar;
             RectTransform healthBar = healthSlider.GetComponent<RectTransform>();
             healthBar.localScale = new Vector3(healthPerctange, 1f, 1f);
 
+            float pregnancyValue = current.GetComponent<Mating>()?.GetPregnancyTimer() ?? 0f;
             pregnancySlider.maxValue = 30f;
-            Mating matingComponent = current.GetComponent<Mating>();
-            float pregnancyValue = matingComponent?.GetPregnancyTimer() ?? 0f;
-            pregnancySlider.maxValue = matingComponent?.GetGestationDuration() ?? 30f;
             pregnancySlider.value = pregnancyValue;
 
         }
@@ -123,4 +131,6 @@ public class InformationUI : MonoBehaviour
             pregnancySlider.gameObject.SetActive(true);
         }
     }
+
+
 }

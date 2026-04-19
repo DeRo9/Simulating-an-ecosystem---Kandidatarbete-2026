@@ -173,6 +173,10 @@ public class Mating : MonoBehaviour
             RejectMate(partner);
             return;
         }
+
+        // Guard against multiple males mating with the same female in the same frame
+        if (cooldownTimer > 0f || partnerMating.cooldownTimer > 0f)
+            return;
         
         if (partnerAnimal.age < partnerAnimal.grownUpAge)
         {
@@ -290,7 +294,13 @@ public class Mating : MonoBehaviour
             babyBehaviour.SetPregnant(false);
             babyBehaviour.StartWandering();
         }
-            
+
+        if (StatisticsTableManager.instance != null)
+        {
+            if (animal.species == Species.bear) StatisticsTableManager.instance.BearBirthCount++;
+            else if (animal.species == Species.wolf) StatisticsTableManager.instance.WolfBirthCount++;
+            else if (animal.species == Species.moose) StatisticsTableManager.instance.MooseBirthCount++;
+        }
     }
 
     private void SpawnBabyNow(Animal partnerAnimal)
@@ -310,6 +320,13 @@ public class Mating : MonoBehaviour
         AnimalBehaviour babyBehaviour = baby.GetComponent<AnimalBehaviour>();
         if (babyBehaviour != null)
             babyBehaviour.StartWandering();
+
+        if (StatisticsTableManager.instance != null)
+        {
+            if (animal.species == Species.bear) StatisticsTableManager.instance.BearBirthCount++;
+            else if (animal.species == Species.wolf) StatisticsTableManager.instance.WolfBirthCount++;
+            else if (animal.species == Species.moose) StatisticsTableManager.instance.MooseBirthCount++;
+        }
     }
 
     private void ApplyReproductionCosts(AnimalNeeds targetNeeds)

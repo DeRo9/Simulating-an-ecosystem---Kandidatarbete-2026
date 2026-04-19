@@ -306,6 +306,9 @@ public class WolfBehaviour : AnimalBehaviour
             if (wolf.isLeader || pack == null || pack.countCurrentPackSize() <= 1)
                 StatisticsTableManager.instance.WolfhuntAttemptsCount++;
 
+            if (wolf.isLeader && pack != null && pack.countCurrentPackSize() > 1)
+                StatisticsTableManager.instance.PackHuntAttemptsCount++;
+
             MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
             if (moose != null)
             {
@@ -700,7 +703,7 @@ public class WolfBehaviour : AnimalBehaviour
         }
 
     }
-    public override void OnDeath()
+    public override void OnDeath(bool killedByPredator = false)
     {
         bool bearKill = bearAttackers.Count > 0;
 
@@ -729,7 +732,7 @@ public class WolfBehaviour : AnimalBehaviour
         wolf.pack = null;
         wolf.isLeader = false;
 
-        base.OnDeath();
+        base.OnDeath(killedByPredator: bearKill);
     }
 
     public void RegisterBearAttacker(BearBehaviour bear)

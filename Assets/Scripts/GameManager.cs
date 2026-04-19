@@ -289,12 +289,33 @@ public class GameManager : MonoBehaviour
         SimulationResultsCalculator.CalculateStateAverages(carnivoreFolder,SimulationResults.wolfStateAverages);
         SimulationResultsCalculator.CalculateStateAverages(omnivoreFolder,SimulationResults.bearStateAverages);
 
+        SimulationResultsCalculator.CalculateNeedsAverages(omnivoreFolder, out SimulationResults.bearAvgHunger, out SimulationResults.bearAvgThirst, out SimulationResults.bearAvgStamina);
+        SimulationResultsCalculator.CalculateNeedsAverages(carnivoreFolder, out SimulationResults.wolfAvgHunger, out SimulationResults.wolfAvgThirst, out SimulationResults.wolfAvgStamina);
+        SimulationResultsCalculator.CalculateNeedsAverages(herbivoresFolder, out SimulationResults.mooseAvgHunger, out SimulationResults.mooseAvgThirst, out SimulationResults.mooseAvgStamina);
+
+        SimulationResults.bearAvgHunger = Average(SimulationResults.bearHungerSamples);
+        SimulationResults.bearAvgThirst = Average(SimulationResults.bearThirstSamples);
+        SimulationResults.bearAvgStamina = Average(SimulationResults.bearStaminaSamples);
+        SimulationResults.wolfAvgHunger = Average(SimulationResults.wolfHungerSamples);
+        SimulationResults.wolfAvgThirst = Average(SimulationResults.wolfThirstSamples);
+        SimulationResults.wolfAvgStamina = Average(SimulationResults.wolfStaminaSamples);
+        SimulationResults.mooseAvgHunger = Average(SimulationResults.mooseHungerSamples);
+        SimulationResults.mooseAvgThirst = Average(SimulationResults.mooseThirstSamples);
+        SimulationResults.mooseAvgStamina = Average(SimulationResults.mooseStaminaSamples);
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
         Time.timeScale = 0f;
 
         SimulationResults.simulationLength = simulationTime;
+
+        if (StatisticsTableManager.instance != null)
+        {
+            RecordSurvivorAges(omnivoreFolder, Species.bear);
+            RecordSurvivorAges(carnivoreFolder, Species.wolf);
+            RecordSurvivorAges(herbivoresFolder, Species.moose);
+        }
 
         SceneManager.LoadScene("SimOver");
     }
@@ -304,6 +325,44 @@ public class GameManager : MonoBehaviour
         SimulationResults.bearsHistory.Add(omnivoreFolder.childCount);
         SimulationResults.wolvesHistory.Add(carnivoreFolder.childCount);
         SimulationResults.mooseHistory.Add(herbivoresFolder.childCount);
+
+        float h, t, s;
+        SimulationResultsCalculator.CalculateNeedsAverages(omnivoreFolder, out h, out t, out s);
+        SimulationResults.bearHungerSamples.Add(h);
+        SimulationResults.bearThirstSamples.Add(t);
+        SimulationResults.bearStaminaSamples.Add(s);
+
+        SimulationResultsCalculator.CalculateNeedsAverages(carnivoreFolder, out h, out t, out s);
+        SimulationResults.wolfHungerSamples.Add(h);
+        SimulationResults.wolfThirstSamples.Add(t);
+        SimulationResults.wolfStaminaSamples.Add(s);
+
+        SimulationResultsCalculator.CalculateNeedsAverages(herbivoresFolder, out h, out t, out s);
+        SimulationResults.mooseHungerSamples.Add(h);
+        SimulationResults.mooseThirstSamples.Add(t);
+        SimulationResults.mooseStaminaSamples.Add(s);
+    }
+
+    float Average(System.Collections.Generic.List<float> list)
+    {
+        if (list.Count == 0) return 0f;
+        float sum = 0f;
+        foreach (float v in list) sum += v;
+        return Mathf.Round(sum / list.Count);
+    }
+
+    void RecordSurvivorAges(Transform folder, Species species)
+    {
+        var sm = StatisticsTableManager.instance;
+        foreach (Transform child in folder)
+        {
+            if (child.CompareTag("carcass")) continue;
+            Animal a = child.GetComponent<Animal>();
+            if (a == null) continue;
+            if (species == Species.bear)  { sm.BearSurvivorTotalAge += a.age; sm.BearSurvivorCount++; }
+            else if (species == Species.wolf)  { sm.WolfSurvivorTotalAge += a.age; sm.WolfSurvivorCount++; }
+            else if (species == Species.moose) { sm.MooseSurvivorTotalAge += a.age; sm.MooseSurvivorCount++; }
+        }
     }
 
     private IEnumerator RecordPopulationCoroutine()
