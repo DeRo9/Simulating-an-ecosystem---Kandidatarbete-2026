@@ -83,7 +83,9 @@ public class Animal : MonoBehaviour
     protected virtual void Update()
     {
         age += Time.deltaTime * agingSpeed;
-        hearingCollider.radius = hearingRange / size;
+
+        if(size  > 0f)
+            hearingCollider.radius = hearingRange / size; // In case division by zero
     }
     
     public virtual void SetMovementState(bool moving, float speed){
