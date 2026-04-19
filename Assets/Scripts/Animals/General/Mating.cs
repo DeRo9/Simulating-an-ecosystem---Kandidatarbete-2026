@@ -219,6 +219,8 @@ public class Mating : MonoBehaviour
 
     }
 
+
+
     private bool TryStartPregnancy(Animal fatherAnimal)
     {
         if (animal == null || fatherAnimal == null)
@@ -283,6 +285,9 @@ public class Mating : MonoBehaviour
         babyAnimal.speed = pendingBabySpeed;
         babyAnimal.sightRange = pendingBabySight;
         babyAnimal.hearingRange = pendingBabyHearing;
+        babyAnimal.sightRange = Mathf.Max(1f, pendingBabySight);
+        babyAnimal.hearingRange = Mathf.Max(1f, pendingBabyHearing);
+        babyAnimal.speed = Mathf.Max(0.5f, pendingBabySpeed);
 
         AnimalBehaviour babyBehaviour = baby.GetComponent<AnimalBehaviour>();
         if (babyBehaviour != null)
@@ -297,6 +302,7 @@ public class Mating : MonoBehaviour
             else if (animal.species == Species.wolf) StatisticsTableManager.instance.WolfBirthCount++;
             else if (animal.species == Species.moose) StatisticsTableManager.instance.MooseBirthCount++;
         }
+
     }
 
     private void SpawnBabyNow(Animal partnerAnimal)
@@ -308,10 +314,10 @@ public class Mating : MonoBehaviour
             return;
 
         babyAnimal.age = 0f;
-        babyAnimal.size = (animal.size + partnerAnimal.size) / 2f;
-        babyAnimal.speed = (animal.speed + partnerAnimal.speed) / 2f;
-        babyAnimal.sightRange = (animal.sightRange + partnerAnimal.sightRange) / 2f;
-        babyAnimal.hearingRange = (animal.hearingRange + partnerAnimal.hearingRange) / 2f;
+        babyAnimal.size = Mathf.Max(0.1f, (animal.size + partnerAnimal.size) / 2f);
+        babyAnimal.speed = Mathf.Max(0.5f, (animal.speed + partnerAnimal.speed) / 2f);
+        babyAnimal.sightRange = Mathf.Max(1f, (animal.sightRange + partnerAnimal.sightRange) / 2f);
+        babyAnimal.hearingRange = Mathf.Max(1f, (animal.hearingRange + partnerAnimal.hearingRange) / 2f);
 
         AnimalBehaviour babyBehaviour = baby.GetComponent<AnimalBehaviour>();
         if (babyBehaviour != null)
