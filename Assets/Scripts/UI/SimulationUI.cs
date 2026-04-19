@@ -2,6 +2,7 @@ using System;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using System.Linq;
 
 public class SimulationUI : MonoBehaviour
 {
@@ -96,17 +97,17 @@ public class SimulationUI : MonoBehaviour
 
     int CountWolves()
     {
-        return FindObjectsByType<Wolf>(FindObjectsSortMode.None).Length;
+        return FindObjectsByType<WolfBehaviour>(FindObjectsSortMode.None).Count(w => !w.isDead);
     }
 
     int CountBears()
     {
-        return FindObjectsByType<Bear>(FindObjectsSortMode.None).Length;
+        return FindObjectsByType<BearBehaviour>(FindObjectsSortMode.None).Count(b => !b.isDead);
     }
 
     int CountMoose()
     {
-        return FindObjectsByType<Moose>(FindObjectsSortMode.None).Length;
+        return FindObjectsByType<MooseBehaviour>(FindObjectsSortMode.None).Count(m => !m.isDead);
     }
 
     int CountPlants()
