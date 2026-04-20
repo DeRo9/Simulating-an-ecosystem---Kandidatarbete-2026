@@ -60,8 +60,9 @@ public class InformationUI : MonoBehaviour
             staminaText.SetText(Mathf.FloorToInt(staminaSlider.value).ToString());
 
             float healthPerctange = current.maxHealth / baseHealthBar;
+            float clampedHealthPercentage = Mathf.Clamp(healthPerctange, 0f, 1f);
             RectTransform healthBar = healthSlider.GetComponent<RectTransform>();
-            healthBar.localScale = new Vector3(healthPerctange, 1f, 1f);
+            healthBar.localScale = new Vector3(clampedHealthPercentage, 1f, 1f);
 
             float pregnancyValue = current.GetComponent<Mating>()?.GetPregnancyTimer() ?? 0f;
             pregnancySlider.maxValue = 30f;
