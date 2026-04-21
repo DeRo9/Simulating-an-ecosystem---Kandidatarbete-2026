@@ -59,6 +59,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected NavMeshAgent agent;
     protected AnimalNeeds needs;
     protected AnimalMemory memory;
+    protected Mating mating;
 
     protected GameObject waterTarget;
 
@@ -85,8 +86,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected GameObject mateTarget;
 
     private bool isMating = false;
-
-    public Mating mating;
     
     private float wanderCooldown = 0f;
     
@@ -301,7 +300,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
     public virtual void SetPregnant(bool value)
     {
-        if (isDead) return;
+        if (isDead && value) return;
         isPregnant = value;
     }
 
@@ -362,6 +361,8 @@ public abstract class AnimalBehaviour : MonoBehaviour
     {
         if (isDead) return;
         isDead = true;
+
+        isPregnant = false;
 
         if (StatisticsTableManager.instance != null)
         {
@@ -681,7 +682,7 @@ protected virtual void UpdateSearchMate()
 
     if (mateTarget != null)
     {
-        AnimalBehaviour otherBehaviour = mateTarget.GetComponent<AnimalBehaviour>();
+        AnimalBehaviour otherBehaviour = mateTarget.GetComponentInParent<AnimalBehaviour>();
         if (otherBehaviour == null || otherBehaviour.isDead)
         {
             mateTarget = null;
@@ -696,8 +697,8 @@ protected virtual void UpdateSearchMate()
             return;
         }
 
-        Animal other = mateTarget.GetComponent<Animal>();
-        Mating otherMating = mateTarget.GetComponent<Mating>();
+        Animal other = mateTarget.GetComponentInParent<Animal>();
+        Mating otherMating = mateTarget.GetComponentInParent<Mating>();
         if (other != null && otherMating != null && IsCompatibleForMating(other, otherBehaviour, otherMating))
         {
             otherBehaviour.AcceptMateRequest(gameObject);
@@ -728,19 +729,19 @@ protected virtual void UpdateSearchMate()
         foreach (Collider col in nearby)
         {
             if (col.gameObject == gameObject) continue;
-            Animal other = col.GetComponent<Animal>();
+            Animal other = col.GetComponentInParent<Animal>();
             if (other == null) continue;
             if (other.species != animal.species) continue;
             
-            AnimalBehaviour otherBehaviour = col.GetComponent<AnimalBehaviour>();
+            AnimalBehaviour otherBehaviour = col.GetComponentInParent<AnimalBehaviour>();
             if (otherBehaviour == null || otherBehaviour.isDead) continue;
             if (otherBehaviour.CurrentState != State.SearchMate) continue;
             if (other.IsMale == animal.IsMale) continue;
             if (other.age < other.grownUpAge) continue;
             if (otherBehaviour.isPregnant) continue;
             
-            Mating otherMating = col.GetComponent<Mating>();
-            AnimalNeeds otherNeeds = col.GetComponent<AnimalNeeds>();
+            Mating otherMating = col.GetComponentInParent<Mating>();
+            AnimalNeeds otherNeeds = col.GetComponentInParent<AnimalNeeds>();
             if (otherMating == null || otherNeeds == null) continue;
             if (!otherMating.HasEnoughNeeds(otherNeeds)) continue;
             if (mating.IsRejectedMate(col.gameObject)) continue;
@@ -757,7 +758,7 @@ protected virtual void UpdateSearchMate()
         if (isPregnant || otherBehaviour.isPregnant) return false;
         if (animal.age < animal.grownUpAge || other.age < other.grownUpAge) return false;
         
-        AnimalNeeds otherNeeds = otherBehaviour.GetComponent<AnimalNeeds>();
+        AnimalNeeds otherNeeds = otherBehaviour.GetComponentInParent<AnimalNeeds>();
         if (otherNeeds == null) return false;
     
         Mating mating = GetComponent<Mating>();
@@ -787,7 +788,7 @@ protected virtual void UpdateSearchMate()
             return;
         }
 
-        AnimalBehaviour otherBehaviour = mateTarget.GetComponent<AnimalBehaviour>();
+        AnimalBehaviour otherBehaviour = mateTarget.GetComponentInParent<AnimalBehaviour>();
         if (otherBehaviour == null || otherBehaviour.isDead)
         {
             mateTarget = null;
@@ -815,9 +816,10 @@ protected virtual void UpdateSearchMate()
     public void AcceptMateRequest(GameObject requester)
     {
         if (requester == null || isDead) return;
+        if (!CanMate()) return;
     
         float distanceToRequester = Vector3.Distance(transform.position, requester.transform.position);
-        Mating requesterMating = requester.GetComponent<Mating>();
+        Mating requesterMating = requester.GetComponentInParent<Mating>();
         if (requesterMating == null || distanceToRequester > requesterMating.matingRange * 2f)
             return;
         

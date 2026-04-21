@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class SimulationUI : MonoBehaviour
 {
+    public static SimulationUI Instance;
+
     [Header("FPS Text")]
     [SerializeField] TextMeshProUGUI FPS;
     private float fps;
@@ -33,6 +35,10 @@ public class SimulationUI : MonoBehaviour
     private int bearMatingCount;
     private int mooseMatingCount;
 
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -72,6 +78,17 @@ public class SimulationUI : MonoBehaviour
         UpdateBears();
         UpdateMoose();
         UpdatePlantsCount();
+    }
+
+    public int GetPopCount(Species species)
+    {
+        return species switch
+        {
+            Species.wolf => CountWolves(),
+            Species.bear => CountBears(),
+            Species.moose => CountMoose(),
+            _ => 0,
+        };
     }
 
     void UpdateWolves()
