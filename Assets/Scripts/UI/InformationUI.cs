@@ -65,7 +65,7 @@ public class InformationUI : MonoBehaviour
             healthBar.localScale = new Vector3(clampedHealthPercentage, 1f, 1f);
 
             float pregnancyValue = current.GetComponent<Mating>()?.GetPregnancyTimer() ?? 0f;
-            pregnancySlider.maxValue = 30f;
+            pregnancySlider.maxValue = 100f;
             pregnancySlider.value = pregnancyValue;
 
         }

@@ -60,6 +60,9 @@ public class Mating : MonoBehaviour
         if (animal == null || needs == null)
             return;
 
+        if (behaviour != null && behaviour.isDead)
+            return;
+
         UpdatePregnancy();
 
         if (behaviour.isPregnant)
@@ -230,17 +233,17 @@ public class Mating : MonoBehaviour
 
         if (animal.IsMale || behaviour.isPregnant)
             return false;
+        if (cooldownTimer > 0f)
+            return false;
 
-        behaviour.isPregnant = true;
+        behaviour.SetPregnant(true);
+        cooldownTimer = matingCooldown;
         pregnancyTimer = gestationDuration;
 
         pendingBabySize = (animal.size + fatherAnimal.size) / 2f;
         pendingBabySpeed = (animal.speed + fatherAnimal.speed) / 2f;
         pendingBabySight = (animal.sightRange + fatherAnimal.sightRange) / 2f;
         pendingBabyHearing = (animal.hearingRange + fatherAnimal.hearingRange) / 2f;
-
-        if (behaviour != null)
-            behaviour.SetPregnant(true);
 
         return true;
     }
@@ -267,7 +270,6 @@ public class Mating : MonoBehaviour
             pregnancyTimer = 0f;
             cooldownTimer = matingCooldown;
             return;
-
         }
     }
 
@@ -278,15 +280,27 @@ public class Mating : MonoBehaviour
 
         Vector3 spawnPosition = transform.position + transform.forward;
         GameObject baby = Instantiate(animalPrefab, spawnPosition, Quaternion.identity, transform.parent);
+
+
         Animal babyAnimal = baby.GetComponent<Animal>();
         if (babyAnimal == null)
+        {
+            Destroy(baby);
             return;
+        }
 
         babyAnimal.age = 0f;
         babyAnimal.size = pendingBabySize;
         babyAnimal.speed = pendingBabySpeed;
         babyAnimal.sightRange = pendingBabySight;
         babyAnimal.hearingRange = pendingBabyHearing;
+
+        Mating babyMating = baby.GetComponent<Mating>();
+        if(babyMating != null)
+        {
+            babyMating.pregnancyTimer = 0f;
+            babyMating.cooldownTimer = babyMating.matingCooldown;
+        }
 
         AnimalBehaviour babyBehaviour = baby.GetComponent<AnimalBehaviour>();
         if (babyBehaviour != null)
