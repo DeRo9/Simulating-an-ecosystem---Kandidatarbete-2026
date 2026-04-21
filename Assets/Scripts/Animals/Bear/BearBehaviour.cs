@@ -128,37 +128,49 @@ public class BearBehaviour : AnimalBehaviour
             Wolf wolfComp = hit.GetComponentInParent<Wolf>();
             if (wolfComp == null || wolfComp.pack == null) continue;
 
+            WolfBehaviour wolfBehaviour = hit.GetComponentInParent<WolfBehaviour>();
+            if (wolfBehaviour == null) continue;
+
+            // Wolves are hunting the bear, fight back
+            if (wolfBehaviour.CurrentTarget == gameObject)
+            {
+                Debug.Log("Bear is being hunted, fighting back!");
+                if (memory != null)
+                    memory.RememberDanger(transform.position);
+
+                preyTarget = hit.gameObject;
+                ChangeState(State.Hunt);
+                return true;
+            }
+
+            // Large pack spotted nearby, decide based on hunger
             if (wolfComp.pack.members.Count >= dangerousPackSize)
             {
-                Debug.Log("Bear detected pack of wolves" + wolfComp.pack.members.Count);
+                Debug.Log("Bear detected wolf pack of " + wolfComp.pack.members.Count);
                 if (memory != null)
-                {
                     memory.RememberDanger(transform.position);
-                }
+
                 if (needs.howHungryInPercent < 0.25f)
                 {
-                    Debug.Log("Bear is hungry,its attacking the wolves");
+                    Debug.Log("Bear is starving, attacking the pack");
                     preyTarget = hit.gameObject;
                     ChangeState(State.Hunt);
                 }
                 else
                 {
-                    Debug.Log("Bear is not hungry enough for this, runs away");
+                    Debug.Log("Bear flees from large pack");
                     enemy = hit.gameObject;
                     ChangeState(State.Fleeing);
-
                 }
                 return true;
-
             }
         }
         return false;
-
     }
 
     private void EvaluateNeeds()
     {
-        bool hungry  = IsHungry();
+        bool hungry = IsHungry();
         bool thirsty = IsThirsty();
         if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
         {
@@ -261,7 +273,7 @@ public class BearBehaviour : AnimalBehaviour
             if (hit.CompareTag("Moose"))
             {
                 MooseBehaviour moose = hit.GetComponentInParent<MooseBehaviour>();
-                if (moose == null || moose.isDead) continue; 
+                if (moose == null || moose.isDead) continue;
 
                 float distance = Vector3.Distance(transform.position, hit.transform.position);
                 if (distance < closestDistance)
@@ -274,7 +286,7 @@ public class BearBehaviour : AnimalBehaviour
             if (hit.CompareTag("Wolf"))
             {
                 WolfBehaviour wolf = hit.GetComponentInParent<WolfBehaviour>();
-                if (wolf == null || wolf.isDead) continue; 
+                if (wolf == null || wolf.isDead) continue;
 
                 float distance = Vector3.Distance(transform.position, hit.transform.position);
                 if (distance < closestDistance)
@@ -297,7 +309,7 @@ public class BearBehaviour : AnimalBehaviour
             MooseBehaviour moosePrey = preyTarget.GetComponentInParent<MooseBehaviour>();
             if (moosePrey != null)
             {
-                moosePrey.RegisterBearAttacker(this); 
+                moosePrey.RegisterBearAttacker(this);
                 moosePrey.OnBeingHunted(gameObject);
             }
 
@@ -324,7 +336,7 @@ public class BearBehaviour : AnimalBehaviour
         }
         else
         {
-            agent.speed = animal.speed; 
+            agent.speed = animal.speed;
             ChangeState(State.Wander);
         }
     }
@@ -342,7 +354,7 @@ public class BearBehaviour : AnimalBehaviour
         {
             if (waitingForDeathAnimation)
                 return;
-            
+
             ChangeState(State.Wander);
             return;
         }
@@ -395,7 +407,7 @@ public class BearBehaviour : AnimalBehaviour
 
         if (needs.noMoreStamina)
         {
-            LostPrey(); 
+            LostPrey();
             return;
         }
 
