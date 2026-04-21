@@ -68,6 +68,8 @@ public class MooseBehaviour : AnimalBehaviour
 
     private bool CheckForThreats()
     {
+        if (isDead) return false;
+
         if (hearing == null || !hearing.HeardSomething) return false;
 
         Animal heard = hearing.HeardAnimal;
@@ -222,6 +224,8 @@ public class MooseBehaviour : AnimalBehaviour
 
     public override void InflictDamage(float damage)
     {
+        if (isDead) return;
+
         base.InflictDamage(damage);
 
         if (animal.age < animal.grownUpAge) return; // Calves should not attack back
