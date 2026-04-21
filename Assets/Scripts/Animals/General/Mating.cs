@@ -301,6 +301,8 @@ public class Mating : MonoBehaviour
             else if (animal.species == Species.wolf) StatisticsTableManager.instance.WolfBirthCount++;
             else if (animal.species == Species.moose) StatisticsTableManager.instance.MooseBirthCount++;
         }
+
+        SetupCub(baby);
     }
 
     private void SpawnBabyNow(Animal partnerAnimal)
@@ -327,6 +329,7 @@ public class Mating : MonoBehaviour
             else if (animal.species == Species.wolf) StatisticsTableManager.instance.WolfBirthCount++;
             else if (animal.species == Species.moose) StatisticsTableManager.instance.MooseBirthCount++;
         }
+        SetupCub(baby);
     }
 
     private void ApplyReproductionCosts(AnimalNeeds targetNeeds)
@@ -339,6 +342,35 @@ public class Mating : MonoBehaviour
             targetNeeds.maxStamina
         );
     }
+
+    private void SetupCub(GameObject baby)
+{
+    AnimalBehaviour adultBehaviour = baby.GetComponent<AnimalBehaviour>();
+    if (adultBehaviour != null)
+        adultBehaviour.enabled = false;
+
+    AnimalBehaviour motherBehaviour = animal.IsMale
+        ? null
+        : GetComponent<AnimalBehaviour>();
+
+    CubBehaviour cub = null;
+    switch (animal.species)
+    {
+        case Species.bear:
+            cub = baby.AddComponent<BearCubBehaviour>();
+            break;
+        case Species.wolf:
+            cub = baby.AddComponent<WolfCubBehaviour>();
+            break;
+        case Species.moose:
+            cub = baby.AddComponent<MooseCalfBehaviour>();
+            break;
+    }
+
+    if (cub != null && motherBehaviour != null)
+        cub.mother = motherBehaviour;
+}
+
 
 
 }
