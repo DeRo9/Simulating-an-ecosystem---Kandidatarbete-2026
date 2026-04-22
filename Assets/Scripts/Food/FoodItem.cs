@@ -23,6 +23,11 @@ public class FoodItem : MonoBehaviour
             {
                 needs.Eat(nutritionValue);
                 needs.RegenerateHealth(20f);
+                AnimalBehaviour behaviour = other.GetComponentInParent<AnimalBehaviour>();
+                if(behaviour != null)
+                {
+                    behaviour.ForceStopSearchFood();
+                }
 
                 if (StatisticsTableManager.instance != null)
                 {

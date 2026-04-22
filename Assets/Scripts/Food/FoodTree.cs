@@ -7,7 +7,7 @@ public class FoodTree : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        bool canEatFood = other.CompareTag("Moose");
+        bool canEatFood = other.CompareTag("Moose") || other.CompareTag("Bear");
 
         if (canEatFood && !(other is SphereCollider))
         {
@@ -16,11 +16,21 @@ public class FoodTree : MonoBehaviour
             if (needs != null && needs.isHungry)
             {
                 needs.Eat(nutritionValue);
+                needs.RegenerateHealth(20f);
+                AnimalBehaviour behaviour = other.GetComponentInParent<AnimalBehaviour>();
+                if (behaviour != null)
+                {
+                    behaviour.ForceStopSearchFood();
+                }
 
                 if (StatisticsTableManager.instance != null)
-                    StatisticsTableManager.instance.MoosePlantMealsCount++;
+                {
+                    if (other.CompareTag("Bear")) StatisticsTableManager.instance.BearPlantMealsCount++;
+                    else if (other.CompareTag("Moose")) StatisticsTableManager.instance.MoosePlantMealsCount++;
+                }
+
             }
-            
+
         }
     }
 
