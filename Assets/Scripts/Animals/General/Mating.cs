@@ -52,6 +52,8 @@ public class Mating : MonoBehaviour
         pregnancyTimer = 0f;
         behaviour.SetPregnant(false);
         gestationDuration = GetGestationDurationForSpecies(animal.species);
+
+        cooldownTimer = matingCooldown;
     }
 
 

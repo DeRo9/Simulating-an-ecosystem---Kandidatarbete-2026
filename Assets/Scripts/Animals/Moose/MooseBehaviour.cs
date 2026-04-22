@@ -175,6 +175,7 @@ public class MooseBehaviour : AnimalBehaviour
     private Collider[] hits = new Collider[10];
     bool FindFood()
     {
+
         if(foodSearchingCooldown > 0f)
         {
             foodSearchingCooldown -= Time.deltaTime;
