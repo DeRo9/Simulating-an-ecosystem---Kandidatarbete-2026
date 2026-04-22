@@ -18,6 +18,11 @@ public class MooseBehaviour : AnimalBehaviour
 
     private float needsEvalCooldown = 0f;
 
+    [Header("Avoidance")]
+    float avoidanceCheckCooldown = 0f;
+    float avoidanceCheckInterval = 2f;
+    float avoidanceRange = 25f;
+
     [Header("Layers")]
     [SerializeField] LayerMask foodLayer;
 
@@ -42,6 +47,8 @@ public class MooseBehaviour : AnimalBehaviour
         if (isDead) return;
 
         if (CheckForThreats()) return;
+
+        
         // Update animation based on movement
         anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < animal.runningSpeed * 0.95f); // "isWalking" Ã¤r en bool i animator
         anim.SetBool("isRunning", agent.velocity.magnitude > animal.runningSpeed * 0.95f); // "isRunning" Ã¤r en bool i animator
@@ -58,6 +65,7 @@ public class MooseBehaviour : AnimalBehaviour
                 return;
         }
 
+        AvoidPredators();
         needsEvalCooldown -= Time.deltaTime;
         if (needsEvalCooldown <= 0f)
         {
@@ -382,6 +390,58 @@ public class MooseBehaviour : AnimalBehaviour
         base.OnDeath(killedByPredator: wolfKill || bearKill);
     }
 
+    void AvoidPredators()
+    {
+
+        if (isDead) return;
+        avoidanceCheckCooldown -= Time.deltaTime;
+        if(avoidanceCheckCooldown > 0) return;
+
+        avoidanceCheckCooldown = avoidanceCheckInterval;
+
+        Collider[] nearby = Physics.OverlapSphere(transform.position,avoidanceRange);
+        Vector3 avoidDirection = Vector3.zero;
+        int threatCount = 0;
+
+        foreach(Collider hit in nearby)
+        {
+            if(!hit.CompareTag("Wolf") && !hit.CompareTag("Bear")) continue;
+            AnimalBehaviour predator = hit.GetComponentInParent<AnimalBehaviour>();
+            if(predator == null || predator.isDead ) continue;
+
+            if(enemy != null && hit.transform.IsChildOf(enemy.transform)) continue; // If the animal is hunted this function shouldnt be called
+            float distance = Vector3.Distance(transform.position,hit.transform.position);
+            if(distance < avoidanceRange)
+            {
+                Vector3 awayFromThreat = (transform.position - hit.transform.position).normalized;
+                float urgency = 1f - (distance / avoidanceRange); // The closer the threats get the farther the animal goes
+                avoidDirection += awayFromThreat * urgency;
+                threatCount ++;
+            }
+        }
+        if (threatCount > 0 && CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Fleeing)
+            {
+                Vector3 avoidTarget = transform.position + avoidDirection.normalized * 15f;
+                
+                NavMeshHit hit;
+                if(NavMesh.SamplePosition(avoidTarget,out hit, 15f, NavMesh.AllAreas))
+                {
+                    if (agent.isOnNavMesh)
+                    {
+                        agent.SetDestination(hit.position);
+                        if (CurrentState == State.Idle)
+                        {
+                            ChangeState(State.Wander);
+                        }
+                    }
+
+                }
+                if (memory != null && threatCount >= 3)
+            {
+                memory.RememberDanger(transform.position);
+            }
+            }    
+    }
     public float GetAge() { return animal.age; }
     public float GetGrownUpAge() { return animal.grownUpAge; }
 }
