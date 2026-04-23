@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Transactions;
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections.Generic;
 using System.Linq;
 
 
@@ -99,7 +98,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected float drinkingTimer = 0f;
     protected float drinkingDuration = 3f;
     
-    protected virtual void Start()
+    protected virtual void Awake()
     {
         animal = GetComponent<Animal>();
         rb = GetComponent<Rigidbody>();
@@ -109,15 +108,27 @@ public abstract class AnimalBehaviour : MonoBehaviour
         memory = GetComponent<AnimalMemory>();
         mating = GetComponent<Mating>();
 
+        foreach (State state in System.Enum.GetValues(typeof(State)))
+        {
+            stateTrackers[state] = new StateTracker();
+        }
+
+        if (anim != null) // Reset all animation bools to false at start
+        {
+            anim.SetBool("isWalking", false);
+            anim.SetBool("isRunning", false);
+            anim.SetBool("isConsuming", false);
+        }
+    }
+
+    protected virtual void Start()
+    {
+
         if (agent != null && animal != null)
         {
             agent.speed = animal.speed;
         }
 
-        foreach (State state in System.Enum.GetValues(typeof(State)))
-        {
-            stateTrackers[state] = new StateTracker();
-        }
     }
 
     protected bool hasArrived()
@@ -148,19 +159,23 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
         agent.ResetPath();
 
+        if (anim != null)
+        {
+            anim.SetBool("isConsuming", false);
+        }
+
         switch (CurrentState)
         {
             case State.Idle:
                 waitTime = UnityEngine.Random.Range(minTimeWaiting, maxTimeWaiting);
                 agent.isStopped = true;
                 anim.SetBool("isConsuming", false);
-
                 break;
             case State.Wander:
                 agent.isStopped = false;
                 anim.SetBool("isConsuming", false);
-
                 agent.SetDestination(GetRandomPoints());
+                wanderCooldown = 3f;
                 break;
             case State.SearchFood:
                 agent.isStopped = false;
@@ -490,18 +505,22 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
     }
     protected virtual void UpdateWander() 
-    { 
-        wanderCooldown -= Time.deltaTime;
-        if (wanderCooldown <= 0f)
-        {
-            agent.SetDestination(GetRandomPoints());
-            wanderCooldown = 3f;
-        }
-        
+    {
         if (hasArrived())
         {
             ChangeState(State.Idle);
-        } 
+            return;
+        }
+
+        wanderCooldown -= Time.deltaTime;
+        if (wanderCooldown <= 0f)
+        {
+            if(!agent.hasPath || agent.velocity.sqrMagnitude < 0.01f) // If the agent is stuck or has no path, pick a new random destination
+                agent.SetDestination(GetRandomPoints());
+
+            wanderCooldown = 3f;
+        }
+        
     }
     protected virtual void UpdateEat()
     { 
