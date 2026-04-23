@@ -1,37 +1,27 @@
 using UnityEngine;
 
-public class FoodTree : MonoBehaviour
+public class FoodTree : MonoBehaviour, IsEdible
 {
     [SerializeField]
-    private float nutritionValue = 100f; // The amount of nutrition this food provides
+    public float nutritionValue = 100f;
+    [SerializeField]
+    private Species[] allowedSpecies = {Species.moose};
+    private MushroomSpawner spawner;
 
-    void OnTriggerEnter(Collider other)
+    public float Consume()
     {
-        bool canEatFood = other.CompareTag("Moose") || other.CompareTag("Bear");
-
-        if (canEatFood && !(other is SphereCollider))
-        {
-            AnimalNeeds needs = other.GetComponentInParent<AnimalNeeds>();
-
-            if (needs != null && needs.isHungry)
-            {
-                needs.Eat(nutritionValue);
-                needs.RegenerateHealth(20f);
-                AnimalBehaviour behaviour = other.GetComponentInParent<AnimalBehaviour>();
-                if (behaviour != null)
-                {
-                    behaviour.ForceStopSearchFood();
-                }
-
-                if (StatisticsTableManager.instance != null)
-                {
-                    if (other.CompareTag("Bear")) StatisticsTableManager.instance.BearPlantMealsCount++;
-                    else if (other.CompareTag("Moose")) StatisticsTableManager.instance.MoosePlantMealsCount++;
-                }
-
-            }
-
-        }
+        return nutritionValue;
     }
 
+    public bool CanBeEatenBy(Species species)
+    {
+        foreach (Species allowed in allowedSpecies)
+        {
+            if (allowed == species)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

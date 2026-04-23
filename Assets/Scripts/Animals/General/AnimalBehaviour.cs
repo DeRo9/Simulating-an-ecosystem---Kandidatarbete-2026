@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Transactions;
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections.Generic;
+using System.Linq;
 
 
 
@@ -76,6 +78,8 @@ public abstract class AnimalBehaviour : MonoBehaviour
     public static event Action OnPreyDeath;
     public static event Action OnPredatorDeath;
 
+    public float memoryDecisionCooldown = 0f;
+
     public GameObject foodTarget;
 
     public GameObject enemy;
@@ -88,6 +92,12 @@ public abstract class AnimalBehaviour : MonoBehaviour
     private bool isMating = false;
     
     private float wanderCooldown = 0f;
+
+    protected float eatingTimer = 0f;
+    protected float eatingDuration = 2f;
+
+    protected float drinkingTimer = 0f;
+    protected float drinkingDuration = 3f;
     
     protected virtual void Start()
     {
@@ -143,21 +153,20 @@ public abstract class AnimalBehaviour : MonoBehaviour
             case State.Idle:
                 waitTime = UnityEngine.Random.Range(minTimeWaiting, maxTimeWaiting);
                 agent.isStopped = true;
+                anim.SetBool("isConsuming", false);
+
                 break;
             case State.Wander:
                 agent.isStopped = false;
+                anim.SetBool("isConsuming", false);
+
                 agent.SetDestination(GetRandomPoints());
                 break;
             case State.SearchFood:
                 agent.isStopped = false;
-                agent.SetDestination(GetRandomPoints());
                 break;
             case State.SearchWater:
                 agent.isStopped = false;
-                if (FindWater())
-                {
-                    ChangeState(State.Drink);
-                }
                 break;
             case State.SearchMate:
                 agent.isStopped = false;
@@ -169,11 +178,23 @@ public abstract class AnimalBehaviour : MonoBehaviour
                     ChangeState(State.SearchFood);
                     break;
                 }
-                agent.isStopped = false;
-                agent.SetDestination(foodTarget.transform.position);
+                anim.SetBool("isConsuming", true);
+                agent.isStopped = true;
+                eatingTimer = 0f;
+                anim.SetBool("isWalking", false);
+                anim.SetBool("isRunning", false);
                 break;
             case State.Drink:
-                DrinkState();
+                if (waterTarget == null)
+                {
+                    ChangeState(State.SearchWater);
+                    break;
+                }
+                anim.SetBool("isConsuming", true);
+                agent.isStopped = true;
+                drinkingTimer = 0f;
+                anim.SetBool("isWalking", false);
+                anim.SetBool("isRunning", false);
                 break;
             case State.Mating:
                 agent.isStopped = true;
@@ -313,10 +334,22 @@ public abstract class AnimalBehaviour : MonoBehaviour
             ChangeState(State.Wander);
     }
 
+    float waterSearchingCooldown;
     public bool FindWater()
     {
-        // Compensate because animals sometimes are too far away from water and never finding it.
-        // If it never finds water, it can never allocate to memory
+        if (waterTarget != null)
+        {
+            return true;
+        }
+
+        if (waterSearchingCooldown > 0f && waterTarget != null)
+        {
+            waterSearchingCooldown -= Time.deltaTime;
+            return true;
+        }
+
+        waterSearchingCooldown = 1.5f;
+
         float waterSearchingRadius = animal.sightRange * 2f;
         Collider[] hits = Physics.OverlapSphere(transform.position, waterSearchingRadius, waterLayer);
 
@@ -327,6 +360,8 @@ public abstract class AnimalBehaviour : MonoBehaviour
         {
             if (hit.CompareTag("Water"))
             {
+                memory.RememberWater(hit.transform.position);
+
                 float distance = Vector3.Distance(transform.position, hit.transform.position);
                 if (distance < closestDistance)
                 {
@@ -339,22 +374,19 @@ public abstract class AnimalBehaviour : MonoBehaviour
         if(closestWater != null)
         {
             waterTarget = closestWater;
+            if (agent != null && agent.isOnNavMesh)
+            {
+                agent.isStopped = false;
+                NavMeshHit navHit;
+                if (NavMesh.SamplePosition(closestWater.transform.position, out navHit, 20f, NavMesh.AllAreas))
+                {
+                    agent.SetDestination(navHit.position);
+                }
+            }
             return true;
         }
+        waterTarget = null;
         return false;
-    }
-
-    protected virtual void DrinkState()
-    {
-        if (waterTarget != null)
-        {
-            agent.isStopped = false;
-            NavMeshHit hit;
-            if (NavMesh.SamplePosition(waterTarget.transform.position, out hit, 20f, NavMesh.AllAreas))
-            {
-                agent.SetDestination(hit.position);
-            }
-        }
     }
 
     public virtual void OnDeath(bool killedByPredator = false) 
@@ -415,7 +447,17 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
         if (animal != null && animal.species == Species.moose)
         {
-            carcass.Initialize(Species.moose, 10, 100f);
+            carcass.Initialize(Species.moose, 6, 100f);
+        }
+
+        if (animal != null && animal.species == Species.bear)
+        {
+            carcass.Initialize(Species.bear, 100, 100f);
+        }
+
+        if (animal != null && animal.species == Species.wolf)
+        {
+            carcass.Initialize(Species.wolf, 3, 80f);
         }
         
         ChangeState(State.Dead);
@@ -469,86 +511,50 @@ public abstract class AnimalBehaviour : MonoBehaviour
             return;
         }
 
-        if (!hasArrived())
+        eatingTimer += Time.deltaTime;
+
+        if (eatingTimer >= eatingDuration)
         {
             agent.isStopped = false;
-            agent.SetDestination(foodTarget.transform.position);
-        }
-        else
-        {
-            agent.isStopped = true;
-
-            Carcass carcass = foodTarget.GetComponent<Carcass>();
-            if (carcass != null && needs.isHungry)
-            {
-                float nutrition = carcass.ConsumeOneFeed();
-                if (nutrition > 0f)
-                {
-                    needs.Eat(nutrition);
-                    if (StatisticsTableManager.instance != null)
-                    {
-                        if (animal.species == Species.wolf) StatisticsTableManager.instance.WolfCarcassCount++;
-                        else if (animal.species == Species.bear) StatisticsTableManager.instance.BearAnimalPreyCount++;
-                    }
-                    foodTarget = null;
-                    needs.RegenerateHealth(20f);
-                    ChangeState(State.Wander);
-                    return;
-                }
-                else
-                {
-                    foodTarget = null;
-                    ChangeState(State.SearchFood);
-                    return;
-                }
-            }
-            else
-            {
-                foodTarget = null;
-                ChangeState(State.SearchFood);
-                return;
-            }
-        }
-        if (!needs.isHungry)
-        {
             foodTarget = null;
+            eatingTimer = 0f;
             ChangeState(State.Wander);
         }
-   
-    }
 
-    public void OnFinishedDrinking()
-    {
-        waterTarget = null;
-        agent.isStopped = true;
-        ChangeState(State.Idle);
     }
 
     public void UpdateDrink()
     {
         if (waterTarget == null)
         {
-            ChangeState(State.Wander);
+            ChangeState(State.SearchWater);
             return;
         }
 
-        if (hasArrived())
-        {
-            agent.isStopped = true;
+        agent.isStopped = true;
+        drinkingTimer += Time.deltaTime;
 
-            if (!needs.isThirsty)
+        if (drinkingTimer >= drinkingDuration)
+        {
+            if (needs.isThirsty)
             {
-                ChangeState(State.Wander);
-                return;
+                needs.drinkFromSource(waterTarget.GetComponent<WaterSource>().Drink());
             }
 
-            DrinkState(); 
-        }
-        else
-        {
             agent.isStopped = false;
+            waterTarget = null;
+            drinkingTimer = 0f;
+             
+            if (needs.isThirsty)
+            {
+                ChangeState(State.SearchFood);
+            }
+            else
+            {
+                ChangeState(State.Wander);
+            }
         }
-    }    
+    }
 
     protected virtual void ApplyPregnancyEffects()
     {
@@ -649,17 +655,52 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
     // New state virtual methods
     protected virtual void UpdateSearchFood() { return; }
-    protected virtual void UpdateSearchWater() { 
-    if (FindWater())
+    protected virtual void UpdateSearchWater() 
+    { 
+        if (waterTarget == null)
         {
-            ChangeState(State.Drink);
+            FindWater();
+        }
+
+        if (waterTarget != null)
+        {
+            if (hasArrived())
+            {
+                ChangeState(State.Drink);
+                return;
+            }
             return;
         }
 
-        if (hasArrived())
+        memoryDecisionCooldown -= Time.deltaTime;
+
+        if (memoryDecisionCooldown <= 0f)
         {
-            agent.SetDestination(GetRandomPoints());
-        } 
+            memoryDecisionCooldown = 2f;
+
+            if (UnityEngine.Random.value < 0.2f)
+            {
+                agent.SetDestination(GetRandomPoints());
+            }
+            else
+            {
+                Vector2Int targetChunk = DecideFoodAndWaterTargetChunk();
+
+                if (targetChunk.x != -1)
+                {
+                    Vector3 targetPos = memory.GetRandomPointInChunk(targetChunk);
+                    agent.SetDestination(targetPos);
+                }
+                else
+                {
+                    agent.SetDestination(GetRandomPoints());
+                }
+            }
+        }
+        else if (hasArrived())
+        {
+            memoryDecisionCooldown = 0f;
+        }
     }
 
     public bool CanMate()

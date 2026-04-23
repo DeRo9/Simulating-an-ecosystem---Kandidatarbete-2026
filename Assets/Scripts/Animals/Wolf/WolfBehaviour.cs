@@ -235,21 +235,13 @@ public class WolfBehaviour : AnimalBehaviour
         bool thirsty = IsThirsty();
         if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
         {
-            if (FindWater())
-                ChangeState(State.Drink);
-            else
-                ChangeState(State.SearchWater);
+            ChangeState(State.SearchWater);
             return;
         }
 
         if (hungry)
         {
-            if (FindFood())
-                ChangeState(State.Eat);
-            else if (FindPrey())
-                ChangeState(State.Hunt);
-            else
-                ChangeState(State.SearchFood);
+            ChangeState(State.SearchFood);
             return;
         }
 
@@ -270,6 +262,7 @@ public class WolfBehaviour : AnimalBehaviour
 
     bool FindPrey()
     {
+        if (huntCooldownTimer > 0f) return false;
         if (preyTarget != null) return true;
 
         Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange, PreyLayer);
@@ -279,7 +272,6 @@ public class WolfBehaviour : AnimalBehaviour
         foreach (Collider hit in hits)
         {
             if (!fov.IsInFOV(hit.transform)) continue;
-
             if (hit.CompareTag("Moose"))
             {
                 MooseBehaviour moose = hit.GetComponentInParent<MooseBehaviour>();
@@ -504,9 +496,19 @@ public class WolfBehaviour : AnimalBehaviour
 
     protected override void UpdateSearchFood()
     {
-        if (FindFood())
+
+        if (foodTarget == null) 
         {
-            ChangeState(State.Eat);
+            FindFood();
+        }
+
+        if (foodTarget != null)
+        {
+            if (hasArrived())
+            {
+                ChangeState(State.Eat);
+                return;
+            }
             return;
         }
 
@@ -541,11 +543,21 @@ public class WolfBehaviour : AnimalBehaviour
                 }
             }
         }
+        else if (hasArrived())
+        {
+            memoryDecisionCooldown = 0f;
+        }
     }
 
     private Collider[] hits = new Collider[10];
     bool FindFood()
     {
+
+        if (foodTarget != null)
+        {
+            return true;
+        }
+
         if (foodSearchingCooldown > 0f && foodTarget != null)
         {
             foodSearchingCooldown -= Time.deltaTime;
@@ -567,6 +579,9 @@ public class WolfBehaviour : AnimalBehaviour
                 continue;
             if (!hit.CompareTag("carcass"))
                 continue;
+            IsEdible edible = hit.GetComponent<IsEdible>();
+            if (edible == null || !edible.CanBeEatenBy(animal.species))
+                continue;
             if (!fov.IsInFOV(hit.transform))
             {
                 continue;
@@ -584,11 +599,61 @@ public class WolfBehaviour : AnimalBehaviour
         if (closestFood != null)
         {
             foodTarget = closestFood;
+            if (agent != null && agent.isOnNavMesh)
+            {
+                agent.isStopped = false;
+                agent.SetDestination(closestFood.transform.position);
+            }
             return true;
         }
 
         foodTarget = null;
         return false;
+    }
+
+    protected override void UpdateEat()
+    {
+        if (foodTarget == null)
+        {
+            ChangeState(State.SearchFood);
+            return;
+        }
+
+        Carcass carcass = foodTarget.GetComponent<Carcass>();
+
+        if (carcass == null)
+        {
+            foodTarget = null;
+            ChangeState(State.SearchFood);
+            return;
+        }
+
+        agent.isStopped = true;
+        eatingTimer += Time.deltaTime;
+        if (eatingTimer >= eatingDuration)
+        {
+            needs.Eat(carcass.Consume());
+            eatingTimer = 0f;
+
+            if (carcass.IsEmpty || foodTarget == null)
+            {
+                foodTarget = null;
+                agent.isStopped = false;
+
+                if (needs.isHungry)
+                    ChangeState(State.SearchFood);
+                else
+                    ChangeState(State.Wander);
+                return;
+            }
+
+            if (!needs.isHungry)
+            {
+                foodTarget = null;
+                agent.isStopped = false;
+                ChangeState(State.Wander);
+            }
+        }
     }
 
     public void notifyDeath()

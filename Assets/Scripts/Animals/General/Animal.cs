@@ -63,6 +63,13 @@ public class Animal : MonoBehaviour
         IsMale = Random.value > 0.5f;
         needs = GetComponent<AnimalNeeds>();
         needs.staminaDecreaseRate = staminaDecreaseRate;
+        if (!IsMale)
+        {
+            size *= 0.8f;
+            baseStrength *= 0.8f;
+            baseHealth *= 0.8f;
+            baseSpeed *= 0.9f;
+        }
     }
 
     float attributeUpdateTimer;
@@ -81,6 +88,26 @@ public class Animal : MonoBehaviour
 
             attributeUpdateTimer = 0f;
         }
+    }
+
+    public void InitializeAttributes()
+    {
+        baseHealth *= getVariation();
+        baseStrength *= getVariation();
+        baseSpeed *= getVariation();
+        hearingRange = baseHearing * getVariation();
+        sightRange = baseSight * getVariation();
+        needs.staminaDecreaseRate = staminaDecreaseRate;
+
+        UpdateAttributes();
+
+        needs.healthLevel = health;
+        needs.maxHealth = health;
+    }
+
+    public float getVariation()
+    {
+        return Random.Range(0.85f, 1.15f);
     }
 
     public virtual void UpdateAttributes()
@@ -105,26 +132,6 @@ public class Animal : MonoBehaviour
             return 0.8f; 
         }
         return 1f;
-    }
-
-    public void InitializeAttributes()
-    {
-        baseHealth *= getVariation();
-        baseStrength *= getVariation();
-        baseSpeed *= getVariation();
-        hearingRange = baseHearing * getVariation();
-        sightRange = baseSight * getVariation();
-        needs.staminaDecreaseRate = staminaDecreaseRate;
-
-        UpdateAttributes();
-
-        needs.healthLevel = health;
-        needs.maxHealth = health;
-    }
-
-    public float getVariation()
-    {
-        return Random.Range(0.85f, 1.15f);
     }
 
     public virtual void SetMovementState(bool moving, float speed){
