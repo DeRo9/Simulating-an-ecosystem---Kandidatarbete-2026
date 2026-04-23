@@ -65,7 +65,6 @@ public class MooseBehaviour : AnimalBehaviour
                 return;
         }
 
-        AvoidPredators();
         needsEvalCooldown -= Time.deltaTime;
         if (needsEvalCooldown <= 0f)
         {
@@ -390,102 +389,7 @@ public class MooseBehaviour : AnimalBehaviour
         base.OnDeath(killedByPredator: wolfKill || bearKill);
     }
 
-    /*void AvoidPredators()
-    {
-
-        if (isDead) return;
-        avoidanceCheckCooldown -= Time.deltaTime;
-        if(avoidanceCheckCooldown > 0) return;
-
-        avoidanceCheckCooldown = avoidanceCheckInterval;
-
-        Collider[] nearby = Physics.OverlapSphere(transform.position,avoidanceRange);
-        Vector3 avoidDirection = Vector3.zero;
-        int threatCount = 0;
-
-        foreach(Collider hit in nearby)
-        {
-            if(!hit.CompareTag("Wolf") && !hit.CompareTag("Bear")) continue;
-            AnimalBehaviour predator = hit.GetComponentInParent<AnimalBehaviour>();
-            if(predator == null || predator.isDead ) continue;
-
-            if(enemy != null && hit.transform.IsChildOf(enemy.transform)) continue; // If the animal is hunted this function shouldnt be called
-            float distance = Vector3.Distance(transform.position,hit.transform.position);
-            if(distance < avoidanceRange)
-            {
-                Vector3 awayFromThreat = (transform.position - hit.transform.position).normalized;
-                float urgency = 1f - (distance / avoidanceRange); // The closer the threats get the farther the animal goes
-                avoidDirection += awayFromThreat * urgency;
-                threatCount ++;
-            }
-        }
-        if (threatCount > 0 && CurrentState != State.Eat && CurrentState != State.Drink && CurrentState != State.Fleeing)
-            {
-                Debug.Log("Moose " + gameObject.name + " avoiding " + threatCount + " predators | State: " + CurrentState);
-                Vector3 avoidTarget = transform.position + avoidDirection.normalized * 15f;
-                
-                NavMeshHit hit;
-                if(NavMesh.SamplePosition(avoidTarget,out hit, 15f, NavMesh.AllAreas))
-                {
-                    if (agent.isOnNavMesh)
-                    {
-                        agent.SetDestination(hit.position);
-                        if (CurrentState == State.Idle)
-                        {
-                            ChangeState(State.Wander);
-                        }
-                    }
-
-                }
-                if (memory != null && threatCount >= 3)
-            {
-                memory.RememberDanger(transform.position);
-            }
-            }    
-    }*/
-
-    void AvoidPredators()
-{
-    if (isDead) return;
-    if (CurrentState != State.Idle && CurrentState != State.Wander) return;
-
-    avoidanceCheckCooldown -= Time.deltaTime;
-    if (avoidanceCheckCooldown > 0f) return;
-    avoidanceCheckCooldown = avoidanceCheckInterval;
-
-    Collider[] nearby = Physics.OverlapSphere(transform.position, avoidanceRange);
-    Vector3 avoidDirection = Vector3.zero;
-    int threatCount = 0;
-
-    foreach (Collider col in nearby)
-    {
-        if (!col.CompareTag("Wolf") && !col.CompareTag("Bear")) continue;
-        AnimalBehaviour predator = col.GetComponentInParent<AnimalBehaviour>();
-        if (predator == null || predator.isDead) continue;
-
-        float distance = Vector3.Distance(transform.position, col.transform.position);
-        if (distance < avoidanceRange)
-        {
-            Vector3 away = (transform.position - col.transform.position).normalized;
-            float urgency = 1f - (distance / avoidanceRange);
-            avoidDirection += away * urgency;
-            threatCount++;
-        }
-    }
-
-    if (threatCount > 0)
-    {
-        Vector3 avoidTarget = transform.position + avoidDirection.normalized * 15f;
-        NavMeshHit navHit;
-        if (NavMesh.SamplePosition(avoidTarget, out navHit, 15f, NavMesh.AllAreas))
-        {
-            if (agent.isOnNavMesh)
-            {
-                agent.SetDestination(navHit.position);
-            }
-        }
-    }
-}
+   
     public float GetAge() { return animal.age; }
     public float GetGrownUpAge() { return animal.grownUpAge; }
 }
