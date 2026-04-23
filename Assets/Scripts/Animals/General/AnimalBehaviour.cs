@@ -665,6 +665,13 @@ public abstract class AnimalBehaviour : MonoBehaviour
         waterTarget = null;
         agent.isStopped = false;
         agent.speed = animal.runningSpeed;
+
+        if (enemy != null)
+        {
+            Vector3 fleePoint = CalculateFleePath();
+            agent.SetDestination(fleePoint);
+            fleeRepathTimer = 0f;
+        }
     
     }
 
@@ -693,7 +700,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
         memoryDecisionCooldown -= Time.deltaTime;
 
-        if (memoryDecisionCooldown <= 0f)
+        if (memoryDecisionCooldown <= 0f && hasArrived())
         {
             memoryDecisionCooldown = 2f;
 
