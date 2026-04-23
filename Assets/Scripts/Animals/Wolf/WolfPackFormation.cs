@@ -22,10 +22,11 @@ public class WolfPackFormation : MonoBehaviour
 
     private void Update()
     {
-        if (needs.hungerLevel < 0.2f && !SeasonManager.Instance.IsWinter)
+        if ((needs.hungerLevel < 0.2f || needs.howHungryInPercent < 0.15f) && !SeasonManager.Instance.IsWinter)
         {
             LeavePack();
         }
+
         formationTimer -= Time.deltaTime;
         if (formationTimer > 0f) return;
         if ((behaviour.CurrentState == AnimalBehaviour.State.Idle || behaviour.CurrentState == AnimalBehaviour.State.Wander) &&

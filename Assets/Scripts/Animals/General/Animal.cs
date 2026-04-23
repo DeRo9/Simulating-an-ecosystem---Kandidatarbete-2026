@@ -119,6 +119,10 @@ public class Animal : MonoBehaviour
         speed = baseSpeed * ageModifier * size;
         runningSpeed = speed * 1.75f;
         needs.staminaDecreaseRate = staminaDecreaseRate * size; //smaller animal does net get as tired
+
+        float healthRatio = needs.healthLevel / needs.maxHealth;
+        needs.maxHealth = health;
+        needs.healthLevel = health * healthRatio;
     }
 
     protected float GetAgeModifier()
