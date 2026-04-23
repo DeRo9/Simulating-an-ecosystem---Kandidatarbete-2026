@@ -35,7 +35,7 @@ public class CubBehaviour : MonoBehaviour
             agent.speed = animalData.speed * 0.6f;
         }
 
-        transform.localScale = Vector3.one * animalData.size * 0.4f;
+        /// transform.localScale = Vector3.one * animalData.size * 0.4f; aging handles this already
     }
 
     protected virtual void Update()
@@ -59,8 +59,8 @@ public class CubBehaviour : MonoBehaviour
 
         // Gradual growth
         float progress = age / animalData.grownUpAge;
-        float currentScale = Mathf.Lerp(animalData.size * 0.4f, animalData.size, progress);
-        transform.localScale = Vector3.one * currentScale;
+        /*float currentScale = Mathf.Lerp(animalData.size * 0.4f, animalData.size, progress);
+        transform.localScale = Vector3.one * currentScale;*/
 
         // Scale speed with growth
         agent.speed = Mathf.Lerp(animalData.speed * 0.6f, animalData.speed, progress);
@@ -157,9 +157,9 @@ public class CubBehaviour : MonoBehaviour
     protected virtual void BecomeAdult()
     {
         isAdult = true;
-        transform.localScale = Vector3.one * animalData.size;
+        //transform.localScale = Vector3.one * animalData.size;
 
-        // Re-enable needs and mating
+        // Re-enable needs
         if (cubNeeds != null) cubNeeds.enabled = true;
         if (cubMating != null)
         {
