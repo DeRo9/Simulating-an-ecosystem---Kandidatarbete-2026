@@ -953,6 +953,7 @@ GameObject:
   - component: {fileID: 4620774494346928479}
   - component: {fileID: 8127107587192447712}
   - component: {fileID: 4510168710266619781}
+  - component: {fileID: 1575169611474954200}
   m_Layer: 6
   m_Name: WolfPrefab
   m_TagString: Wolf
@@ -1283,6 +1284,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalMemory
   chunkSize: 50
+--- !u!114 &1575169611474954200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4266865027632842223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69e74389407865b49be919e9dc612053, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalAvoidance
+  avoidanceRange: 25
+  checkInterval: 2
+  tagsToAvoid:
+  - Bear
 --- !u!1 &4293556539160456709
 GameObject:
   m_ObjectHideFlags: 0
