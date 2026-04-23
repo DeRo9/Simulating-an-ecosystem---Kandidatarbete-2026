@@ -29,7 +29,6 @@ public class BearBehaviour : AnimalBehaviour
     float needsEvalCooldown = 0f;
 
     float deathWaitTimer = 0f;
-    float memoryDecisionCooldown = 0f;
     float deathWaitDuration = 2f;
     bool waitingForDeathAnimation = false;
 

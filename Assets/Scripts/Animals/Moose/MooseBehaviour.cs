@@ -74,12 +74,10 @@ public class MooseBehaviour : AnimalBehaviour
     private bool CheckForThreats()
     {
         if (isDead) return false;
-
         if (hearing == null || !hearing.HeardSomething) return false;
 
         Animal heard = hearing.HeardAnimal;
         if (heard == null) return false;
-
         if (heard.species != Species.bear && heard.species != Species.wolf) return false;
 
         memory.RememberDanger(heard.transform.position);
@@ -88,7 +86,8 @@ public class MooseBehaviour : AnimalBehaviour
         if (wolf != null && wolf.CurrentTarget == gameObject)
         {
             enemy = heard.gameObject;
-            ChangeState(State.Fleeing);
+            if (CurrentState != State.Defend || CurrentState != State.Fleeing)
+                ChangeState(State.Fleeing);
             return true;
         }
 
@@ -96,7 +95,8 @@ public class MooseBehaviour : AnimalBehaviour
         if (bear != null && bear.CurrentTarget == gameObject)
         {
             enemy = heard.gameObject;
-            ChangeState(State.Fleeing);
+            if (CurrentState != State.Defend || CurrentState != State.Fleeing)
+                ChangeState(State.Fleeing);
             return true;
         }
         return false;

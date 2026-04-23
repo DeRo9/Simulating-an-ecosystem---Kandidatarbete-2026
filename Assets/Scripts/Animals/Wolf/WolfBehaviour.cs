@@ -26,8 +26,6 @@ public class WolfBehaviour : AnimalBehaviour
     float deathWaitTimer = 0f;
     float deathWaitDuration = 2f; 
 
-    float memoryDecisionCooldown = 0f;
-
     bool waitingForDeathAnimation = false;
 
     const int DefendThreshold = 5;
