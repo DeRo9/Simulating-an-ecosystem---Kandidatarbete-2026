@@ -37,6 +37,8 @@ public class Mating : MonoBehaviour
     private float pendingBabySight;
     private float pendingBabyHearing;
 
+    private bool hasSpawnedCurrentBaby = false;
+
     [Header("Failed Mating")]
     public float matingRejectionCooldown = 30f;
     private System.Collections.Generic.List<GameObject> rejectedMates = new System.Collections.Generic.List<GameObject>();
@@ -235,10 +237,14 @@ public class Mating : MonoBehaviour
             return false;
         if (cooldownTimer > 0f)
             return false;
+        if (animal.age < animal.grownUpAge)
+        return false;
 
         behaviour.SetPregnant(true);
         cooldownTimer = matingCooldown;
         pregnancyTimer = gestationDuration;
+
+        hasSpawnedCurrentBaby = false;
 
         pendingBabySize = (animal.size + fatherAnimal.size) / 2f;
         pendingBabySpeed = (animal.speed + fatherAnimal.speed) / 2f;
@@ -263,11 +269,14 @@ public class Mating : MonoBehaviour
             needs.maxStamina
         );
 
-        if (pregnancyTimer <= 0f)
+        if (pregnancyTimer <= 0f && behaviour.isPregnant && !hasSpawnedCurrentBaby)  // Extra safety check
         {
+            hasSpawnedCurrentBaby = true;
             SpawnPregnancyBaby();
+        
             behaviour.SetPregnant(false);
-            pregnancyTimer = 0f;
+            pregnancyTimer = -2f;
+            
             cooldownTimer = matingCooldown;
             return;
         }
