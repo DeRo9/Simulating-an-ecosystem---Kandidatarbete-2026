@@ -473,6 +473,13 @@ public abstract class AnimalBehaviour : MonoBehaviour
         return needs.isThirsty;
     }
 
+    public void ForceStopSearchFood()
+    {
+        foodTarget = null;
+        ChangeState(State.Wander);
+    }
+
+
     protected virtual void UpdateIdle() 
     { 
         waitTime -= Time.deltaTime; 

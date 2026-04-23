@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6912339993959237326}
   m_Layer: 10
   m_Name: PT_Fruit_Tree_01_green_LOD1
-  m_TagString: Untagged
+  m_TagString: Plant
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -202,7 +202,7 @@ GameObject:
   - component: {fileID: 1318007474417015381}
   m_Layer: 10
   m_Name: PT_Fruit_Tree_01_green_LOD2
-  m_TagString: Untagged
+  m_TagString: Plant
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -293,7 +293,7 @@ GameObject:
   - component: {fileID: 3331911261893497383}
   m_Layer: 10
   m_Name: PT_Fruit_Tree_01_green_LOD0
-  m_TagString: Untagged
+  m_TagString: Plant
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

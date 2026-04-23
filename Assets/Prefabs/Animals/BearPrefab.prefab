@@ -478,8 +478,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.90411377, y: 2.5872457, z: 1.2842445}
-  m_Center: {x: 0.014221191, y: -0.31699648, z: 0.8181759}
+  m_Size: {x: 0.90411377, y: 2.5872457, z: 1.4406797}
+  m_Center: {x: 0.014221191, y: -0.31699756, z: 0.7009645}
 --- !u!1 &3010163245392319558
 GameObject:
   m_ObjectHideFlags: 0
@@ -840,7 +840,7 @@ GameObject:
   - component: {fileID: 6816986271859043627}
   m_Layer: 9
   m_Name: Base
-  m_TagString: Untagged
+  m_TagString: Bear
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1524,6 +1524,7 @@ GameObject:
   - component: {fileID: 3228180883506121390}
   - component: {fileID: 6755423101185060674}
   - component: {fileID: 9110168608035052604}
+  - component: {fileID: -8880786739125311230}
   m_Layer: 9
   m_Name: BearPrefab
   m_TagString: Bear
@@ -1593,21 +1594,18 @@ MonoBehaviour:
   IsMale: 0
   sightRange: 20
   hearingRange: 30
-  minSpeed: 0
-  maxSpeed: 0
-  minSight: 0
-  maxSight: 0
-  minHearing: 0
-  maxHearing: 0
+  baseSpeed: 0
+  baseStrength: 0
+  baseHealth: 0
+  baseSight: 0
+  baseHearing: 0
   hearingCollider: {fileID: -8017201233929457047}
-  minStrength: 0
-  maxStrength: 0
-  minHealth: 0
-  maxHealth: 0
   speed: 1.95
   runningSpeed: 3
   size: 1.5
   strength: 25
+  health: 0
+  staminaDecreaseRate: 0
   needs: {fileID: 5642719112376538877}
 --- !u!114 &8115009223279749859
 MonoBehaviour:
@@ -1634,7 +1632,6 @@ MonoBehaviour:
     m_Bits: 16
   foodTarget: {fileID: 0}
   enemy: {fileID: 0}
-  mating: {fileID: 0}
   huntCooldownTimer: 0
   PreyLayer:
     serializedVersion: 2
@@ -1767,8 +1764,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.7979431, y: 0.87387466, z: 1.9689636}
-  m_Center: {x: -0.00843811, y: 0.8952465, z: 0.32740784}
+  m_Size: {x: 0.6024475, y: 0.48444366, z: 1.0888672}
+  m_Center: {x: 0.030563354, y: 0.9203758, z: 0.18493652}
 --- !u!135 &-8017201233929457047
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1841,6 +1838,22 @@ MonoBehaviour:
   viewLayer:
     serializedVersion: 2
     m_Bits: 1
+--- !u!114 &-8880786739125311230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8565310438801436797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69e74389407865b49be919e9dc612053, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalAvoidance
+  avoidanceRange: 25
+  checkInterval: 2
+  tagsToAvoid:
+  - Wolf
 --- !u!1 &8881512897072243634
 GameObject:
   m_ObjectHideFlags: 0

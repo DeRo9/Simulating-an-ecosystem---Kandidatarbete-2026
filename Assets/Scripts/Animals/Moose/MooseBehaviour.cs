@@ -16,6 +16,11 @@ public class MooseBehaviour : AnimalBehaviour
 
     private float needsEvalCooldown = 0f;
 
+    [Header("Avoidance")]
+    float avoidanceCheckCooldown = 0f;
+    float avoidanceCheckInterval = 2f;
+    float avoidanceRange = 25f;
+
     [Header("Layers")]
     [SerializeField] LayerMask foodLayer;
 
@@ -40,6 +45,8 @@ public class MooseBehaviour : AnimalBehaviour
         if (isDead) return;
 
         if (CheckForThreats()) return;
+
+        
         // Update animation based on movement
         anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < animal.runningSpeed * 0.95f); // "isWalking" Ã¤r en bool i animator
         anim.SetBool("isRunning", agent.velocity.magnitude > animal.runningSpeed * 0.95f); // "isRunning" Ã¤r en bool i animator
@@ -438,6 +445,7 @@ public class MooseBehaviour : AnimalBehaviour
         base.OnDeath(killedByPredator: wolfKill || bearKill);
     }
 
+   
     public float GetAge() { return animal.age; }
     public float GetGrownUpAge() { return animal.grownUpAge; }
 }

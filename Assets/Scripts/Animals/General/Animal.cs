@@ -82,7 +82,10 @@ public class Animal : MonoBehaviour
         if(attributeUpdateTimer >= 3f)
         {
             UpdateAttributes();
-            hearingCollider.radius = hearingRange / size;
+
+            if(hearingCollider != null && size > 0f && !float.IsNaN(hearingRange))
+                hearingCollider.radius = hearingRange / size;
+
             attributeUpdateTimer = 0f;
         }
     }
