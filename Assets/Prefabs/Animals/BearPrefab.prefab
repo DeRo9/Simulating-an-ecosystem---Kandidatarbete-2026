@@ -1524,6 +1524,7 @@ GameObject:
   - component: {fileID: 3228180883506121390}
   - component: {fileID: 6755423101185060674}
   - component: {fileID: 9110168608035052604}
+  - component: {fileID: -8880786739125311230}
   m_Layer: 9
   m_Name: BearPrefab
   m_TagString: Bear
@@ -1837,6 +1838,22 @@ MonoBehaviour:
   viewLayer:
     serializedVersion: 2
     m_Bits: 1
+--- !u!114 &-8880786739125311230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8565310438801436797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69e74389407865b49be919e9dc612053, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalAvoidance
+  avoidanceRange: 25
+  checkInterval: 2
+  tagsToAvoid:
+  - Wolf
 --- !u!1 &8881512897072243634
 GameObject:
   m_ObjectHideFlags: 0
