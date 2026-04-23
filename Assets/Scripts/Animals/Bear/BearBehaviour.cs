@@ -14,6 +14,9 @@ public class BearBehaviour : AnimalBehaviour
     public GameObject CurrentTarget => preyTarget;
     float attackRange = 3.5f;
 
+    [Header("Layers")]
+    [SerializeField] LayerMask foodLayer;
+
     float huntCooldown = 5f;
     [Header("Hunting")]
     [SerializeField]
@@ -220,7 +223,7 @@ public class BearBehaviour : AnimalBehaviour
 
         foodSearchingCooldown = 1.5f;
 
-        int hitCount = Physics.OverlapSphereNonAlloc(transform.position, animal.sightRange, hits);
+        int hitCount = Physics.OverlapSphereNonAlloc(transform.position, animal.sightRange, hits, foodLayer);
 
         float closestDistance = Mathf.Infinity;
         GameObject closestFood = null;
@@ -231,7 +234,7 @@ public class BearBehaviour : AnimalBehaviour
 
             if (hit == null) continue;
 
-            IsEdible edible = hit.GetComponentInParent<IsEdible>();
+            IsEdible edible = hit.GetComponent<IsEdible>();
             if (edible == null || !edible.CanBeEatenBy(animal.species))
                 continue;
             if (!fov.IsInFOV(hit.transform))
@@ -403,11 +406,8 @@ public class BearBehaviour : AnimalBehaviour
                     agent.SetDestination(preyTarget.transform.position);
                     repathTimer = 0f;
                 }
-
             }
-
         }
-
         if (needs.noMoreStamina)
         {
             LostPrey();
@@ -425,7 +425,6 @@ public class BearBehaviour : AnimalBehaviour
         if (distance <= attackRange)
         {
             agent.isStopped = true;
-
             attackTimer += Time.deltaTime;
 
             if (attackTimer >= attackInterval)

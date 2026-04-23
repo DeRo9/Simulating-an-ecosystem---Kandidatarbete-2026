@@ -207,7 +207,6 @@ public class MooseBehaviour : AnimalBehaviour
             Collider hit = hits[i];
 
             if (hit == null) continue;
-            if (!hit.CompareTag("Plant")) continue;
             
             IsEdible edible = hit.GetComponent<IsEdible>();
             if (edible == null || !edible.CanBeEatenBy(animal.species))

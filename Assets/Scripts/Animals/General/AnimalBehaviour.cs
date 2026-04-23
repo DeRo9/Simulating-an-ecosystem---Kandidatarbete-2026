@@ -98,6 +98,10 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
     protected float drinkingTimer = 0f;
     protected float drinkingDuration = 3f;
+
+    protected float timeSinceLastDamage = 0f;
+    protected float damageRecoveryCooldown = 10f;    
+    protected float healthRegenRate = 5f;  
     
     protected virtual void Start()
     {
@@ -118,6 +122,8 @@ public abstract class AnimalBehaviour : MonoBehaviour
         {
             stateTrackers[state] = new StateTracker();
         }
+
+        timeSinceLastDamage = damageRecoveryCooldown;
     }
 
     protected bool hasArrived()
@@ -253,6 +259,13 @@ public abstract class AnimalBehaviour : MonoBehaviour
             return;
         }
 
+        if (agent != null && animal != null)
+        {
+            agent.speed = animal.speed;
+        }
+
+        UpdateHealthRegeneration();
+
         ApplyPregnancyEffects();
 
         if (animal.GetHealth() <= 0f)
@@ -316,6 +329,18 @@ public abstract class AnimalBehaviour : MonoBehaviour
                 break;
             case State.Dead:
                 break;
+        }
+    }
+
+    protected void UpdateHealthRegeneration()
+    {
+        timeSinceLastDamage += Time.deltaTime;
+        if (timeSinceLastDamage >= damageRecoveryCooldown && 
+            !needs.isHungry && 
+            !needs.isThirsty &&
+            needs.healthLevel < needs.maxHealth)
+        {
+            needs.RegenerateHealth(healthRegenRate * Time.deltaTime);
         }
     }
 
@@ -887,6 +912,7 @@ protected virtual void UpdateSearchMate()
     public virtual void InflictDamage(float damage)
     {
         needs.TakeDamage(damage);
+        timeSinceLastDamage = 0f;
     }
 
     public Vector2Int DecideFoodAndWaterTargetChunk()

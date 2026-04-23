@@ -154,9 +154,8 @@ public class WolfBehaviour : AnimalBehaviour
             huntCooldown = huntCooldown * 0.5f;
         }
 
-        // Update animation based on movement
-        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < animal.runningSpeed * 0.95f); // "isWalking" är en bool i animator
-        anim.SetBool("isRunning", agent.velocity.magnitude > animal.runningSpeed * 0.95f); // "isRunning" är en bool i animator
+        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < animal.runningSpeed * 0.95f);
+        anim.SetBool("isRunning", agent.velocity.magnitude > animal.runningSpeed * 0.95f);
 
         if (waitingForDeathAnimation)
         {
@@ -173,19 +172,12 @@ public class WolfBehaviour : AnimalBehaviour
             return;
         }
 
-        if (pack != null && wolf != null && !wolf.isLeader && pack.leader != null)
-        {
-            if (CurrentState == State.Idle || CurrentState == State.Wander)
-            {
-                FollowLeader();
-                return;
-            }
-        }
-
         if (CheckForThreats()) return;
 
         if (huntCooldownTimer > 0)
+        {
             huntCooldownTimer -= Time.deltaTime;
+        }
 
         switch (CurrentState)
         {
@@ -200,6 +192,21 @@ public class WolfBehaviour : AnimalBehaviour
                 return;
         }
 
+
+        if (!wolf.isLeader && HasCriticalNeed())
+        {
+            EvaluateNeeds();
+            return;
+            
+        }
+        
+        
+        if (pack != null && wolf != null && !wolf.isLeader && pack.leader != null)
+        {
+            FollowLeader();
+            return;
+        }
+
         needsEvalCooldown -= Time.deltaTime;
         if (needsEvalCooldown <= 0f)
         {
@@ -207,6 +214,17 @@ public class WolfBehaviour : AnimalBehaviour
             EvaluateNeeds();
         }
 
+    }
+
+    private bool HasCriticalNeed()
+    {
+        if (needs.howThirstyInPercent < 0.2f)
+            return true;
+        
+        if (needs.howHungryInPercent < 0.15f)
+            return true;
+        
+        return false;
     }
 
     private bool CheckForThreats()
