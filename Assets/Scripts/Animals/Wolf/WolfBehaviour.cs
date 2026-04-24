@@ -11,27 +11,26 @@ public class WolfBehaviour : AnimalBehaviour
     AnimalFOV fov;
     AnimalHearing hearing;
     float huntCooldown = 6f;
+
+
     [Header("Hunting")]
     [SerializeField]
     float huntCooldownTimer = 0;
-
     float attackRange = 3.5f; 
-
     float repathTimer = 0f;
     float repathInterval = 0.5f;
-
     float foodSearchingCooldown;
     float needsEvalCooldown = 0f;
 
+    private float nonLeaderNeedsEvalCooldown = 0f;
+    [SerializeField] private float nonLeaderNeedsEvalInterval = 3f;
+
     float deathWaitTimer = 0f;
     float deathWaitDuration = 2f; 
-
     bool waitingForDeathAnimation = false;
 
     const int DefendThreshold = 5;
-
     GameObject pendingCarcass;
-
     private List<BearBehaviour> bearAttackers = new List<BearBehaviour>();
 
     [Header("Layers")]
@@ -41,10 +40,10 @@ public class WolfBehaviour : AnimalBehaviour
     [Header("Pack")]
     Wolf wolf;
     WolfPackManager pack;
-
     public GameObject preyTarget;
-
     public GameObject CurrentTarget => preyTarget;
+
+    public bool breakFormation = false;
 
     protected override void Start()
     {
@@ -54,6 +53,106 @@ public class WolfBehaviour : AnimalBehaviour
         wolf = GetComponent<Wolf>();
         if (wolf != null)
             pack = wolf.pack;
+    }
+
+
+    protected override void Update()
+    {
+        pack = wolf.pack;
+
+        base.Update();
+
+        if (isDead) return;
+
+        if (SeasonManager.Instance.IsWinter)
+        {
+            huntCooldown = huntCooldown * 0.5f;
+        }
+
+        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < animal.runningSpeed * 0.95f);
+        anim.SetBool("isRunning", agent.velocity.magnitude > animal.runningSpeed * 0.95f);
+
+        if (waitingForDeathAnimation)
+        {
+            deathWaitTimer -= Time.deltaTime;
+            if (deathWaitTimer <= 0f)
+            {
+                waitingForDeathAnimation = false;
+                preyTarget = null;
+                if (CurrentState != State.SearchFood)
+                {
+                    ChangeState(State.SearchFood);
+                }
+            }
+            return;
+        }
+
+        if (CheckForThreats()) return;
+
+        if (huntCooldownTimer > 0)
+        {
+            huntCooldownTimer -= Time.deltaTime;
+        }
+
+        switch (CurrentState)
+        {
+            case State.Hunt:
+            case State.Eat:
+            case State.Drink:
+            case State.SearchFood:
+            case State.SearchWater:
+            case State.Mating:
+            case State.Fleeing:
+            case State.Defend:
+                return;
+        }
+
+
+        if (!wolf.isLeader)
+        {
+            if (HasCriticalNeed())
+            {
+                EvaluateNeeds();
+                return;
+            }
+ 
+            nonLeaderNeedsEvalCooldown -= Time.deltaTime;
+            if (nonLeaderNeedsEvalCooldown <= 0f)
+            {
+                nonLeaderNeedsEvalCooldown = nonLeaderNeedsEvalInterval;
+                
+                if (CanMate())
+                {
+                    breakFormation = true;
+                }
+                else
+                {
+                    breakFormation = false;
+                }
+                
+                if (CurrentState == State.Idle || CurrentState == State.Wander)
+                {
+                    EvaluateNeeds();
+                }
+            }
+ 
+            if (pack != null && wolf != null && pack.leader != null)
+            {
+                FollowLeader();
+                return;
+            }
+        }
+        
+        if (wolf.isLeader)
+        {
+            needsEvalCooldown -= Time.deltaTime;
+            if (needsEvalCooldown <= 0f)
+            {
+                needsEvalCooldown = 1f;
+                EvaluateNeeds();
+            }
+        }
+
     }
 
     Vector3 followOffset = new Vector3(0, 0, -5f);
@@ -75,6 +174,16 @@ public class WolfBehaviour : AnimalBehaviour
         Vector3 targetPosition = pack.leader.transform.position + pack.leader.transform.TransformDirection(followOffset);
 
         float distance = Vector3.Distance(transform.position, targetPosition);
+
+
+        if (!wolf.isLeader && breakFormation && CanMate())
+        {
+            if (pack.countCurrentPackSize() < 3)
+            {
+                ChangeState(State.SearchMate);
+                return;
+            }
+        }
 
         if (leaderBehaviour != null && leaderBehaviour.preyTarget != null)
         {
@@ -136,82 +245,6 @@ public class WolfBehaviour : AnimalBehaviour
 
         if (agent != null && agent.isOnNavMesh)
             agent.Move(separation * Time.deltaTime);
-    }
-
-
-    protected override void Update()
-    {
-        pack = wolf.pack;
-
-        base.Update();
-
-        if (isDead) return;
-
-        if (SeasonManager.Instance.IsWinter)
-        {
-            huntCooldown = huntCooldown * 0.5f;
-        }
-
-        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < animal.runningSpeed * 0.95f);
-        anim.SetBool("isRunning", agent.velocity.magnitude > animal.runningSpeed * 0.95f);
-
-        if (waitingForDeathAnimation)
-        {
-            deathWaitTimer -= Time.deltaTime;
-            if (deathWaitTimer <= 0f)
-            {
-                waitingForDeathAnimation = false;
-                preyTarget = null;
-                if (CurrentState != State.SearchFood)
-                {
-                    ChangeState(State.SearchFood);
-                }
-            }
-            return;
-        }
-
-        if (CheckForThreats()) return;
-
-        if (huntCooldownTimer > 0)
-        {
-            huntCooldownTimer -= Time.deltaTime;
-        }
-
-        switch (CurrentState)
-        {
-            case State.Hunt:
-            case State.Eat:
-            case State.Drink:
-            case State.SearchFood:
-            case State.SearchWater:
-            case State.Mating:
-            case State.Fleeing:
-            case State.Defend:
-                return;
-        }
-
-
-        if (!wolf.isLeader && HasCriticalNeed())
-        {
-            EvaluateNeeds();
-            return;
-            
-        }
-        
-        
-        if (pack != null && wolf != null && !wolf.isLeader && pack.leader != null)
-        {
-            FollowLeader();
-            return;
-        }
-
-        needsEvalCooldown -= Time.deltaTime;
-        if (needsEvalCooldown <= 0f)
-        {
-            needsEvalCooldown = 1f;
-            EvaluateNeeds();
-        }
-
     }
 
     private bool HasCriticalNeed()
