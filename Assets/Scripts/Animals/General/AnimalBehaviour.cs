@@ -760,6 +760,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
         if (mating.GetPregnancyTimer() > 0f) return false;
         if (animal.age < animal.grownUpAge) return false;
         if (mating.GetCooldownTimer() > 0f) return false;
+        if (needs.isHungry || needs.isThirsty) return false;
         return true;
     }
 
