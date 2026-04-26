@@ -63,6 +63,13 @@ public class Animal : MonoBehaviour
         IsMale = Random.value > 0.5f;
         needs = GetComponent<AnimalNeeds>();
         needs.staminaDecreaseRate = staminaDecreaseRate;
+        if (!IsMale)
+        {
+            size *= 0.8f;
+            baseStrength *= 0.8f;
+            baseHealth *= 0.8f;
+            baseSpeed *= 0.9f;
+        }
     }
 
     float attributeUpdateTimer;
@@ -83,30 +90,6 @@ public class Animal : MonoBehaviour
         }
     }
 
-    public virtual void UpdateAttributes()
-    {
-        float ageModifier = GetAgeModifier();
-
-        strength = baseStrength * ageModifier * size;
-        health = baseHealth * ageModifier * size;
-        speed = baseSpeed * ageModifier * size;
-        runningSpeed = speed * 1.75f;
-        needs.staminaDecreaseRate = staminaDecreaseRate * size; //smaller animal does net get as tired
-    }
-
-    protected float GetAgeModifier()
-    {
-        if (age < grownUpAge)
-        {
-            return Mathf.Lerp(0.5f, 1f, age / grownUpAge);
-        }
-        else if (age > oldAge)
-        {
-            return 0.8f; 
-        }
-        return 1f;
-    }
-
     public void InitializeAttributes()
     {
         baseHealth *= getVariation();
@@ -125,6 +108,34 @@ public class Animal : MonoBehaviour
     public float getVariation()
     {
         return Random.Range(0.85f, 1.15f);
+    }
+
+    public virtual void UpdateAttributes()
+    {
+        float ageModifier = GetAgeModifier();
+
+        strength = baseStrength * ageModifier * size;
+        health = baseHealth * ageModifier * size;
+        speed = baseSpeed * ageModifier * size;
+        runningSpeed = speed * 1.75f;
+        needs.staminaDecreaseRate = staminaDecreaseRate * size; //smaller animal does net get as tired
+
+        float healthRatio = needs.healthLevel / needs.maxHealth;
+        needs.maxHealth = health;
+        needs.healthLevel = health * healthRatio;
+    }
+
+    protected float GetAgeModifier()
+    {
+        if (age < grownUpAge)
+        {
+            return Mathf.Lerp(0.5f, 1f, age / grownUpAge);
+        }
+        else if (age > oldAge)
+        {
+            return 0.8f; 
+        }
+        return 1f;
     }
 
     public virtual void SetMovementState(bool moving, float speed){

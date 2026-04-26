@@ -36,6 +36,7 @@ public class MushroomSpawner : MonoBehaviour
         mushrooms.Clear();
 
         //maxMushrooms = mushroomMaxInitialization;
+    
 
         if (SeasonManager.Instance.IsWinter)
         {

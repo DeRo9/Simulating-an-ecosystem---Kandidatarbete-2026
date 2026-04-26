@@ -11,29 +11,26 @@ public class WolfBehaviour : AnimalBehaviour
     AnimalFOV fov;
     AnimalHearing hearing;
     float huntCooldown = 6f;
+
+
     [Header("Hunting")]
     [SerializeField]
     float huntCooldownTimer = 0;
-
     float attackRange = 3.5f; 
-
     float repathTimer = 0f;
     float repathInterval = 0.5f;
-
     float foodSearchingCooldown;
     float needsEvalCooldown = 0f;
 
+    private float nonLeaderNeedsEvalCooldown = 0f;
+    [SerializeField] private float nonLeaderNeedsEvalInterval = 3f;
+
     float deathWaitTimer = 0f;
     float deathWaitDuration = 2f; 
-
-    float memoryDecisionCooldown = 0f;
-
     bool waitingForDeathAnimation = false;
 
     const int DefendThreshold = 5;
-
     GameObject pendingCarcass;
-
     private List<BearBehaviour> bearAttackers = new List<BearBehaviour>();
 
     [Header("Layers")]
@@ -43,10 +40,10 @@ public class WolfBehaviour : AnimalBehaviour
     [Header("Pack")]
     Wolf wolf;
     WolfPackManager pack;
-
     public GameObject preyTarget;
-
     public GameObject CurrentTarget => preyTarget;
+
+    public bool breakFormation = false;
 
     protected override void Start()
     {
@@ -56,6 +53,106 @@ public class WolfBehaviour : AnimalBehaviour
         wolf = GetComponent<Wolf>();
         if (wolf != null)
             pack = wolf.pack;
+    }
+
+
+    protected override void Update()
+    {
+        pack = wolf.pack;
+
+        base.Update();
+
+        if (isDead) return;
+
+        if (SeasonManager.Instance.IsWinter)
+        {
+            huntCooldown = huntCooldown * 0.5f;
+        }
+
+        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < animal.runningSpeed * 0.95f);
+        anim.SetBool("isRunning", agent.velocity.magnitude > animal.runningSpeed * 0.95f);
+
+        if (waitingForDeathAnimation)
+        {
+            deathWaitTimer -= Time.deltaTime;
+            if (deathWaitTimer <= 0f)
+            {
+                waitingForDeathAnimation = false;
+                preyTarget = null;
+                if (CurrentState != State.SearchFood)
+                {
+                    ChangeState(State.SearchFood);
+                }
+            }
+            return;
+        }
+
+        if (CheckForThreats()) return;
+
+        if (huntCooldownTimer > 0)
+        {
+            huntCooldownTimer -= Time.deltaTime;
+        }
+
+        switch (CurrentState)
+        {
+            case State.Hunt:
+            case State.Eat:
+            case State.Drink:
+            case State.SearchFood:
+            case State.SearchWater:
+            case State.Mating:
+            case State.Fleeing:
+            case State.Defend:
+                return;
+        }
+
+
+        if (!wolf.isLeader)
+        {
+            if (HasCriticalNeed())
+            {
+                EvaluateNeeds();
+                return;
+            }
+ 
+            nonLeaderNeedsEvalCooldown -= Time.deltaTime;
+            if (nonLeaderNeedsEvalCooldown <= 0f)
+            {
+                nonLeaderNeedsEvalCooldown = nonLeaderNeedsEvalInterval;
+                
+                if (CanMate())
+                {
+                    breakFormation = true;
+                }
+                else
+                {
+                    breakFormation = false;
+                }
+                
+                if (CurrentState == State.Idle || CurrentState == State.Wander)
+                {
+                    EvaluateNeeds();
+                }
+            }
+ 
+            if (pack != null && wolf != null && pack.leader != null)
+            {
+                FollowLeader();
+                return;
+            }
+        }
+        
+        if (wolf.isLeader)
+        {
+            needsEvalCooldown -= Time.deltaTime;
+            if (needsEvalCooldown <= 0f)
+            {
+                needsEvalCooldown = 1f;
+                EvaluateNeeds();
+            }
+        }
+
     }
 
     Vector3 followOffset = new Vector3(0, 0, -5f);
@@ -77,6 +174,16 @@ public class WolfBehaviour : AnimalBehaviour
         Vector3 targetPosition = pack.leader.transform.position + pack.leader.transform.TransformDirection(followOffset);
 
         float distance = Vector3.Distance(transform.position, targetPosition);
+
+
+        if (!wolf.isLeader && breakFormation && CanMate())
+        {
+            if (pack.countCurrentPackSize() < 3)
+            {
+                ChangeState(State.SearchMate);
+                return;
+            }
+        }
 
         if (leaderBehaviour != null && leaderBehaviour.preyTarget != null)
         {
@@ -140,73 +247,15 @@ public class WolfBehaviour : AnimalBehaviour
             agent.Move(separation * Time.deltaTime);
     }
 
-
-    protected override void Update()
+    private bool HasCriticalNeed()
     {
-        pack = wolf.pack;
-
-        base.Update();
-
-        if (isDead) return;
-
-        if (SeasonManager.Instance.IsWinter)
-        {
-            huntCooldown = huntCooldown * 0.5f;
-        }
-
-        // Update animation based on movement
-        anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < animal.runningSpeed * 0.95f); // "isWalking" är en bool i animator
-        anim.SetBool("isRunning", agent.velocity.magnitude > animal.runningSpeed * 0.95f); // "isRunning" är en bool i animator
-
-        if (waitingForDeathAnimation)
-        {
-            deathWaitTimer -= Time.deltaTime;
-            if (deathWaitTimer <= 0f)
-            {
-                waitingForDeathAnimation = false;
-                preyTarget = null;
-                if (CurrentState != State.SearchFood)
-                {
-                    ChangeState(State.SearchFood);
-                }
-            }
-            return;
-        }
-
-        if (pack != null && wolf != null && !wolf.isLeader && pack.leader != null)
-        {
-            if (CurrentState == State.Idle || CurrentState == State.Wander)
-            {
-                FollowLeader();
-                return;
-            }
-        }
-
-        if (CheckForThreats()) return;
-
-        if (huntCooldownTimer > 0)
-            huntCooldownTimer -= Time.deltaTime;
-
-        switch (CurrentState)
-        {
-            case State.Hunt:
-            case State.Eat:
-            case State.Drink:
-            case State.SearchFood:
-            case State.SearchWater:
-            case State.Mating:
-            case State.Fleeing:
-            case State.Defend:
-                return;
-        }
-
-        needsEvalCooldown -= Time.deltaTime;
-        if (needsEvalCooldown <= 0f)
-        {
-            needsEvalCooldown = 1f;
-            EvaluateNeeds();
-        }
-
+        if (needs.howThirstyInPercent < 0.2f)
+            return true;
+        
+        if (needs.howHungryInPercent < 0.15f)
+            return true;
+        
+        return false;
     }
 
     private bool CheckForThreats()
@@ -235,21 +284,13 @@ public class WolfBehaviour : AnimalBehaviour
         bool thirsty = IsThirsty();
         if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
         {
-            if (FindWater())
-                ChangeState(State.Drink);
-            else
-                ChangeState(State.SearchWater);
+            ChangeState(State.SearchWater);
             return;
         }
 
         if (hungry)
         {
-            if (FindFood())
-                ChangeState(State.Eat);
-            else if (FindPrey())
-                ChangeState(State.Hunt);
-            else
-                ChangeState(State.SearchFood);
+            ChangeState(State.SearchFood);
             return;
         }
 
@@ -270,6 +311,7 @@ public class WolfBehaviour : AnimalBehaviour
 
     bool FindPrey()
     {
+        if (huntCooldownTimer > 0f) return false;
         if (preyTarget != null) return true;
 
         Collider[] hits = Physics.OverlapSphere(transform.position, animal.sightRange, PreyLayer);
@@ -279,7 +321,6 @@ public class WolfBehaviour : AnimalBehaviour
         foreach (Collider hit in hits)
         {
             if (!fov.IsInFOV(hit.transform)) continue;
-
             if (hit.CompareTag("Moose"))
             {
                 MooseBehaviour moose = hit.GetComponentInParent<MooseBehaviour>();
@@ -504,9 +545,19 @@ public class WolfBehaviour : AnimalBehaviour
 
     protected override void UpdateSearchFood()
     {
-        if (FindFood())
+
+        if (foodTarget == null) 
         {
-            ChangeState(State.Eat);
+            FindFood();
+        }
+
+        if (foodTarget != null)
+        {
+            if (hasArrived())
+            {
+                ChangeState(State.Eat);
+                return;
+            }
             return;
         }
 
@@ -541,11 +592,21 @@ public class WolfBehaviour : AnimalBehaviour
                 }
             }
         }
+        else if (hasArrived())
+        {
+            memoryDecisionCooldown = 0f;
+        }
     }
 
     private Collider[] hits = new Collider[10];
     bool FindFood()
     {
+
+        if (foodTarget != null)
+        {
+            return true;
+        }
+
         if (foodSearchingCooldown > 0f && foodTarget != null)
         {
             foodSearchingCooldown -= Time.deltaTime;
@@ -567,6 +628,9 @@ public class WolfBehaviour : AnimalBehaviour
                 continue;
             if (!hit.CompareTag("carcass"))
                 continue;
+            IsEdible edible = hit.GetComponent<IsEdible>();
+            if (edible == null || !edible.CanBeEatenBy(animal.species))
+                continue;
             if (!fov.IsInFOV(hit.transform))
             {
                 continue;
@@ -584,11 +648,61 @@ public class WolfBehaviour : AnimalBehaviour
         if (closestFood != null)
         {
             foodTarget = closestFood;
+            if (agent != null && agent.isOnNavMesh)
+            {
+                agent.isStopped = false;
+                agent.SetDestination(closestFood.transform.position);
+            }
             return true;
         }
 
         foodTarget = null;
         return false;
+    }
+
+    protected override void UpdateEat()
+    {
+        if (foodTarget == null)
+        {
+            ChangeState(State.SearchFood);
+            return;
+        }
+
+        Carcass carcass = foodTarget.GetComponent<Carcass>();
+
+        if (carcass == null)
+        {
+            foodTarget = null;
+            ChangeState(State.SearchFood);
+            return;
+        }
+
+        agent.isStopped = true;
+        eatingTimer += Time.deltaTime;
+        if (eatingTimer >= eatingDuration)
+        {
+            needs.Eat(carcass.Consume());
+            eatingTimer = 0f;
+
+            if (carcass.IsEmpty || foodTarget == null)
+            {
+                foodTarget = null;
+                agent.isStopped = false;
+
+                if (needs.isHungry)
+                    ChangeState(State.SearchFood);
+                else
+                    ChangeState(State.Wander);
+                return;
+            }
+
+            if (!needs.isHungry)
+            {
+                foodTarget = null;
+                agent.isStopped = false;
+                ChangeState(State.Wander);
+            }
+        }
     }
 
     public void notifyDeath()

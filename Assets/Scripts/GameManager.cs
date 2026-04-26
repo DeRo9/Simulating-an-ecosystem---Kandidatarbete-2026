@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 
 
 public class GameManager : MonoBehaviour
@@ -262,6 +263,86 @@ public class GameManager : MonoBehaviour
         return transform.position;
     }
 
+    void ExportSimulationData()
+    {
+        if (StatisticsTableManager.instance == null) return;
+
+        var sm = StatisticsTableManager.instance;
+        
+        // Build CSV header and data row
+        string header = "BearFinalPopulation,WolfFinalPopulation,MooseFinalPopulation," +
+            "BearBirths,WolfBirths,MooseBirths," +
+            "BearDeaths,WolfDeaths,MooseDeaths," +
+            "BearStarvation,WolfStarvation,MooseStarvation," +
+            "BearPredation,WolfPredation,MoosePredation," +
+            "BearPlantMeals,BearAnimalPrey,MoosePlantMeals,WolfCarcass," +
+            "PacksFormed,PackHuntAttempts,PackHuntSuccess," +
+            "BearAvgHunger,BearAvgThirst,BearAvgStamina," +
+            "WolfAvgHunger,WolfAvgThirst,WolfAvgStamina," +
+            "MooseAvgHunger,MooseAvgThirst,MooseAvgStamina," +
+            "BearAvgLifespan,WolfAvgLifespan,MooseAvgLifespan";
+
+        // Final population
+        int bearPop = omnivoreFolder != null ? omnivoreFolder.childCount : 0;
+        int wolfPop = carnivoreFolder != null ? carnivoreFolder.childCount : 0;
+        int moosePop = herbivoresFolder != null ? herbivoresFolder.childCount : 0;
+
+        // Pack hunt success rate
+        float packHuntSuccessRate = sm.PackHuntAttemptsCount > 0 
+            ? (sm.PackHuntSuccessCount / (float)sm.PackHuntAttemptsCount) * 100f 
+            : 0f;
+
+        System.Globalization.CultureInfo inv = System.Globalization.CultureInfo.InvariantCulture;
+        string data = $"{bearPop},{wolfPop},{moosePop}," +
+            $"{sm.BearBirthCount},{sm.WolfBirthCount},{sm.MooseBirthCount}," +
+            $"{sm.BearDeathCount},{sm.WolfDeathCount},{sm.MooseDeathCount}," +
+            $"{sm.BearStarvationCount},{sm.WolfStarvationCount},{sm.MooseStarvationCount}," +
+            $"{sm.BearPredationCount},{sm.WolfPredationCount},{sm.MoosePredationCount}," +
+            $"{sm.BearPlantMealsCount},{sm.BearAnimalPreyCount},{sm.MoosePlantMealsCount},{sm.WolfCarcassCount}," +
+            $"{sm.PacksFormedCount},{sm.PackHuntAttemptsCount},{sm.PackHuntSuccessCount}," +
+            $"{SimulationResults.bearAvgHunger.ToString("F2", inv)},{SimulationResults.bearAvgThirst.ToString("F2", inv)},{SimulationResults.bearAvgStamina.ToString("F2", inv)}," +
+            $"{SimulationResults.wolfAvgHunger.ToString("F2", inv)},{SimulationResults.wolfAvgThirst.ToString("F2", inv)},{SimulationResults.wolfAvgStamina.ToString("F2", inv)}," +
+            $"{SimulationResults.mooseAvgHunger.ToString("F2", inv)},{SimulationResults.mooseAvgThirst.ToString("F2", inv)},{SimulationResults.mooseAvgStamina.ToString("F2", inv)}," +
+            $"{CalculateAvgLifespan(Species.bear).ToString("F2", inv)},{CalculateAvgLifespan(Species.wolf).ToString("F2", inv)},{CalculateAvgLifespan(Species.moose).ToString("F2", inv)}";
+
+        // Create output directory if it doesn't exist
+        string outputDir = Path.Combine(Application.persistentDataPath, "SimulationData");
+        Directory.CreateDirectory(outputDir);
+
+        // Generate filename with timestamp
+        string timestamp = System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+        string filePath = Path.Combine(outputDir, $"simulation_{timestamp}.csv");
+
+        // Write to file
+        using (StreamWriter writer = new StreamWriter(filePath))
+        {
+            writer.WriteLine(header);
+            writer.WriteLine(data);
+        }
+
+        Debug.Log($"Simulation data exported to: {filePath}");
+    }
+
+    float CalculateAvgLifespan(Species species)
+    {
+        var sm = StatisticsTableManager.instance;
+        if (sm == null) return 0f;
+
+        return species switch
+        {
+            Species.bear => (sm.BearDeathCount + sm.BearSurvivorCount) > 0
+                ? (sm.BearTotalAgeAtDeath + sm.BearSurvivorTotalAge) / (sm.BearDeathCount + sm.BearSurvivorCount)
+                : 0f,
+            Species.wolf => (sm.WolfDeathCount + sm.WolfSurvivorCount) > 0
+                ? (sm.WolfTotalAgeAtDeath + sm.WolfSurvivorTotalAge) / (sm.WolfDeathCount + sm.WolfSurvivorCount)
+                : 0f,
+            Species.moose => (sm.MooseDeathCount + sm.MooseSurvivorCount) > 0
+                ? (sm.MooseTotalAgeAtDeath + sm.MooseSurvivorTotalAge) / (sm.MooseDeathCount + sm.MooseSurvivorCount)
+                : 0f,
+            _ => 0f
+        };
+    }
+
     void EndSimulation ()
     {
         simulationRunning = false;
@@ -304,6 +385,8 @@ public class GameManager : MonoBehaviour
             RecordSurvivorAges(carnivoreFolder, Species.wolf);
             RecordSurvivorAges(herbivoresFolder, Species.moose);
         }
+
+        ExportSimulationData();
 
         SceneManager.LoadScene("SimOver");
     }

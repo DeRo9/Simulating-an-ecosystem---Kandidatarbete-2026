@@ -14,8 +14,6 @@ public class MooseBehaviour : AnimalBehaviour
     Moose moose;
     float foodSearchingCooldown;
 
-    float memoryDecisionCooldown = 0f;
-
     private float needsEvalCooldown = 0f;
 
     [Header("Avoidance")]
@@ -76,12 +74,10 @@ public class MooseBehaviour : AnimalBehaviour
     private bool CheckForThreats()
     {
         if (isDead) return false;
-
         if (hearing == null || !hearing.HeardSomething) return false;
 
         Animal heard = hearing.HeardAnimal;
         if (heard == null) return false;
-
         if (heard.species != Species.bear && heard.species != Species.wolf) return false;
 
         memory.RememberDanger(heard.transform.position);
@@ -90,7 +86,8 @@ public class MooseBehaviour : AnimalBehaviour
         if (wolf != null && wolf.CurrentTarget == gameObject)
         {
             enemy = heard.gameObject;
-            ChangeState(State.Fleeing);
+            if (CurrentState != State.Defend || CurrentState != State.Fleeing)
+                ChangeState(State.Fleeing);
             return true;
         }
 
@@ -98,7 +95,8 @@ public class MooseBehaviour : AnimalBehaviour
         if (bear != null && bear.CurrentTarget == gameObject)
         {
             enemy = heard.gameObject;
-            ChangeState(State.Fleeing);
+            if (CurrentState != State.Defend || CurrentState != State.Fleeing)
+                ChangeState(State.Fleeing);
             return true;
         }
         return false;
@@ -110,26 +108,23 @@ public class MooseBehaviour : AnimalBehaviour
         bool thirsty = IsThirsty();
 
         if (thirsty && (!hungry || needs.howThirstyInPercent < needs.howHungryInPercent))
-        {
-            if (FindWater())
-                ChangeState(State.Drink);
-            else
-                ChangeState(State.SearchWater);
+        {       
+            ChangeState(State.SearchWater);
             return;
         }
 
         if (hungry)
         {
-            if (FindFood())
-                ChangeState(State.Eat);
-            else
-                ChangeState(State.SearchFood);
+            ChangeState(State.SearchFood);
             return;
         }
 
         if (mating != null && CanMate())
         {
-            ChangeState(State.SearchMate);
+            if (CurrentState != State.SearchMate && CurrentState != State.Mating)
+            {
+                ChangeState(State.SearchMate);
+            }
             return;
         }
 
@@ -140,9 +135,18 @@ public class MooseBehaviour : AnimalBehaviour
     }
     protected override void UpdateSearchFood()
     {
-        if (FindFood())
+        if (foodTarget == null) 
         {
-            ChangeState(State.Eat);
+            FindFood();
+        }
+
+        if (foodTarget != null)
+        {
+            if (hasArrived())
+            {
+                ChangeState(State.Eat);
+                return;
+            }
             return;
         }
 
@@ -167,21 +171,23 @@ public class MooseBehaviour : AnimalBehaviour
                 }
                 else
                 {
-                    agent.SetDestination(GetRandomPoints());
-
-                    if (UnityEngine.Random.value < 0.2f) // 20% chance for exploration instead of memory
-                    {
-                        ChangeState(State.Wander);
-                        return;
-                    }     
+                    agent.SetDestination(GetRandomPoints());     
                 }
             }
+        }
+        else if (hasArrived())
+        {
+            memoryDecisionCooldown = 0f;
         }
     }
 
     private Collider[] hits = new Collider[10];
     bool FindFood()
     {
+        if (foodTarget != null)
+        {
+            return true;
+        }
 
         if(foodSearchingCooldown > 0f)
         {
@@ -201,7 +207,10 @@ public class MooseBehaviour : AnimalBehaviour
             Collider hit = hits[i];
 
             if (hit == null) continue;
-            if (!hit.CompareTag("Plant")) continue;
+            
+            IsEdible edible = hit.GetComponent<IsEdible>();
+            if (edible == null || !edible.CanBeEatenBy(animal.species))
+                continue;
             if (!fov.IsInFOV(hit.transform)) continue;
             
             memory.RememberFood(hit.transform.position);
@@ -217,11 +226,57 @@ public class MooseBehaviour : AnimalBehaviour
         if(closestFood != null)
         {
             foodTarget = closestFood;
+            if (agent != null && agent.isOnNavMesh)
+            {
+                agent.isStopped = false;
+                agent.SetDestination(closestFood.transform.position);
+            }
             return true;
         }
 
         foodTarget = null;
         return false;
+    }
+
+    protected override void UpdateEat()
+    {
+        if (foodTarget == null)
+        {
+            ChangeState(State.SearchFood);
+            return;
+        }
+
+        agent.isStopped = true;
+        eatingTimer += Time.deltaTime;
+
+        if (eatingTimer >= eatingDuration)
+        {
+            if (needs.isHungry)
+            {
+                IsEdible edible = foodTarget.GetComponent<IsEdible>();
+                
+                if (edible != null && edible.CanBeEatenBy(animal.species))
+                {
+                    float nutrition = edible.Consume();
+                    needs.Eat(nutrition);
+                    StatisticsTableManager.instance.MoosePlantMealsCount++;
+
+                }
+            }
+
+            agent.isStopped = false;
+            foodTarget = null;
+            eatingTimer = 0f;
+            
+            if (needs.isHungry)
+            {
+                ChangeState(State.SearchFood);
+            }
+            else
+            {
+                ChangeState(State.Wander);
+            }
+        }
     }
 
     public void OnBeingHunted(GameObject predator)

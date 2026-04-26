@@ -7,29 +7,10 @@ public class WaterSource : MonoBehaviour
 {
     [SerializeField]
     
-    private float chunkOfWater = 100f;
+    private float waterAmount = 100f;
 
-    void OnTriggerStay(Collider other)
+    public float Drink()
     {
-        if (!(other is SphereCollider))
-        {
-
-            AnimalNeeds needs = other.GetComponentInParent<AnimalNeeds>();
-
-            if (needs != null && needs.isThirsty) //Only drink if thirsty
-            {
-                needs.drinkFromSource(chunkOfWater);
-                needs.RegenerateHealth(10f); // Drinking also regenerates health
-
-                if (!needs.isThirsty)
-                {
-                    AnimalBehaviour behaviour = other.GetComponentInParent<AnimalBehaviour>();
-                    if (behaviour != null)
-                    {
-                        behaviour.OnFinishedDrinking();
-                    }
-                }
-            }
-        }
+        return waterAmount;
     }
 }

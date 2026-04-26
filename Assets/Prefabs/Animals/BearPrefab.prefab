@@ -1630,8 +1630,12 @@ MonoBehaviour:
   waterLayer:
     serializedVersion: 2
     m_Bits: 16
+  memoryDecisionCooldown: 0
   foodTarget: {fileID: 0}
   enemy: {fileID: 0}
+  foodLayer:
+    serializedVersion: 2
+    m_Bits: 1024
   huntCooldownTimer: 0
   PreyLayer:
     serializedVersion: 2

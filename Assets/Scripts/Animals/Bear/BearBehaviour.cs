@@ -14,6 +14,9 @@ public class BearBehaviour : AnimalBehaviour
     public GameObject CurrentTarget => preyTarget;
     float attackRange = 3.5f;
 
+    [Header("Layers")]
+    [SerializeField] LayerMask foodLayer;
+
     float huntCooldown = 5f;
     [Header("Hunting")]
     [SerializeField]
@@ -26,7 +29,6 @@ public class BearBehaviour : AnimalBehaviour
     float needsEvalCooldown = 0f;
 
     float deathWaitTimer = 0f;
-    float memoryDecisionCooldown = 0f;
     float deathWaitDuration = 2f;
     bool waitingForDeathAnimation = false;
 
@@ -81,7 +83,10 @@ public class BearBehaviour : AnimalBehaviour
                 waitingForDeathAnimation = false;
                 preyTarget = null;
                 pendingCarcass = null;
-                ChangeState(State.SearchFood);
+                if (CurrentState != State.SearchFood)
+                {
+                    ChangeState(State.SearchFood);
+                }
             }
             return;
         }
@@ -173,22 +178,14 @@ public class BearBehaviour : AnimalBehaviour
         bool hungry = IsHungry();
         bool thirsty = IsThirsty();
         if (needs.howThirstyInPercent < needs.howHungryInPercent && IsThirsty())
-        {
-            if (FindWater())
-                ChangeState(State.Drink);
-            else
-                ChangeState(State.SearchWater);
+        { 
+            ChangeState(State.SearchWater);
             return;
         }
 
         if (hungry)
         {
-            if (FindFood())
-                ChangeState(State.Eat);
-            else if (FindPrey())
-                ChangeState(State.Hunt);
-            else
-                ChangeState(State.SearchFood);
+            ChangeState(State.SearchFood);
             return;
         }
 
@@ -212,15 +209,20 @@ public class BearBehaviour : AnimalBehaviour
     bool FindFood()
     {
 
-        if (foodSearchingCooldown > 0f && foodTarget != null)
+        if (foodTarget != null)
+        {
+            return true;
+        }
+
+        if(foodSearchingCooldown > 0f)
         {
             foodSearchingCooldown -= Time.deltaTime;
-            return true;
+            return foodTarget != null;
         }
 
         foodSearchingCooldown = 1.5f;
 
-        int hitCount = Physics.OverlapSphereNonAlloc(transform.position, animal.sightRange, hits);
+        int hitCount = Physics.OverlapSphereNonAlloc(transform.position, animal.sightRange, hits, foodLayer);
 
         float closestDistance = Mathf.Infinity;
         GameObject closestFood = null;
@@ -229,9 +231,10 @@ public class BearBehaviour : AnimalBehaviour
         {
             Collider hit = hits[i];
 
-            if (hit == null)
-                continue;
-            if (!hit.CompareTag("Plant") && !hit.CompareTag("carcass"))
+            if (hit == null) continue;
+
+            IsEdible edible = hit.GetComponent<IsEdible>();
+            if (edible == null || !edible.CanBeEatenBy(animal.species))
                 continue;
             if (!fov.IsInFOV(hit.transform))
                 continue;
@@ -249,6 +252,11 @@ public class BearBehaviour : AnimalBehaviour
         if (closestFood != null)
         {
             foodTarget = closestFood;
+            if (agent != null && agent.isOnNavMesh)
+            {
+                agent.isStopped = false;
+                agent.SetDestination(closestFood.transform.position);
+            }
             return true;
         }
         foodTarget = null;
@@ -266,10 +274,7 @@ public class BearBehaviour : AnimalBehaviour
 
         foreach (Collider hit in hits)
         {
-
             if (!fov.IsInFOV(hit.transform)) continue;
-
-
             if (hit.CompareTag("Moose"))
             {
                 MooseBehaviour moose = hit.GetComponentInParent<MooseBehaviour>();
@@ -400,11 +405,8 @@ public class BearBehaviour : AnimalBehaviour
                     agent.SetDestination(preyTarget.transform.position);
                     repathTimer = 0f;
                 }
-
             }
-
         }
-
         if (needs.noMoreStamina)
         {
             LostPrey();
@@ -422,7 +424,6 @@ public class BearBehaviour : AnimalBehaviour
         if (distance <= attackRange)
         {
             agent.isStopped = true;
-
             attackTimer += Time.deltaTime;
 
             if (attackTimer >= attackInterval)
@@ -476,7 +477,7 @@ public class BearBehaviour : AnimalBehaviour
                 wolf.UnregisterBearAttacker(this);
                 wolf.OnNoLongerHunted(gameObject);
             }
-        }
+        }  
 
         preyTarget = null;
         huntCooldownTimer = huntCooldown;
@@ -486,18 +487,30 @@ public class BearBehaviour : AnimalBehaviour
 
     protected override void UpdateSearchFood()
     {
-        if (FindFood())
+        if (foodTarget == null) 
         {
-            ChangeState(State.Eat);
+            FindFood();
+        }
+
+        if (foodTarget != null)
+        {
+            if (hasArrived())
+            {
+                ChangeState(State.Eat);
+                return;
+            }
             return;
         }
 
-        if (FindPrey())
+        if (foodTarget == null)
         {
-            ChangeState(State.Hunt);
-            return;
+            if (FindPrey())
+            {
+                ChangeState(State.Hunt);
+                return;
+            }   
         }
-
+        
         memoryDecisionCooldown -= Time.deltaTime;
 
         if (memoryDecisionCooldown <= 0f)
@@ -526,6 +539,45 @@ public class BearBehaviour : AnimalBehaviour
         else if (hasArrived())
         {
             memoryDecisionCooldown = 0f;
+        }
+    }
+
+    protected override void UpdateEat()
+    {
+        if (foodTarget == null)
+        {
+            ChangeState(State.SearchFood);
+            return;
+        }
+
+        agent.isStopped = true;
+        eatingTimer += Time.deltaTime;
+        if (eatingTimer >= eatingDuration)
+        {
+            Carcass carcass = foodTarget.GetComponentInParent<Carcass>();
+            if (carcass != null)
+            {
+                float nutrition = carcass.Consume();
+                needs.Eat(nutrition);
+            }
+            else
+            {
+                IsEdible edible = foodTarget.GetComponent<IsEdible>();
+                
+                if (edible != null && edible.CanBeEatenBy(animal.species))
+                {
+                    float nutrition = edible.Consume();
+                    needs.Eat(nutrition);
+                    StatisticsTableManager.instance.BearPlantMealsCount++;
+
+                }
+            }
+    
+            eatingTimer = 0f;
+            agent.isStopped = false;
+            foodTarget = null;
+
+            ChangeState(needs.isHungry ? State.SearchFood : State.Wander);
         }
     }
 
