@@ -36,7 +36,7 @@ public class AnimalAvoidance : MonoBehaviour
          case AnimalBehaviour.State.SearchWater:
             break; // Continue with avoidance
          default:
-            return;  //This code is here in case we need to add more states to the avoidance, much easier to check this way than to go through them individually
+            return;  
         }
         AnimalNeeds needs = GetComponent<AnimalNeeds>();
          if (needs != null && needs.howHungryInPercent < 0.2f) return;
