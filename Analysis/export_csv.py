@@ -205,13 +205,150 @@ def plot_lifespan(data: pd.DataFrame, output_dir: Path) -> None:
 	plt.close()
 
 
+def plot_births(data: pd.DataFrame, output_dir: Path) -> None:
+	cols = ["BearBirths", "WolfBirths", "MooseBirths"]
+	cols = [c for c in cols if c in data.columns]
+	if not cols:
+		return
+
+	grouped = data.groupby("scenario")[cols]
+	means = grouped.mean()
+	stds = grouped.std().fillna(0)
+
+	ax = means.plot(kind="bar", yerr=stds, capsize=4, figsize=(10, 6))
+	ax.set_title("Births by Scenario")
+	ax.set_ylabel("Count")
+	ax.set_xlabel("Scenario")
+	ax.legend(title="Species")
+	ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha="center")
+	plt.tight_layout()
+	plt.savefig(output_dir / "plot_births.png", dpi=180)
+	plt.close()
+
+
+def plot_starvation(data: pd.DataFrame, output_dir: Path) -> None:
+	cols = ["BearStarvation", "WolfStarvation", "MooseStarvation"]
+	cols = [c for c in cols if c in data.columns]
+	if not cols:
+		return
+
+	grouped = data.groupby("scenario")[cols]
+	means = grouped.mean()
+	stds = grouped.std().fillna(0)
+
+	ax = means.plot(kind="bar", yerr=stds, capsize=4, figsize=(10, 6))
+	ax.set_title("Deaths by Starvation by Scenario")
+	ax.set_ylabel("Count")
+	ax.set_xlabel("Scenario")
+	ax.legend(title="Species")
+	ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha="center")
+	plt.tight_layout()
+	plt.savefig(output_dir / "plot_starvation.png", dpi=180)
+	plt.close()
+
+
+def plot_predation(data: pd.DataFrame, output_dir: Path) -> None:
+	cols = ["BearPredation", "WolfPredation", "MoosePredation"]
+	cols = [c for c in cols if c in data.columns]
+	if not cols:
+		return
+
+	grouped = data.groupby("scenario")[cols]
+	means = grouped.mean()
+	stds = grouped.std().fillna(0)
+
+	ax = means.plot(kind="bar", yerr=stds, capsize=4, figsize=(10, 6))
+	ax.set_title("Deaths by Predation by Scenario")
+	ax.set_ylabel("Count")
+	ax.set_xlabel("Scenario")
+	ax.legend(title="Species")
+	ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha="center")
+	plt.tight_layout()
+	plt.savefig(output_dir / "plot_predation.png", dpi=180)
+	plt.close()
+
+
+def plot_feeding(data: pd.DataFrame, output_dir: Path) -> None:
+	cols = ["BearPlantMeals", "BearAnimalPrey", "MoosePlantMeals", "WolfCarcass"]
+	cols = [c for c in cols if c in data.columns]
+	if not cols:
+		return
+
+	grouped = data.groupby("scenario")[cols]
+	means = grouped.mean()
+	stds = grouped.std().fillna(0)
+
+	ax = means.plot(kind="bar", yerr=stds, capsize=4, figsize=(10, 6))
+	ax.set_title("Feeding by Scenario")
+	ax.set_ylabel("Count")
+	ax.set_xlabel("Scenario")
+	ax.legend(title="Food source")
+	ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha="center")
+	plt.tight_layout()
+	plt.savefig(output_dir / "plot_feeding.png", dpi=180)
+	plt.close()
+
+
+def plot_pack_behavior(data: pd.DataFrame, output_dir: Path) -> None:
+	cols = ["PacksFormed", "PackHuntAttempts", "PackHuntSuccess"]
+	cols = [c for c in cols if c in data.columns]
+	if not cols:
+		return
+
+	grouped = data.groupby("scenario")[cols]
+	means = grouped.mean()
+	stds = grouped.std().fillna(0)
+
+	ax = means.plot(kind="bar", yerr=stds, capsize=4, figsize=(10, 6))
+	ax.set_title("Pack Behavior by Scenario")
+	ax.set_ylabel("Count")
+	ax.set_xlabel("Scenario")
+	ax.legend(title="Metric")
+	ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha="center")
+	plt.tight_layout()
+	plt.savefig(output_dir / "plot_pack_behavior.png", dpi=180)
+	plt.close()
+
+
+def plot_avg_needs(data: pd.DataFrame, output_dir: Path) -> None:
+	cols = [
+		"BearAvgHunger", "BearAvgThirst", "BearAvgStamina",
+		"WolfAvgHunger", "WolfAvgThirst", "WolfAvgStamina",
+		"MooseAvgHunger", "MooseAvgThirst", "MooseAvgStamina",
+	]
+	cols = [c for c in cols if c in data.columns]
+	if not cols:
+		return
+
+	grouped = data.groupby("scenario")[cols]
+	means = grouped.mean()
+	stds = grouped.std().fillna(0)
+
+	ax = means.plot(kind="bar", yerr=stds, capsize=4, figsize=(14, 6))
+	ax.set_title("Average Needs at End of Simulation by Scenario (%)")
+	ax.set_ylabel("Value (%)")
+	ax.set_xlabel("Scenario")
+	ax.legend(title="Metric", bbox_to_anchor=(1.01, 1), loc="upper left")
+	ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha="center")
+	plt.tight_layout()
+	plt.savefig(output_dir / "plot_avg_needs.png", dpi=180)
+	plt.close()
+
+
 def main() -> None:
 	args = parse_args()
 	files = find_csv_files(args.input, args.pattern)
 	data = load_runs(files, infer_scenario=args.scenario_from_filename)
 	summarize(data, args.output)
 	plot_population(data, args.output)
+	plot_births(data, args.output)
 	plot_deaths(data, args.output)
+	plot_starvation(data, args.output)
+	plot_predation(data, args.output)
+	plot_feeding(data, args.output)
+	plot_pack_behavior(data, args.output)
+	plot_avg_needs(data, args.output)
+	plot_lifespan(data, args.output)
 
 	print(f"Saved summary + plots to: {args.output.resolve()}")
 

@@ -23,21 +23,21 @@ public class AnimalAvoidance : MonoBehaviour
 
     void Update()
     {
-        if (behaviour == null || behaviour.isDead) return;
+        /*if (behaviour == null || behaviour.isDead) return;
         if (behaviour.CurrentState != AnimalBehaviour.State.Idle &&
-            behaviour.CurrentState != AnimalBehaviour.State.Wander) return;
+            behaviour.CurrentState != AnimalBehaviour.State.Wander) return;*/
 
-       /* switch (behaviour.CurrentState)
-    {
-        case AnimalBehaviour.State.Idle:
-        case AnimalBehaviour.State.Wander:
-        case AnimalBehaviour.State.SearchMate:
-        case AnimalBehaviour.State.SearchFood:
-        case AnimalBehaviour.State.SearchWater:
+        switch (behaviour.CurrentState)
+        {
+         case AnimalBehaviour.State.Idle:
+         case AnimalBehaviour.State.Wander:
+         case AnimalBehaviour.State.SearchMate:
+         case AnimalBehaviour.State.SearchFood:
+         case AnimalBehaviour.State.SearchWater:
             break; // Continue with avoidance
-        default:
-            return;  This code is here in case we need to add more states to the avoidance, much easier to check this way than to go through them individually
-    }*/
+         default:
+            return;  
+        }
         AnimalNeeds needs = GetComponent<AnimalNeeds>();
          if (needs != null && needs.howHungryInPercent < 0.2f) return;
         cooldown -= Time.deltaTime;
