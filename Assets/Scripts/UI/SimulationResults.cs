@@ -4,7 +4,7 @@ using System;
 
 public class AnimalStateAverages
 {
-    public Dictionary<string, float> stateAverages = new Dictionary<string, float>();
+    public Dictionary<AnimalBehaviour.State, float> stateAverages = new Dictionary<AnimalBehaviour.State, float>();
 }
 
 public static class SimulationResultsCalculator
@@ -40,7 +40,7 @@ public static class SimulationResultsCalculator
         foreach (var pair in totals)
         {
             float avg = pair.Value / count;
-            result.stateAverages[pair.Key.ToString()] = avg;
+            result.stateAverages[pair.Key] = avg;
         }
     }
 

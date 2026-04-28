@@ -45,38 +45,38 @@ NUMERIC_COLUMNS = [
 	"MooseAvgLifespan",
 
 	#Moose State Time
-	"MooseIdleTime"
-	"MooseWanderTime"
-	"MooseSearchFoodTime"
-	"MooseSearchWaterTime"
-	"MooseEatTime"
-	"MooseDrinkTime"
-	"MooseMatingTime"
-	"MooseFleeingTime"
-	"MooseDefendTime"
+	"MooseIdleTime",
+	"MooseWanderTime",
+	"MooseSearchFoodTime",
+	"MooseSearchWaterTime",
+	"MooseEatTime",
+	"MooseDrinkTime",
+	"MooseMatingTime",
+	"MooseFleeingTime",
+	"MooseDefendTime",
 
 	#Bear State Time
-	"BearIdleTime"
-	"BearWanderTime"
-	"BearSearchFoodTime"
-	"BearSearchWaterTime"
-	"BearEatTime"
-	"BearDrinkTime"
-	"BearMatingTime"
-	"BearFleeingTime"
-	"BearDefendTime"
-	"BearHuntingTime"
+	"BearIdleTime",
+	"BearWanderTime",
+	"BearSearchFoodTime",
+	"BearSearchWaterTime",
+	"BearEatTime",
+	"BearDrinkTime",
+	"BearMatingTime",
+	"BearFleeingTime",
+	"BearDefendTime",
+	"BearHuntingTime",
 
 	#Wolf State Time
-	"WolfIdleTime"
-	"WolfWanderTime"
-	"WolfSearchFoodTime"
-	"WolfSearchWaterTime"
-	"WolfEatTime"
-	"WolfDrinkTime"
-	"WolfMatingTime"
-	"WolfFleeingTime"
-	"WolfDefendTime"
+	"WolfIdleTime",
+	"WolfWanderTime",
+	"WolfSearchFoodTime",
+	"WolfSearchWaterTime",
+	"WolfEatTime",
+	"WolfDrinkTime",
+	"WolfMatingTime",
+	"WolfFleeingTime",
+	"WolfDefendTime",
 	"WolfHuntingTime"
 ]
 
@@ -369,6 +369,64 @@ def plot_avg_needs(data: pd.DataFrame, output_dir: Path) -> None:
 	plt.savefig(output_dir / "plot_avg_needs.png", dpi=180)
 	plt.close()
 
+def plot_state_distribution_pie(data: pd.DataFrame, output_dir: Path) -> None:
+	"""Plot state distribution as pie charts (proportion of time in each state)."""
+	
+	scenarios = data["scenario"].unique()
+	species_info = [
+		("Moose", [col for col in data.columns if col.startswith("Moose") and col.endswith("Time")]),
+		("Bear", [col for col in data.columns if col.startswith("Bear") and col.endswith("Time")]),
+		("Wolf", [col for col in data.columns if col.startswith("Wolf") and col.endswith("Time")]),
+	]
+	
+	for scenario in scenarios:
+		scenario_data = data[data["scenario"] == scenario]
+		
+		fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+		fig.suptitle(f"State Distribution by Species - Scenario: {scenario}", fontsize=14, fontweight="bold")
+		
+		for idx, (species, state_cols) in enumerate(species_info):
+			if not state_cols:
+				axes[idx].text(0.5, 0.5, f"No {species} data", ha="center", va="center")
+				continue
+			
+			state_values = scenario_data[state_cols].mean()
+			total = state_values.sum()
+
+			if total == 0:
+				continue
+
+			state_values = state_values / total * 100
+			
+			state_labels = [col.replace(species, "").replace("Time", "") for col in state_cols]
+			
+			filtered_values = [(label, val) for label, val in zip(state_labels, state_values) if val > 0.1]
+			if not filtered_values:
+				axes[idx].text(0.5, 0.5, f"No significant {species} data", ha="center", va="center")
+				continue
+			
+			labels, values = zip(*filtered_values)
+			colors = plt.cm.Set3(range(len(labels)))
+			
+			wedges, texts, autotexts = axes[idx].pie(
+				values, 
+				labels=labels, 
+				autopct="%1.1f%%", 
+				startangle=90,
+				colors=colors
+			)
+			axes[idx].set_title(f"{species}")
+			
+			for text in texts:
+				text.set_fontsize(9)
+			for autotext in autotexts:
+				autotext.set_fontsize(8)
+				autotext.set_color("black")
+		
+		plt.tight_layout()
+		safe_scenario = scenario.replace("/", "_").replace(" ", "_")
+		plt.savefig(output_dir / f"plot_state_distribution_{safe_scenario}.png", dpi=180)
+		plt.close()
 
 def main() -> None:
 	args = parse_args()
@@ -384,7 +442,7 @@ def main() -> None:
 	plot_pack_behavior(data, args.output)
 	plot_avg_needs(data, args.output)
 	plot_lifespan(data, args.output)
-
+	plot_state_distribution_pie(data, args.output)
 	print(f"Saved summary + plots to: {args.output.resolve()}")
 
 
