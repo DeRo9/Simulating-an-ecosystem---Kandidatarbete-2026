@@ -639,6 +639,7 @@ MonoBehaviour:
   waterLayer:
     serializedVersion: 2
     m_Bits: 16
+  memoryDecisionCooldown: 0
   foodTarget: {fileID: 0}
   enemy: {fileID: 0}
   foodLayer:
@@ -830,10 +831,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalAvoidance
   avoidanceRange: 25
-  checkInterval: 2
-  tagsToAvoid:
-  - Bear
-  - Wolf
+  checkInterval: 0.1
 --- !u!1 &2992573502856677246
 GameObject:
   m_ObjectHideFlags: 0

@@ -1855,9 +1855,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalAvoidance
   avoidanceRange: 25
-  checkInterval: 2
-  tagsToAvoid:
-  - Wolf
+  checkInterval: 0.1
 --- !u!1 &8881512897072243634
 GameObject:
   m_ObjectHideFlags: 0

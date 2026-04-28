@@ -1091,13 +1091,16 @@ MonoBehaviour:
   waterLayer:
     serializedVersion: 2
     m_Bits: 16
+  memoryDecisionCooldown: 0
   foodTarget: {fileID: 0}
   enemy: {fileID: 0}
   huntCooldownTimer: 0
+  nonLeaderNeedsEvalInterval: 3
   PreyLayer:
     serializedVersion: 2
     m_Bits: 256
   preyTarget: {fileID: 0}
+  breakFormation: 0
 --- !u!114 &1081293250822596563
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1297,9 +1300,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalAvoidance
   avoidanceRange: 25
-  checkInterval: 2
-  tagsToAvoid:
-  - Bear
+  checkInterval: 0.1
 --- !u!1 &4293556539160456709
 GameObject:
   m_ObjectHideFlags: 0

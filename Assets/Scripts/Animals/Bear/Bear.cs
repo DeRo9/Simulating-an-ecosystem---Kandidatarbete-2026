@@ -17,7 +17,7 @@ public class Bear : Animal
 
         baseSight = 25f;
 
-        baseHearing = 40f;
+        baseHearing = 25f;
 
         baseHealth = 110f;
         baseStrength = 24f;
