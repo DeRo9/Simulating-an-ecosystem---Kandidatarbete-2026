@@ -15,7 +15,7 @@ public class Moose : Animal
 
         baseSpeed = 2f;
         baseSight = 25f;
-        baseHearing = 30f;
+        baseHearing = 20f;
 
         baseHealth = 90f;
         baseStrength = 14f;

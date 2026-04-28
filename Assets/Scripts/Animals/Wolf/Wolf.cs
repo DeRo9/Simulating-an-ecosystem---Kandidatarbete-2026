@@ -21,7 +21,7 @@ public class Wolf : Animal
 
         baseSight = 30f;
 
-        baseHearing = 45f;
+        baseHearing = 25f;
 
         baseHealth = 30f;
         baseStrength = 10f;

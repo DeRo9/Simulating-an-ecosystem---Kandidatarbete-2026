@@ -8,10 +8,8 @@ public class AnimalAvoidance : MonoBehaviour
     Animal animal;
 
     [Header("Settings")]
-    public float avoidanceRange = 25f;
-    public float checkInterval = 2f;
-    public string[] tagsToAvoid;
-
+    public float avoidanceRange;
+    public float checkInterval = 0.1f;
     float cooldown = 0f;
 
     void Start()
@@ -19,13 +17,13 @@ public class AnimalAvoidance : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         behaviour = GetComponent<AnimalBehaviour>();
         animal = GetComponent<Animal>();
+        avoidanceRange = animal.baseSight * 0.8f;
     }
 
     void Update()
     {
-        /*if (behaviour == null || behaviour.isDead) return;
-        if (behaviour.CurrentState != AnimalBehaviour.State.Idle &&
-            behaviour.CurrentState != AnimalBehaviour.State.Wander) return;*/
+
+        if (behaviour == null || animal == null || agent == null || behaviour.isDead) return;
 
         switch (behaviour.CurrentState)
         {
@@ -34,49 +32,44 @@ public class AnimalAvoidance : MonoBehaviour
          case AnimalBehaviour.State.SearchMate:
          case AnimalBehaviour.State.SearchFood:
          case AnimalBehaviour.State.SearchWater:
-            break; // Continue with avoidance
+            break;
          default:
             return;  
         }
-        AnimalNeeds needs = GetComponent<AnimalNeeds>();
-         if (needs != null && needs.howHungryInPercent < 0.2f) return;
+
         cooldown -= Time.deltaTime;
         if (cooldown > 0f) return;
         cooldown = checkInterval;
 
         Vector3 avoidDirection = Vector3.zero;
-        int threatCount = 0;
+        float totalThreatLevel = 0f;
 
         Collider[] nearby = Physics.OverlapSphere(transform.position, avoidanceRange);
 
         foreach (Collider col in nearby)
         {
-            bool isThreat = false;
-            foreach (string tag in tagsToAvoid)
-            {
-                if (col.CompareTag(tag))
-                {
-                    isThreat = true;
-                    break;
-                }
-            }
 
-            if (!isThreat) continue;
+            AnimalBehaviour otherBehaviour = col.GetComponentInParent<AnimalBehaviour>();
+            if (otherBehaviour == null || otherBehaviour.isDead) continue;
 
-            AnimalBehaviour other = col.GetComponentInParent<AnimalBehaviour>();
-            if (other == null || other.isDead) continue;
+            Animal otherAnimal = col.GetComponentInParent<Animal>();
+            if (otherAnimal == null) continue;
 
             float distance = Vector3.Distance(transform.position, col.transform.position);
-            if (distance < avoidanceRange)
+
+            float threatLevel = AssesThreat(otherAnimal, otherBehaviour, distance);
+            if (threatLevel <= 0f) continue;
+
+            if (threatLevel > 0f)
             {
                 Vector3 away = (transform.position - col.transform.position).normalized;
                 float urgency = 1f - (distance / avoidanceRange);
-                avoidDirection += away * urgency;
-                threatCount++;
+                avoidDirection += away * urgency * threatLevel;
+                totalThreatLevel += threatLevel;
             }
         }
 
-        if (threatCount > 0 && agent.isOnNavMesh)
+        if (totalThreatLevel > 0 && agent.isOnNavMesh)
         {
             Vector3 avoidTarget = transform.position + avoidDirection.normalized * 15f;
             NavMeshHit navHit;
@@ -86,4 +79,74 @@ public class AnimalAvoidance : MonoBehaviour
             }
         }
     }
+    public float AssesThreat(Animal otherAnimal, AnimalBehaviour otherBehaviour, float distance)
+    {
+        if (otherAnimal.species == animal.species)
+        {
+            return 0f;
+        }
+        if (animal.species == Species.moose)
+        {
+            return AssesMooseThreat(otherAnimal, otherBehaviour, distance);
+        }
+        if (animal.species == Species.bear)
+        {
+            return AssesBearThreat(otherAnimal, otherBehaviour, distance);
+        }
+        if (animal.species == Species.wolf)
+        {
+            return AssesWolfThreat(otherAnimal, otherBehaviour, distance);
+        }
+        return 0f;
+    }
+
+    public float AssesMooseThreat(Animal otherAnimal, AnimalBehaviour otherBehaviour, float distance)
+    {
+        bool isAdult = animal.age > animal.grownUpAge;
+        
+        if (otherAnimal.species == Species.bear)
+        {
+            return 1f; 
+        }
+        if (otherAnimal.species == Species.wolf)
+        {
+            if (!isAdult)
+            {
+                return 1f; 
+            }
+            else
+            {
+                Wolf wolf = otherAnimal as Wolf;
+                return 0.15f*wolf.pack.countCurrentPackSize(); 
+            }
+        }
+        return 0f;
+    }
+
+    public float AssesBearThreat(Animal otherAnimal, AnimalBehaviour otherBehaviour, float distance)
+    {
+        if (otherAnimal.species == Species.wolf)
+        {
+            Wolf wolf = otherAnimal as Wolf;
+            if (wolf.pack != null && wolf.pack.countCurrentPackSize() >= 6)
+            {
+                return 0.1f*wolf.pack.countCurrentPackSize();
+            }
+        }
+        return 0f;
+    }
+
+    public float AssesWolfThreat(Animal otherAnimal, AnimalBehaviour otherBehaviour, float distance)
+    {
+        if (otherAnimal.species == Species.bear)
+        {
+            Wolf wolf = animal as Wolf;
+            if (wolf.pack != null && wolf.pack.countCurrentPackSize() < 6)
+            {
+                return 1f / wolf.pack.countCurrentPackSize();
+            }
+        }
+        return 0f;
+    }
+    
 }

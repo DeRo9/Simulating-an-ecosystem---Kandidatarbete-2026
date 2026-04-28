@@ -6,7 +6,7 @@ public class BearBehaviour : AnimalBehaviour
     [Header("Pack Threat")]
     float packCheckCooldown = 0f;
     float packCheckInterval = 2f;
-    int dangerousPackSize = 5;
+    int dangerousPackSize = 7;
 
     BearHearing hearing;
     AnimalFOV fov;
@@ -148,10 +148,9 @@ public class BearBehaviour : AnimalBehaviour
                 return true;
             }
 
-            // Large pack spotted nearby, decide based on hunger
-            if (wolfComp.pack.members.Count >= dangerousPackSize)
+            if (wolfComp.pack.countCurrentPackSize() >= dangerousPackSize)
             {
-                Debug.Log("Bear detected wolf pack of " + wolfComp.pack.members.Count);
+                Debug.Log("Bear detected wolf pack of " + wolfComp.pack.countCurrentPackSize());
                 if (memory != null)
                     memory.RememberDanger(transform.position);
 
