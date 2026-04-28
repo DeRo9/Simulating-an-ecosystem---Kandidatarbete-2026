@@ -105,8 +105,9 @@ def parse_args() -> argparse.Namespace:
 	)
 	parser.add_argument(
 		"--scenario-from-filename",
-		action="store_true",
-		help="Infer scenario from filename (e.g. with_bear_run1.csv, no_bear_run1.csv).",
+		action=argparse.BooleanOptionalAction,
+		default=True,
+		help="Infer scenario from filename (e.g. with_bear_run1.csv, no_bear_run1.csv, few_bear_run1.csv).",
 	)
 	return parser.parse_args()
 
@@ -120,6 +121,18 @@ def find_csv_files(input_dir: Path, pattern: str) -> list[Path]:
 
 def infer_scenario_from_name(filename: str) -> str:
 	lower = filename.lower()
+
+	# Normalize common separators so checks work for names like with-bear-run1.csv.
+	for sep in ("-", " "):
+		lower = lower.replace(sep, "_")
+
+	if (
+		"few_bear" in lower
+		or "few_bears" in lower
+		or "low_bear" in lower
+		or "fa_bjorn" in lower
+	):
+		return "few_bear"
 	if "no_bear" in lower or "without_bear" in lower:
 		return "without_bear"
 	if "with_bear" in lower:
