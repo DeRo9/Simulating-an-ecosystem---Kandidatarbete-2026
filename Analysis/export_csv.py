@@ -43,6 +43,41 @@ NUMERIC_COLUMNS = [
 	"BearAvgLifespan",
 	"WolfAvgLifespan",
 	"MooseAvgLifespan",
+
+	#Moose State Time
+	"MooseIdleTime"
+	"MooseWanderTime"
+	"MooseSearchFoodTime"
+	"MooseSearchWaterTime
+	"MooseEatTime"
+	"MooseDrinkTime"
+	"MooseMatingTime"
+	"MooseFleeingTime"
+	"MooseDefendTime"
+
+	#Bear State Time
+	"BearIdleTime"
+	"BearWanderTime"
+	"BearSearchFoodTime"
+	"BearSearchWaterTime
+	"BearEatTime"
+	"BearDrinkTime"
+	"BearMatingTime"
+	"BearFleeingTime"
+	"BearDefendTime"
+	"BearHuntingTime"
+
+	#Wolf State Time
+	"WolfIdleTime"
+	"WolfWanderTime"
+	"WolfSearchFoodTime"
+	"WolfSearchWaterTime
+	"WolfEatTime"
+	"WolfDrinkTime"
+	"WolfMatingTime"
+	"WolfFleeingTime"
+	"WolfDefendTime"
+	"WolfHuntingTime"
 ]
 
 
