@@ -48,7 +48,7 @@ NUMERIC_COLUMNS = [
 	"MooseIdleTime"
 	"MooseWanderTime"
 	"MooseSearchFoodTime"
-	"MooseSearchWaterTime
+	"MooseSearchWaterTime"
 	"MooseEatTime"
 	"MooseDrinkTime"
 	"MooseMatingTime"
@@ -59,7 +59,7 @@ NUMERIC_COLUMNS = [
 	"BearIdleTime"
 	"BearWanderTime"
 	"BearSearchFoodTime"
-	"BearSearchWaterTime
+	"BearSearchWaterTime"
 	"BearEatTime"
 	"BearDrinkTime"
 	"BearMatingTime"
@@ -71,7 +71,7 @@ NUMERIC_COLUMNS = [
 	"WolfIdleTime"
 	"WolfWanderTime"
 	"WolfSearchFoodTime"
-	"WolfSearchWaterTime
+	"WolfSearchWaterTime"
 	"WolfEatTime"
 	"WolfDrinkTime"
 	"WolfMatingTime"
