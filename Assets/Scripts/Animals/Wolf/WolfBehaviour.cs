@@ -708,6 +708,7 @@ public class WolfBehaviour : AnimalBehaviour
     public void notifyDeath()
     {
         if (preyTarget == null) return;
+        if (isDead) return;
 
         MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
         if (moose != null)
@@ -718,7 +719,9 @@ public class WolfBehaviour : AnimalBehaviour
         pendingCarcass = preyTarget.GetComponentInParent<AnimalBehaviour>().gameObject;
 
         preyTarget = null;
-        agent.isStopped = true;
+
+        if (agent != null && agent.enabled && agent.isOnNavMesh)
+            agent.isStopped = true;
 
         waitingForDeathAnimation = true;
         deathWaitTimer = deathWaitDuration;
@@ -819,6 +822,9 @@ public class WolfBehaviour : AnimalBehaviour
     }
     public override void OnDeath(bool killedByPredator = false)
     {
+        if (isDead) return;
+        isDead = true;
+
         bool bearKill = bearAttackers.Count > 0;
 
         foreach (BearBehaviour bear in bearAttackers.ToList())

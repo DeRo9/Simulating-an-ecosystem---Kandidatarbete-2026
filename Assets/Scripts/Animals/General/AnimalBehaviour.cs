@@ -62,7 +62,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
     protected AnimalMemory memory;
     protected Mating mating;
 
-    protected GameObject waterTarget;
+    public GameObject waterTarget;
 
     public bool isDead;
 

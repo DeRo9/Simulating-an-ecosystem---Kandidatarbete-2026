@@ -30,8 +30,8 @@ public class AnimalAvoidance : MonoBehaviour
          case AnimalBehaviour.State.Idle:
          case AnimalBehaviour.State.Wander:
          case AnimalBehaviour.State.SearchMate:
-         case AnimalBehaviour.State.SearchFood:
-         case AnimalBehaviour.State.SearchWater:
+         //case AnimalBehaviour.State.SearchFood:
+         //case AnimalBehaviour.State.SearchWater:
             break;
          default:
             return;  
@@ -71,11 +71,21 @@ public class AnimalAvoidance : MonoBehaviour
 
         if (totalThreatLevel > 0 && agent.isOnNavMesh)
         {
+            if (behaviour.CurrentState == AnimalBehaviour.State.SearchFood && behaviour.foodTarget != null) 
+            {
+                return;
+            }
+            if (behaviour.CurrentState == AnimalBehaviour.State.SearchWater && behaviour.waterTarget != null)
+            {
+                return;
+            }
+
             Vector3 avoidTarget = transform.position + avoidDirection.normalized * 15f;
             NavMeshHit navHit;
             if (NavMesh.SamplePosition(avoidTarget, out navHit, 15f, NavMesh.AllAreas))
             {
                 agent.SetDestination(navHit.position);
+                cooldown = 2f;
             }
         }
     }
@@ -117,6 +127,10 @@ public class AnimalAvoidance : MonoBehaviour
             else
             {
                 Wolf wolf = otherAnimal as Wolf;
+                if(wolf != null || wolf.pack != null)
+                {
+                    return 1f;
+                }
                 return 0.15f*wolf.pack.countCurrentPackSize(); 
             }
         }
