@@ -23,7 +23,7 @@ public class AnimalNeeds : MonoBehaviour
 
     public float hibernationMultiplier = 1f;
 
-    public bool isHungry => hungerLevel < maxHunger * 0.8f;
+    public bool isHungry => hungerLevel < maxHunger * 0.65f;
     public bool isHungryBearH => hungerLevel < maxHunger * 0.5f; 
     public bool isThirsty => thirstLevel < maxThirst * 0.5f;
     public bool isTired => staminaLevel < maxStamina * 0.1f;

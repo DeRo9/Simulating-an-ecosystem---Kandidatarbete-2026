@@ -184,9 +184,7 @@ public class AnimalMemory : MonoBehaviour
     }
 
 
-
-
-    void GetBestPreyChunk()
+    public Vector2Int GetBestPreyChunk()
     {
         float bestvalue = 0f;
         Vector2Int bestchunk = new Vector2Int(-1, -1);
@@ -199,6 +197,8 @@ public class AnimalMemory : MonoBehaviour
                     bestchunk = new Vector2Int(x, z);
                 }
             }
+
+        return bestchunk;
     }
 
 

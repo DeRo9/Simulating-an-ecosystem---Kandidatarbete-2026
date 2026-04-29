@@ -84,7 +84,6 @@ public class WolfBehaviour : AnimalBehaviour
                     ChangeState(State.SearchFood);
                 }
             }
-            return;
         }
 
         if (CheckForThreats()) return;
@@ -430,15 +429,10 @@ public class WolfBehaviour : AnimalBehaviour
 
         if (preyTarget == null)
         {
-            if (waitingForDeathAnimation && deathWaitTimer <= 0f)
-            {
-                waitingForDeathAnimation = false;
-            }
-
-            if (waitingForDeathAnimation)
+            if (waitingForDeathAnimation && deathWaitTimer > 0f)
                 return;
-            
-            ChangeState(State.Wander); 
+ 
+            ChangeState(State.SearchFood);
             return;
         }
 
@@ -571,7 +565,7 @@ public class WolfBehaviour : AnimalBehaviour
 
         if (memoryDecisionCooldown <= 0f)
         {
-            memoryDecisionCooldown = 2f;
+            memoryDecisionCooldown = 4f;
 
             if (Random.value < 0.2f)
             {
@@ -579,7 +573,7 @@ public class WolfBehaviour : AnimalBehaviour
             }
             else
             {
-                Vector2Int targetChunk = DecideFoodAndWaterTargetChunk();
+                Vector2Int targetChunk = memory.GetBestPreyChunk();
 
                 if (targetChunk.x != -1)
                 {
@@ -588,7 +582,16 @@ public class WolfBehaviour : AnimalBehaviour
                 }
                 else
                 {
-                    agent.SetDestination(GetRandomPoints());
+                    targetChunk = DecideFoodAndWaterTargetChunk();
+                    if (targetChunk.x != -1)
+                    {
+                        Vector3 targetPos = memory.GetRandomPointInChunk(targetChunk);
+                        agent.SetDestination(targetPos);
+                    }
+                    else
+                    {
+                        agent.SetDestination(GetRandomPoints());
+                    }
                 }
             }
         }
@@ -822,9 +825,6 @@ public class WolfBehaviour : AnimalBehaviour
     }
     public override void OnDeath(bool killedByPredator = false)
     {
-        if (isDead) return;
-        isDead = true;
-
         bool bearKill = bearAttackers.Count > 0;
 
         foreach (BearBehaviour bear in bearAttackers.ToList())
