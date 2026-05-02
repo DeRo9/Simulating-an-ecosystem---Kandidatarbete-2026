@@ -25,6 +25,7 @@ public class SeasonManager : MonoBehaviour
     [Header("Terrain")]
     public Terrain terrain;
     public TerrainLayer grassLayer;
+    public TerrainLayer sandLayer;
     public TerrainLayer snowLayer;
 
     private void Awake()
@@ -94,7 +95,7 @@ public class SeasonManager : MonoBehaviour
         }
         else
         {
-            terrain.terrainData.terrainLayers = new TerrainLayer[] { grassLayer };
+            terrain.terrainData.terrainLayers = new TerrainLayer[] { grassLayer, sandLayer };
         }
     }
 }

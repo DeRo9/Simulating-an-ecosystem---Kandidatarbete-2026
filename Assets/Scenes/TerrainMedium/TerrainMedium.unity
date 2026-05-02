@@ -14,7 +14,7 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
-  m_Fog: 0
+  m_Fog: 1
   m_FogColor: {r: 0.7019608, g: 0.83137256, b: 0.84705883, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.01
@@ -186,7 +186,7 @@ MonoBehaviour:
   simulationSeed: 12345
   informationUI: {fileID: 0}
   simulationUI: {fileID: 1646297639}
-  spawnRadius: 100
+  spawnRadius: 400
   summerToggle: {fileID: 1050397844}
   winterToggle: {fileID: 1372752597}
   percipitationToggle: {fileID: 1342007192}
@@ -12496,6 +12496,7 @@ MonoBehaviour:
   weatherManager: {fileID: 844803666}
   terrain: {fileID: 44702050}
   grassLayer: {fileID: 8574412962073106934, guid: f7ce30ec9b280b34cacb1a1005349890, type: 2}
+  sandLayer: {fileID: 8574412962073106934, guid: a6343719f7a874d4fa48e836cdaf1187, type: 2}
   snowLayer: {fileID: 8574412962073106934, guid: e4e818f2f514e5d46a5f53d7f81b5888, type: 2}
 --- !u!4 &1261316111
 Transform:
@@ -18305,7 +18306,7 @@ Transform:
   m_GameObject: {fileID: 1852152617}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 19, y: 9.5, z: 9.46}
+  m_LocalPosition: {x: 250, y: 24.68, z: 250}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
