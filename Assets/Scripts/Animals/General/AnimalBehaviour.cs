@@ -389,7 +389,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
         waterSearchingCooldown = 1.5f;
 
-        float waterSearchingRadius = animal.sightRange * 2f;
+        float waterSearchingRadius = animal.sightRange * 3f;
         Collider[] hits = Physics.OverlapSphere(transform.position, waterSearchingRadius, waterLayer);
 
         float closestDistance = Mathf.Infinity;
