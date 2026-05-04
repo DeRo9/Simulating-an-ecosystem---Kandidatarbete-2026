@@ -13,7 +13,7 @@ public class Moose : Animal
         grownUpAge = 4f;
         oldAge = 8f;
 
-        baseSpeed = 2f;
+        baseSpeed = 2.5f;
         baseSight = 25f;
         baseHearing = 20f;
 

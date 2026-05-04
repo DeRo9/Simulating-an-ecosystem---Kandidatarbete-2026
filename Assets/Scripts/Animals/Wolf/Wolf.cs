@@ -17,7 +17,7 @@ public class Wolf : Animal
         grownUpAge = 2f;
         oldAge = 4f;
 
-        baseSpeed = 1.8f;
+        baseSpeed = 2.2f;
 
         baseSight = 30f;
 

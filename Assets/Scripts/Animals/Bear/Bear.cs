@@ -13,7 +13,7 @@ public class Bear : Animal
         grownUpAge = 8f;
         oldAge = 16f;
 
-        baseSpeed = 2f;
+        baseSpeed = 2.5f;
 
         baseSight = 25f;
 
