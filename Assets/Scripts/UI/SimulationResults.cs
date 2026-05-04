@@ -7,40 +7,55 @@ public class AnimalStateAverages
     public Dictionary<AnimalBehaviour.State, float> stateAverages = new Dictionary<AnimalBehaviour.State, float>();
 }
 
+
 public static class SimulationResultsCalculator
 {
-    public static void CalculateStateAverages(Transform parent, AnimalStateAverages result)
+    public static void CalculateStateAverages(Transform parent, AnimalStateAverages result, Species species)
     {
-        Dictionary<AnimalBehaviour.State, float> totals = new Dictionary<AnimalBehaviour.State, float>();
-
-        foreach (AnimalBehaviour.State state in Enum.GetValues(typeof(AnimalBehaviour.State)))
+    
+        foreach (AnimalBehaviour.State state in System.Enum.GetValues(typeof(AnimalBehaviour.State)))
         {
-            totals[state] = 0f;
+            if (!result.stateAverages.ContainsKey(state))
+                result.stateAverages[state] = 0f;
         }
-
-        int count = 0;
-
+        
+        int totalCount = 0;
+        
         for (int i = 0; i < parent.childCount; i++)
         {
             AnimalBehaviour animal = parent.GetChild(i).GetComponent<AnimalBehaviour>();
-            if (animal == null) continue;
-
-            count += 1;
-
-            var states = new List<AnimalBehaviour.State>(totals.Keys);
-
-            foreach (var state in states)
+            if (animal == null || animal.isDead) continue;
+            
+            foreach (var kvp in animal.stateTrackers)
             {
-                totals[state] += animal.GetTotalStateTime(state);
+                result.stateAverages[kvp.Key] += kvp.Value.timeInState;
+            }
+            totalCount++;
+        }
+        
+        if (SimulationResults.accumulatedStateTimes.ContainsKey(species))
+        {
+            var deadCount = SimulationResults.totalAnimalsProcessed.ContainsKey(species) 
+            ? SimulationResults.totalAnimalsProcessed[species] 
+            : 0;
+        
+            if (deadCount > 0)
+            {
+                foreach (var kvp in SimulationResults.accumulatedStateTimes[species])
+                {
+                    result.stateAverages[kvp.Key] += kvp.Value;
+                }
+                totalCount += deadCount;
             }
         }
-
-        if (count == 0) return;
-
-        foreach (var pair in totals)
+        
+        if (totalCount > 0)
         {
-            float avg = pair.Value / count;
-            result.stateAverages[pair.Key] = avg;
+            var stateKeys = new List<AnimalBehaviour.State>(result.stateAverages.Keys);
+            foreach (var state in stateKeys)
+            {
+                result.stateAverages[state] /= totalCount;
+            }
         }
     }
 
@@ -70,6 +85,10 @@ public static class SimulationResultsCalculator
 
 public static class SimulationResults
 {
+
+    public static Dictionary<Species, Dictionary<AnimalBehaviour.State, float>> accumulatedStateTimes = new Dictionary<Species, Dictionary<AnimalBehaviour.State, float>>();
+
+    public static Dictionary<Species, int> totalAnimalsProcessed = new Dictionary<Species, int>();
     public static int initialBearsAmount;
     public static int finalBearsAmount;
 

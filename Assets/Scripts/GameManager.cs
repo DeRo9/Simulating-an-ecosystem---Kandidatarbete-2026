@@ -155,6 +155,9 @@ public class GameManager : MonoBehaviour
     {
         if(StatisticsTableManager.instance != null) StatisticsTableManager.instance.ResetStats();
 
+        SimulationResults.accumulatedStateTimes.Clear();
+        SimulationResults.totalAnimalsProcessed.Clear();
+
         if (useFixedSeed)
         {
             UnityEngine.Random.InitState(simulationSeed);
@@ -402,9 +405,9 @@ public class GameManager : MonoBehaviour
             recordingCoroutine = null;
         }
 
-        SimulationResultsCalculator.CalculateStateAverages(herbivoresFolder,SimulationResults.mooseStateAverages);
-        SimulationResultsCalculator.CalculateStateAverages(carnivoreFolder,SimulationResults.wolfStateAverages);
-        SimulationResultsCalculator.CalculateStateAverages(omnivoreFolder,SimulationResults.bearStateAverages);
+        SimulationResultsCalculator.CalculateStateAverages(herbivoresFolder,SimulationResults.mooseStateAverages, Species.moose);
+        SimulationResultsCalculator.CalculateStateAverages(carnivoreFolder,SimulationResults.wolfStateAverages, Species.wolf);
+        SimulationResultsCalculator.CalculateStateAverages(omnivoreFolder,SimulationResults.bearStateAverages, Species.bear);
 
         SimulationResultsCalculator.CalculateNeedsAverages(omnivoreFolder, out SimulationResults.bearAvgHunger, out SimulationResults.bearAvgThirst, out SimulationResults.bearAvgStamina);
         SimulationResultsCalculator.CalculateNeedsAverages(carnivoreFolder, out SimulationResults.wolfAvgHunger, out SimulationResults.wolfAvgThirst, out SimulationResults.wolfAvgStamina);

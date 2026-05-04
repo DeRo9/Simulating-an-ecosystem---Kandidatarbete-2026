@@ -69,7 +69,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
     public bool isPregnant;
 
     [Header("State Tracking")]
-    protected Dictionary<State, StateTracker> stateTrackers = new Dictionary<State, StateTracker>();
+    public Dictionary<State, StateTracker> stateTrackers = new Dictionary<State, StateTracker>();
 
     [Header("Water Layer")]
     [SerializeField] LayerMask waterLayer;
@@ -117,7 +117,7 @@ public abstract class AnimalBehaviour : MonoBehaviour
             stateTrackers[state] = new StateTracker();
         }
 
-        if (anim != null) // Reset all animation bools to false at start
+        if (anim != null)
         {
             anim.SetBool("isWalking", false);
             anim.SetBool("isRunning", false);
@@ -432,7 +432,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
     {
         if (isDead) return;
         isDead = true;
-
         isPregnant = false;
 
         if (StatisticsTableManager.instance != null)
@@ -458,6 +457,28 @@ public abstract class AnimalBehaviour : MonoBehaviour
                 if (killedByPredator) StatisticsTableManager.instance.MoosePredationCount++;
                 else StatisticsTableManager.instance.MooseStarvationCount++;
             }
+        }
+
+        if (animal != null)
+        {
+            Species species = animal.species;
+
+            if (!SimulationResults.accumulatedStateTimes.ContainsKey(species))
+            {
+                SimulationResults.accumulatedStateTimes[species] = new Dictionary<AnimalBehaviour.State, float>();
+                SimulationResults.totalAnimalsProcessed[species] = 0;
+                
+                foreach (AnimalBehaviour.State state in System.Enum.GetValues(typeof(AnimalBehaviour.State)))
+                {
+                    SimulationResults.accumulatedStateTimes[species][state] = 0f;
+                }
+            }
+            
+            foreach (var state in stateTrackers)
+            {
+                SimulationResults.accumulatedStateTimes[species][state.Key] += state.Value.timeInState;
+            }
+            SimulationResults.totalAnimalsProcessed[species]++;
         }
 
         agent.isStopped = true;

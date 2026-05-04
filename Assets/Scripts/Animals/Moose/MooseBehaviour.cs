@@ -37,13 +37,11 @@ public class MooseBehaviour : AnimalBehaviour
 
     protected override void Update()
     {
+        base.Update();
+
         if (!agent.isOnNavMesh)
             return;
         
-        base.Update();
-
-        if (isDead) return;
-
         if (CheckForThreats()) return;
 
         
