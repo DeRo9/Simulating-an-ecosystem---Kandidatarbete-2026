@@ -634,6 +634,7 @@ MonoBehaviour:
   minTimeWaiting: 2
   maxTimeWaiting: 5
   waitTime: 0
+  waterTarget: {fileID: 0}
   isDead: 0
   isPregnant: 0
   waterLayer:
@@ -666,8 +667,8 @@ MonoBehaviour:
   healthLevel: 100
   staminaLevel: 100
   hungerDecreaseRate: 0.8
-  thirstDecreaseRate: 1
-  staminaDecreaseRate: 1
+  thirstDecreaseRate: 0.8
+  staminaDecreaseRate: 0.8
   staminaIncreaseRate: 1.5
   hibernationMultiplier: 1
 --- !u!114 &2652676559356234131
