@@ -462,65 +462,103 @@ def plot_moose_escape(data: pd.DataFrame, output_dir: Path) -> None:
 	plt.savefig(output_dir / "plot_moose_escape.png", dpi=180)
 	plt.close()
 
+STATE_COLORS = {
+	"SearchFood": "#FFD700",  
+    "SearchWater": "#4169E1",  
+    "SearchMate": "#FF69B4",  
+    "Eat": "#228B22",        
+    "Drink": "#1E90FF",      
+    "Hunt": "#8B0000",     
+    "Defend": "#DC143C",     
+    "Fleeing": "#FF4500",   
+    "Idle": "#808080",     
+    "Wander": "#87CEEB",  
+    "Hibernate": "#4B0082",   
+    "Mating": "#FF1493",     
+}
 
 def plot_state_distribution_pie(data: pd.DataFrame, output_dir: Path) -> None:
-	"""Plot state distribution as pie charts (proportion of time in each state)."""
-	
-	scenarios = data["scenario"].unique()
-	species_info = [
-		("Moose", [col for col in data.columns if col.startswith("Moose") and col.endswith("Time")]),
-		("Bear", [col for col in data.columns if col.startswith("Bear") and col.endswith("Time")]),
-		("Wolf", [col for col in data.columns if col.startswith("Wolf") and col.endswith("Time")]),
-	]
-	
-	for scenario in scenarios:
-		scenario_data = data[data["scenario"] == scenario]
-		
-		fig, axes = plt.subplots(1, 3, figsize=(18, 5))
-		fig.suptitle(f"State Distribution by Species - Scenario: {scenario}", fontsize=14, fontweight="bold")
-		
-		for idx, (species, state_cols) in enumerate(species_info):
-			if not state_cols:
-				axes[idx].text(0.5, 0.5, f"No {species} data", ha="center", va="center")
-				continue
-			
-			state_values = scenario_data[state_cols].mean()
-			total = state_values.sum()
+    """Plot state distribution with shared legend and hidden small labels to prevent overlap."""
+    
+    scenarios = data["scenario"].unique()
+    species_info = [
+        ("Moose", [col for col in data.columns if col.startswith("Moose") and col.endswith("Time")]),
+        ("Bear", [col for col in data.columns if col.startswith("Bear") and col.endswith("Time")]),
+        ("Wolf", [col for col in data.columns if col.startswith("Wolf") and col.endswith("Time")]),
+    ]
+    
+    for scenario in scenarios:
+        scenario_data = data[data["scenario"] == scenario]
+        
+        fig, axes = plt.subplots(1, 3, figsize=(18, 7))
+        fig.suptitle(f"State Distribution by Species - Scenario: {scenario}", fontsize=14, fontweight="bold")
+        
+        global_handles = []
+        global_labels = []
 
-			if total == 0:
-				continue
+        for idx, (species, state_cols) in enumerate(species_info):
+            if not state_cols:
+                axes[idx].text(0.5, 0.5, f"No {species} data", ha="center", va="center")
+                continue
+            
+            state_values = scenario_data[state_cols].mean()
+            total = state_values.sum()
+            if total == 0:
+                continue
 
-			state_values = state_values / total * 100
-			
-			state_labels = [col.replace(species, "").replace("Time", "") for col in state_cols]
-			
-			filtered_values = [(label, val) for label, val in zip(state_labels, state_values) if val > 0.1]
-			if not filtered_values:
-				axes[idx].text(0.5, 0.5, f"No significant {species} data", ha="center", va="center")
-				continue
-			
-			labels, values = zip(*filtered_values)
-			colors = plt.cm.Set3(range(len(labels)))
-			
-			wedges, texts, autotexts = axes[idx].pie(
-				values, 
-				labels=labels, 
-				autopct="%1.1f%%", 
-				startangle=90,
-				colors=colors
-			)
-			axes[idx].set_title(f"{species}")
-			
-			for text in texts:
-				text.set_fontsize(9)
-			for autotext in autotexts:
-				autotext.set_fontsize(8)
-				autotext.set_color("black")
-		
-		plt.tight_layout()
-		safe_scenario = scenario.replace("/", "_").replace(" ", "_")
-		plt.savefig(output_dir / f"plot_state_distribution_{safe_scenario}.png", dpi=180)
-		plt.close()
+            state_pcts = (state_values / total * 100)
+            state_names = [col.replace(species, "").replace("Time", "") for col in state_cols]
+            
+            plot_data = []
+            for name, val in zip(state_names, state_pcts):
+                if val > 0.1: 
+                    display_label = name if val >= 1.0 else "" 
+                    plot_data.append((name, display_label, val))
+
+            if not plot_data:
+                axes[idx].text(0.5, 0.5, f"No significant {species} data", ha="center", va="center")
+                continue
+                
+            original_names, display_labels, values = zip(*plot_data)
+            colors = [STATE_COLORS.get(name, "#cccccc") for name in original_names]
+                
+            wedges, texts, autotexts = axes[idx].pie(
+                values,
+                labels=display_labels,
+                autopct=lambda p: f"{p:.1f}%" if p >= 4 else "",
+                startangle=90,
+                colors=colors,
+                pctdistance=0.75,
+                labeldistance=1.1
+            )
+
+            axes[idx].set_title(f"{species}")
+
+            if len(original_names) > len(global_labels):
+                global_handles = wedges
+                global_labels = original_names
+
+            for autotext in autotexts:
+                autotext.set_fontsize(8)
+                autotext.set_fontweight("bold")
+        
+        if global_handles:
+            fig.legend(
+                global_handles, 
+                global_labels,
+                title="States",
+                loc="lower center",
+                bbox_to_anchor=(0.5, 0.02),
+                ncol=min(len(global_labels), 8),
+                fontsize=9
+            )
+                
+        plt.tight_layout(rect=[0, 0.1, 1, 0.95])
+        
+        safe_scenario = scenario.replace("/", "_").replace(" ", "_")
+        plt.savefig(output_dir / f"plot_state_distribution_{safe_scenario}.png", dpi=180)
+        plt.show()
+        plt.close()
 
 def main() -> None:
 	args = parse_args()
