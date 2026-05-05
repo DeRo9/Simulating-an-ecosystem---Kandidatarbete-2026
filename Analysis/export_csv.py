@@ -136,12 +136,18 @@ def infer_scenario_from_name(filename: str) -> str:
 	for sep in ("-", " "):
 		lower = lower.replace(sep, "_")
 
-	if "few" in lower:
+	if (
+		"few_bear" in lower
+		or "few_bears" in lower
+		or "low_bear" in lower
+		or "fa_bjorn" in lower
+		or "few" in lower
+	):
 		return "few_bear"
-	if "no" in lower:
-		return "no_bear"
-	if "many" in lower:
-		return "many_bear"
+	if "no_bear" in lower or "without_bear" in lower or "no" in lower:
+		return "without_bear"
+	if "with_bear" in lower or "many_bear" in lower or "many" in lower:
+		return "with_bear"
 	return "all"
 
 
@@ -174,6 +180,13 @@ def load_runs(files: Iterable[Path], infer_scenario: bool) -> pd.DataFrame:
 			data[col] = pd.to_numeric(data[col], errors="coerce")
 
 	return data
+
+
+def clear_old_plot_images(output_dir: Path) -> None:
+	"""Remove previously generated plot images so results from old runs do not linger."""
+	for image_path in output_dir.glob("plot_*.png"):
+		if image_path.is_file():
+			image_path.unlink()
 
 
 def summarize(data: pd.DataFrame, output_dir: Path) -> None:
@@ -513,6 +526,8 @@ def main() -> None:
 	args = parse_args()
 	files = find_csv_files(args.input, args.pattern)
 	data = load_runs(files, infer_scenario=args.scenario_from_filename)
+	args.output.mkdir(parents=True, exist_ok=True)
+	clear_old_plot_images(args.output)
 	summarize(data, args.output)
 	plot_population(data, args.output)
 	plot_births(data, args.output)
