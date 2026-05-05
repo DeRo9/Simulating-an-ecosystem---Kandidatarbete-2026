@@ -27,7 +27,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
         Fleeing,
         Defend, 
         Hibernate,
-        Dead, 
     }
 
     public class StateTracker
@@ -231,8 +230,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
             case State.Hibernate:
                 HibernationState();
                 break;
-            case State.Dead:
-                break;
         }
     }
 
@@ -261,6 +258,10 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
     protected virtual void Update()
     {
+        if (isDead) 
+        {
+            return; 
+        }
         if (stateTrackers.ContainsKey(CurrentState))
         {
             stateTrackers[CurrentState].Update(Time.deltaTime);
@@ -340,8 +341,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
                 break;
             case State.Defend:
                 UpdateDefend();
-                break;
-            case State.Dead:
                 break;
         }
     }
@@ -484,17 +483,6 @@ public abstract class AnimalBehaviour : MonoBehaviour
         agent.isStopped = true;
         agent.enabled = false;
 
-        if(animal.species == Species.moose)
-        {
-            OnPreyDeath?.Invoke();   
-        } else if (animal.species == Species.wolf || animal.species == Species.bear)
-        {
-            OnPredatorDeath?.Invoke();
-        }
-
-        gameObject.tag = "carcass";
-        gameObject.layer = LayerMask.NameToLayer("carcass"); ;
-
         if(anim != null)
         {
             anim.SetBool("isWalking", false);
@@ -525,9 +513,23 @@ public abstract class AnimalBehaviour : MonoBehaviour
         {
             carcass.Initialize(Species.wolf, 3, 80f);
         }
-        
-        ChangeState(State.Dead);
 
+        if (GameManager.Instance != null && GameManager.Instance.deadFolder != null)
+        {
+            transform.SetParent(GameManager.Instance.deadFolder);
+        }
+
+        gameObject.tag = "carcass";
+        gameObject.layer = LayerMask.NameToLayer("carcass");
+
+        if(animal.species == Species.moose)
+        {
+            OnPreyDeath?.Invoke();   
+        } else if (animal.species == Species.wolf || animal.species == Species.bear)
+        {
+            OnPredatorDeath?.Invoke();
+        }
+        
     }
     protected virtual bool IsHungry() 
     {

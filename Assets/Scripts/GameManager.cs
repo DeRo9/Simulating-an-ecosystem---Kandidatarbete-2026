@@ -14,10 +14,14 @@ public class GameManager : MonoBehaviour
     [Header("Camera")]
     public FreeCamera cameraMovement;
 
+    public static GameManager Instance {get; private set;}
+
     [Header("Folders")]
     public Transform herbivoresFolder;
     public Transform carnivoreFolder;
     public Transform omnivoreFolder;
+
+    public Transform deadFolder;
     public Transform berryBushFolder;
 
     [Header("UI")]
@@ -85,7 +89,15 @@ public class GameManager : MonoBehaviour
     private Coroutine recordingCoroutine;
     private bool spawnPointsInitialized = false;
 
-
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance  = this;
+    }
     private void Start()
     {
         timesetup.SetAmount(60);
@@ -484,7 +496,6 @@ public class GameManager : MonoBehaviour
         var sm = StatisticsTableManager.instance;
         foreach (Transform child in folder)
         {
-            if (child.CompareTag("carcass")) continue;
             Animal a = child.GetComponent<Animal>();
             if (a == null) continue;
             if (species == Species.bear)  { sm.BearSurvivorTotalAge += a.age; sm.BearSurvivorCount++; }
