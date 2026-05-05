@@ -425,6 +425,13 @@ public class WolfBehaviour : AnimalBehaviour
                 notifyDeath();
                 return;
             }
+
+            BearBehaviour bear = preyTarget.GetComponentInParent<BearBehaviour> ();
+            if ( bear != null && bear.isDead)
+            {
+                notifyDeath();
+                return;
+            }
         }
 
         if (preyTarget == null)
@@ -508,6 +515,7 @@ public class WolfBehaviour : AnimalBehaviour
         BearBehaviour bear = preyTarget.GetComponentInParent<BearBehaviour>();
         if (bear != null && !bear.isDead)
         {
+            bear.RegisterWolfAttacker(this);
             bear?.InflictDamage(wolf.CalculateAttackDamage());
         }
     }
@@ -719,6 +727,11 @@ public class WolfBehaviour : AnimalBehaviour
             moose.UnregisterWolfAttacker(this);
         }
 
+        BearBehaviour bear = preyTarget.GetComponentInParent<BearBehaviour>();
+        if (bear != null)
+        {
+            bear.UnregisterWolfAttacker(this);
+        }
         pendingCarcass = preyTarget.GetComponentInParent<AnimalBehaviour>().gameObject;
 
         preyTarget = null;

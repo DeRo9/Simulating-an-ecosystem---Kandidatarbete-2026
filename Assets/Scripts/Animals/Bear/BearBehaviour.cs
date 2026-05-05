@@ -1,3 +1,6 @@
+//using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -34,6 +37,7 @@ public class BearBehaviour : AnimalBehaviour
 
     GameObject pendingCarcass;
 
+    private List<WolfBehaviour> wolfAttackers = new List<WolfBehaviour>();
 
     [Header("Layers")]
     [SerializeField]
@@ -484,6 +488,42 @@ public class BearBehaviour : AnimalBehaviour
         ChangeState(State.Wander);
     }
 
+    public void RegisterWolfAttacker(WolfBehaviour wolf)
+    {
+        if(wolf == null) return;
+        if (!wolfAttackers.Contains(wolf))
+        {
+            wolfAttackers.Add(wolf);
+        }
+    }
+
+    public void UnregisterWolfAttacker(WolfBehaviour wolf)
+    {
+        if(wolf == null) return;
+        wolfAttackers.Remove(wolf);
+    }
+
+    public override void OnDeath(bool killedByPredator = false)
+    {
+        wolfAttackers.RemoveAll(w => w == null || w.Equals(null));
+        bool wolfKill = wolfAttackers.Count > 0;
+
+        foreach(WolfBehaviour wolf in wolfAttackers.ToList())
+        {
+            if (wolf != null && !wolf.Equals(null))
+            {
+                wolf.notifyDeath();
+            }
+        }
+
+        wolfAttackers.Clear();
+
+        if (wolfKill)
+        {
+            StatisticsTableManager.instance.WolfSuccessfulHuntsCount++;
+        }
+        base.OnDeath(killedByPredator);
+    }
     protected override void UpdateSearchFood()
     {
         if (foodTarget == null) 
