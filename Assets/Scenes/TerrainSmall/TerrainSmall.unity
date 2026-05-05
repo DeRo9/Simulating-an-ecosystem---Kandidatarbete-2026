@@ -751,7 +751,7 @@ TerrainCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_TerrainData: {fileID: 15600000, guid: 671983e47786c440e959f1e3ff4092e5, type: 2}
+  m_TerrainData: {fileID: 15600000, guid: 2daee02d9be598c428b68c6ba989e311, type: 2}
   m_EnableTreeColliders: 1
 --- !u!218 &44702050
 Terrain:
@@ -762,7 +762,7 @@ Terrain:
   m_GameObject: {fileID: 44702048}
   m_Enabled: 1
   serializedVersion: 6
-  m_TerrainData: {fileID: 15600000, guid: 671983e47786c440e959f1e3ff4092e5, type: 2}
+  m_TerrainData: {fileID: 15600000, guid: 2daee02d9be598c428b68c6ba989e311, type: 2}
   m_TreeDistance: 5000
   m_TreeBillboardDistance: 50
   m_TreeCrossFadeLength: 5
@@ -838,7 +838,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.06666667
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 6ddc74ca78379445ba801dce47c6e410, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 30328d5a213fc364798abfbd8b29abb0, type: 2}
   m_BuildHeightMesh: 0
 --- !u!114 &44702053
 MonoBehaviour:
@@ -11754,6 +11754,7 @@ MonoBehaviour:
   weatherManager: {fileID: 844803666}
   terrain: {fileID: 44702050}
   grassLayer: {fileID: 8574412962073106934, guid: f7ce30ec9b280b34cacb1a1005349890, type: 2}
+  sandLayer: {fileID: 0}
   snowLayer: {fileID: 8574412962073106934, guid: e4e818f2f514e5d46a5f53d7f81b5888, type: 2}
 --- !u!4 &1261316111
 Transform:
