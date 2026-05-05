@@ -292,7 +292,10 @@ public class GameManager : MonoBehaviour
             "BearHuntingTime,BearFleeingTime,BearDefendTime,BearHibernateTime," +
             "WolfIdleTime,WolfWanderTime,WolfSearchFoodTime,WolfSearchWaterTime," +
             "WolfSearchMateTime,WolfEatTime,WolfDrinkTime,WolfMatingTime," +
-            "WolfHuntingTime,WolfFleeingTime,WolfDefendTime";
+            "WolfHuntingTime,WolfFleeingTime,WolfDefendTime," +
+            "WolfHuntAttempts,WolfHuntFailures,WolfSuccessfulHunts," +
+            "BearInterference,BearHuntAttempts,BearHuntFailures,BearSuccessfulHunts," +
+            "MooseSuccessfulEscape";
 
         // Final population
         int bearPop = omnivoreFolder != null ? omnivoreFolder.childCount : 0;
@@ -348,7 +351,10 @@ public class GameManager : MonoBehaviour
             $"{GetStateTime(SimulationResults.wolfStateAverages.stateAverages, AnimalBehaviour.State.Mating).ToString("F2", inv)}," +
             $"{GetStateTime(SimulationResults.wolfStateAverages.stateAverages, AnimalBehaviour.State.Hunt).ToString("F2", inv)}," +
             $"{GetStateTime(SimulationResults.wolfStateAverages.stateAverages, AnimalBehaviour.State.Fleeing).ToString("F2", inv)}," +
-            $"{GetStateTime(SimulationResults.wolfStateAverages.stateAverages, AnimalBehaviour.State.Defend).ToString("F2", inv)}";
+            $"{GetStateTime(SimulationResults.wolfStateAverages.stateAverages, AnimalBehaviour.State.Defend).ToString("F2", inv)}," +
+            $"{sm.WolfhuntAttemptsCount},{sm.WolfhuntFailuresCount},{sm.WolfSuccessfulHuntsCount}," +
+            $"{sm.BearInterferenceCount},{sm.BearhuntAttemptsCount},{sm.BearhuntFailuresCount},{sm.BearSuccessfulHuntsCount}," +
+            $"{sm.MooseSuccessfulEscapeCount}";
 
         // Create output directory if it doesn't exist
         string outputDir = Path.Combine(Application.persistentDataPath, "SimulationData");

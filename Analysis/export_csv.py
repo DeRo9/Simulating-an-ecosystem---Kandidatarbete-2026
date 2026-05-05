@@ -77,7 +77,17 @@ NUMERIC_COLUMNS = [
 	"WolfMatingTime",
 	"WolfFleeingTime",
 	"WolfDefendTime",
-	"WolfHuntingTime"
+	"WolfHuntingTime",
+
+	# Hunt statistics (from StatisticsUI)
+	"WolfHuntAttempts",
+	"WolfHuntFailures",
+	"WolfSuccessfulHunts",
+	"BearInterference",
+	"BearHuntAttempts",
+	"BearHuntFailures",
+	"BearSuccessfulHunts",
+	"MooseSuccessfulEscape",
 ]
 
 
@@ -377,6 +387,69 @@ def plot_avg_needs(data: pd.DataFrame, output_dir: Path) -> None:
 	plt.savefig(output_dir / "plot_avg_needs.png", dpi=180)
 	plt.close()
 
+def plot_wolf_hunt(data: pd.DataFrame, output_dir: Path) -> None:
+	cols = ["WolfHuntAttempts", "WolfHuntFailures", "WolfSuccessfulHunts"]
+	cols = [c for c in cols if c in data.columns]
+	if not cols:
+		return
+
+	grouped = data.groupby("scenario")[cols]
+	means = grouped.mean()
+	stds = grouped.std().fillna(0)
+
+	ax = means.plot(kind="bar", yerr=stds, capsize=4, figsize=(10, 6))
+	ax.set_title("Wolf Hunt Statistics by Scenario")
+	ax.set_ylabel("Count")
+	ax.set_xlabel("Scenario")
+	ax.legend(title="Metric")
+	ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha="center")
+	plt.tight_layout()
+	plt.savefig(output_dir / "plot_wolf_hunt.png", dpi=180)
+	plt.close()
+
+
+def plot_bear_hunt(data: pd.DataFrame, output_dir: Path) -> None:
+	cols = ["BearHuntAttempts", "BearHuntFailures", "BearSuccessfulHunts", "BearInterference"]
+	cols = [c for c in cols if c in data.columns]
+	if not cols:
+		return
+
+	grouped = data.groupby("scenario")[cols]
+	means = grouped.mean()
+	stds = grouped.std().fillna(0)
+
+	ax = means.plot(kind="bar", yerr=stds, capsize=4, figsize=(10, 6))
+	ax.set_title("Bear Hunt Statistics by Scenario")
+	ax.set_ylabel("Count")
+	ax.set_xlabel("Scenario")
+	ax.legend(title="Metric")
+	ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha="center")
+	plt.tight_layout()
+	plt.savefig(output_dir / "plot_bear_hunt.png", dpi=180)
+	plt.close()
+
+
+def plot_moose_escape(data: pd.DataFrame, output_dir: Path) -> None:
+	cols = ["MooseSuccessfulEscape"]
+	cols = [c for c in cols if c in data.columns]
+	if not cols:
+		return
+
+	grouped = data.groupby("scenario")[cols]
+	means = grouped.mean()
+	stds = grouped.std().fillna(0)
+
+	ax = means.plot(kind="bar", yerr=stds, capsize=4, figsize=(10, 6), color=["#2ca02c"])
+	ax.set_title("Moose Successful Escapes by Scenario")
+	ax.set_ylabel("Count")
+	ax.set_xlabel("Scenario")
+	ax.legend(title="Metric")
+	ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha="center")
+	plt.tight_layout()
+	plt.savefig(output_dir / "plot_moose_escape.png", dpi=180)
+	plt.close()
+
+
 def plot_state_distribution_pie(data: pd.DataFrame, output_dir: Path) -> None:
 	"""Plot state distribution as pie charts (proportion of time in each state)."""
 	
@@ -450,6 +523,9 @@ def main() -> None:
 	plot_pack_behavior(data, args.output)
 	plot_avg_needs(data, args.output)
 	plot_lifespan(data, args.output)
+	plot_wolf_hunt(data, args.output)
+	plot_bear_hunt(data, args.output)
+	plot_moose_escape(data, args.output)
 	plot_state_distribution_pie(data, args.output)
 	print(f"Saved summary + plots to: {args.output.resolve()}")
 
