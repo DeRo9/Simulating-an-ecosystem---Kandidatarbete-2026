@@ -39,6 +39,9 @@ public class MooseBehaviour : AnimalBehaviour
     {
         base.Update();
 
+        if (isDead)
+            return;
+
         if (!agent.isOnNavMesh)
             return;
         
@@ -403,8 +406,12 @@ public class MooseBehaviour : AnimalBehaviour
 
     public override void OnDeath(bool killedByPredator = false)
     {
+        wolfAttackers.RemoveAll(w => w == null);
+        bearAttackers.RemoveAll(b => b == null);
+
         bool wolfKill = wolfAttackers.Count > 0;
         bool packKill = wolfAttackers.Exists(w => {
+            if (w == null) return false;
             Wolf wolfComp = w?.GetComponent<Wolf>();
             return wolfComp != null && wolfComp.pack != null && wolfComp.pack.countCurrentPackSize() > 1;
         });

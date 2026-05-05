@@ -494,9 +494,15 @@ public abstract class AnimalBehaviour : MonoBehaviour
 
         gameObject.tag = "carcass";
         gameObject.layer = LayerMask.NameToLayer("carcass"); ;
-        anim.SetBool("isWalking", false);
-        anim.SetBool("isRunning", false);
-        anim.SetTrigger("isDead");
+
+        if(anim != null)
+        {
+            anim.SetBool("isWalking", false);
+            anim.SetBool("isRunning", false);
+            anim.SetBool("isConsuming", false);
+            anim.ResetTrigger("Attack");
+            anim.SetTrigger("isDead");
+        }
 
         animal.agingSpeed = 0f;
         Carcass carcass = gameObject.GetComponent<Carcass>();

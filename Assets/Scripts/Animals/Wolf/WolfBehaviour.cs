@@ -710,8 +710,8 @@ public class WolfBehaviour : AnimalBehaviour
 
     public void notifyDeath()
     {
-        if (preyTarget == null) return;
         if (isDead) return;
+        if (preyTarget == null) return;
 
         MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
         if (moose != null)
@@ -825,6 +825,16 @@ public class WolfBehaviour : AnimalBehaviour
     }
     public override void OnDeath(bool killedByPredator = false)
     {
+        if (preyTarget != null)
+        {
+            MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
+            if (moose != null)
+            {
+                moose.UnregisterWolfAttacker(this);
+            }
+            preyTarget = null;
+        }
+
         bool bearKill = bearAttackers.Count > 0;
 
         foreach (BearBehaviour bear in bearAttackers.ToList())
