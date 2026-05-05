@@ -126,17 +126,12 @@ def infer_scenario_from_name(filename: str) -> str:
 	for sep in ("-", " "):
 		lower = lower.replace(sep, "_")
 
-	if (
-		"few_bear" in lower
-		or "few_bears" in lower
-		or "low_bear" in lower
-		or "fa_bjorn" in lower
-	):
+	if "few" in lower:
 		return "few_bear"
-	if "no_bear" in lower or "without_bear" in lower:
-		return "without_bear"
-	if "with_bear" in lower:
-		return "with_bear"
+	if "no" in lower:
+		return "no_bear"
+	if "many" in lower:
+		return "many_bear"
 	return "all"
 
 
