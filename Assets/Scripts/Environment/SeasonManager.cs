@@ -18,8 +18,10 @@ public class SeasonManager : MonoBehaviour
     public bool IsSummer => currentSeason == Season.summer;
     public bool IsWinter => currentSeason == Season.winter;
 
-    public bool IsRaining => percipitation && currentSeason == Season.summer;
+    //public bool IsRaining => percipitation && currentSeason == Season.summer;
     public bool IsSnowing => percipitation && currentSeason == Season.winter;
+
+    public bool IsRaining => weatherManager.currentWeather == WeatherManager.Weather.rainy;
 
 
     [Header("Terrain")]
@@ -73,6 +75,7 @@ public class SeasonManager : MonoBehaviour
 
     private void Update()
     {
+        /*
         if (!percipitation)
         {
             weatherManager.ChangeWeather(WeatherManager.Weather.sunny);
@@ -85,6 +88,7 @@ public class SeasonManager : MonoBehaviour
         {
             weatherManager.ChangeWeather(WeatherManager.Weather.snowy);
         }
+        */
     }
 
     private void SetTerrainLayer()

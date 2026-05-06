@@ -20,6 +20,7 @@ public class WeatherManager : MonoBehaviour
 
     [Header("Probability precipitation")]
     [UnityEngine.Range(0f, 1f)] public float rainProbability = 0.05f;
+    public bool precipitationActive = false;
 
     // Rain duration settings
     public float rainTimer = 0f;
@@ -36,12 +37,15 @@ public class WeatherManager : MonoBehaviour
 
     private void Update()
     {
+        if (!GameManager.GetSimulationStatus()) return;
+
         if (currentWeather == Weather.sunny)
         {
             // Chance to start raining
             if (Random.value < rainProbability * Time.deltaTime) {
                 rainTimer = Random.Range(rainTimerMin, rainTimerMax);
                 ChangeWeather(Weather.rainy);
+                precipitationActive = true;
             }
         } else if (currentWeather == Weather.rainy)
         {
@@ -49,6 +53,7 @@ public class WeatherManager : MonoBehaviour
             if (rainTimer <= 0f)
             {
                 ChangeWeather(Weather.sunny);
+                precipitationActive = false;
             }
         }
     }
