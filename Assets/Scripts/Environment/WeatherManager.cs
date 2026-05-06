@@ -1,3 +1,5 @@
+using NUnit.Framework;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class WeatherManager : MonoBehaviour
@@ -16,10 +18,39 @@ public class WeatherManager : MonoBehaviour
     public GameObject snowing;
 
 
+    [Header("Probability precipitation")]
+    [UnityEngine.Range(0f, 1f)] public float rainProbability = 0.05f;
+
+    // Rain duration settings
+    public float rainTimer = 0f;
+    public float rainTimerMin = 40f;
+    public float rainTimerMax = 60f;
+
+
+
     private void Start()
     {
         currentWeather = Weather.sunny;
         ApplyWeather();
+    }
+
+    private void Update()
+    {
+        if (currentWeather == Weather.sunny)
+        {
+            // Chance to start raining
+            if (Random.value < rainProbability * Time.deltaTime) {
+                rainTimer = Random.Range(rainTimerMin, rainTimerMax);
+                ChangeWeather(Weather.rainy);
+            }
+        } else if (currentWeather == Weather.rainy)
+        {
+            rainTimer -= Time.deltaTime;
+            if (rainTimer <= 0f)
+            {
+                ChangeWeather(Weather.sunny);
+            }
+        }
     }
 
     public void ChangeWeather(Weather newWeather)

@@ -74,7 +74,8 @@ public class GameManager : MonoBehaviour
     public float spawnRadius = 1000f;
 
     [Header("Weather")]
-    
+    public WeatherManager weatherManager;
+
     [Header("Season")]
     public Toggle summerToggle;
     public Toggle winterToggle;
