@@ -26,6 +26,7 @@ public class MooseBehaviour : AnimalBehaviour
 
     private List<WolfBehaviour> wolfAttackers = new List<WolfBehaviour>();
     private List<BearBehaviour> bearAttackers = new List<BearBehaviour>();
+    private bool packHuntAttemptCounted = false;
 
     protected override void Start()
     {
@@ -381,7 +382,19 @@ public class MooseBehaviour : AnimalBehaviour
         if (wolf == null) return;
 
         if (!wolfAttackers.Contains(wolf))
+        {
             wolfAttackers.Add(wolf);
+
+            if (!packHuntAttemptCounted)
+            {
+                Wolf wolfComp = wolf.GetComponent<Wolf>();
+                if (wolfComp != null && wolfComp.pack != null && wolfComp.pack.countCurrentPackSize() > 1)
+                {
+                    StatisticsTableManager.instance.PackHuntAttemptsCount++;
+                    packHuntAttemptCounted = true;
+                }
+            }
+        }
     }
 
     public void UnregisterWolfAttacker(WolfBehaviour wolf)
@@ -425,6 +438,7 @@ public class MooseBehaviour : AnimalBehaviour
         }
 
         wolfAttackers.Clear();
+        packHuntAttemptCounted = false;
 
         if (wolfKill)
         {

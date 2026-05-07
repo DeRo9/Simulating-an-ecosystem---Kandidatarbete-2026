@@ -346,9 +346,6 @@ public class WolfBehaviour : AnimalBehaviour
             if (wolf.isLeader || pack == null || pack.countCurrentPackSize() <= 1)
                 StatisticsTableManager.instance.WolfhuntAttemptsCount++;
 
-            if (wolf.isLeader && pack != null && pack.countCurrentPackSize() > 1)
-                StatisticsTableManager.instance.PackHuntAttemptsCount++;
-
             MooseBehaviour moose = preyTarget.GetComponentInParent<MooseBehaviour>();
             if (moose != null)
             {
