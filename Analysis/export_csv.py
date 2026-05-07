@@ -393,7 +393,7 @@ def plot_lifespan(data: pd.DataFrame, output_dir: Path) -> None:
 		width = 0.25
 		
 		for i, col in enumerate(cols):
-			species = col.replace("Deaths", "")
+			species = col.replace("AvgLifespan", "")
 			color = get_bar_color(col)
 			positions = [p + width*i for p in x]
 			
@@ -590,7 +590,7 @@ def plot_pack_behavior(data: pd.DataFrame, output_dir: Path) -> None:
 	fig, ax = plt.subplots(figsize=(14, 8))
 	x = range(len(means.index))
 	width = 0.25
-	short_labels = ["Packs", "Attempts", "Success"]
+	short_labels = ["Packs\nCreated", "Attempts", "Success"]
 		
 	for i, col in enumerate(cols):
 		color = get_bar_color(col)
@@ -762,7 +762,6 @@ def plot_moose_escape(data: pd.DataFrame, output_dir: Path) -> None:
 	enhance_bar_plot(ax, "Moose Successful Escapes", "Escape Count")
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_moose_escape.png", dpi=300)
-	plt.show()
 	plt.close()
 
 STATE_COLORS = {
