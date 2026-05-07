@@ -40,7 +40,7 @@ public class StatisticsTableManager : MonoBehaviour
 
     [Header("Feeding")]
     public int BearPlantMealsCount;
-    public int BearAnimalPreyCount;
+    public int BearCarcassCount;
     public int MoosePlantMealsCount;
     public int WolfCarcassCount;
 
@@ -109,7 +109,7 @@ public class StatisticsTableManager : MonoBehaviour
         MoosePredationCount = 0;
 
         BearPlantMealsCount = 0;
-        BearAnimalPreyCount = 0;
+        BearCarcassCount = 0;
         MoosePlantMealsCount = 0;
         WolfCarcassCount = 0;
 

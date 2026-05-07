@@ -290,7 +290,7 @@ public class GameManager : MonoBehaviour
             "BearDeaths,WolfDeaths,MooseDeaths," +
             "BearStarvation,WolfStarvation,MooseStarvation," +
             "BearPredation,WolfPredation,MoosePredation," +
-            "BearPlantMeals,BearAnimalPrey,MoosePlantMeals,WolfCarcass," +
+            "BearPlantMeals,BearCarcassCount,MoosePlantMeals,WolfCarcassCount," +
             "PacksFormed,PackHuntAttempts,PackHuntSuccess," +
             "BearAvgHunger,BearAvgThirst,BearAvgStamina," +
             "WolfAvgHunger,WolfAvgThirst,WolfAvgStamina," +
@@ -325,7 +325,7 @@ public class GameManager : MonoBehaviour
             $"{sm.BearDeathCount},{sm.WolfDeathCount},{sm.MooseDeathCount}," +
             $"{sm.BearStarvationCount},{sm.WolfStarvationCount},{sm.MooseStarvationCount}," +
             $"{sm.BearPredationCount},{sm.WolfPredationCount},{sm.MoosePredationCount}," +
-            $"{sm.BearPlantMealsCount},{sm.BearAnimalPreyCount},{sm.MoosePlantMealsCount},{sm.WolfCarcassCount}," +
+            $"{sm.BearPlantMealsCount},{sm.BearCarcassCount},{sm.MoosePlantMealsCount},{sm.WolfCarcassCount}," +
             $"{sm.PacksFormedCount},{sm.PackHuntAttemptsCount},{sm.PackHuntSuccessCount}," +
             $"{SimulationResults.bearAvgHunger.ToString("F2", inv)},{SimulationResults.bearAvgThirst.ToString("F2", inv)},{SimulationResults.bearAvgStamina.ToString("F2", inv)}," +
             $"{SimulationResults.wolfAvgHunger.ToString("F2", inv)},{SimulationResults.wolfAvgThirst.ToString("F2", inv)},{SimulationResults.wolfAvgStamina.ToString("F2", inv)}," +

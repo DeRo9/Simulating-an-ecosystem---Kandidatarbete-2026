@@ -690,6 +690,7 @@ public class WolfBehaviour : AnimalBehaviour
         if (eatingTimer >= eatingDuration)
         {
             needs.Eat(carcass.Consume());
+            StatisticsTableManager.instance.WolfCarcassCount++;
             eatingTimer = 0f;
 
             if (carcass.IsEmpty || foodTarget == null)

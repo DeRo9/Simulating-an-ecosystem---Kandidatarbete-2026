@@ -598,6 +598,7 @@ public class BearBehaviour : AnimalBehaviour
             {
                 float nutrition = carcass.Consume();
                 needs.Eat(nutrition);
+                StatisticsTableManager.instance.BearCarcassCount++;
             }
             else
             {

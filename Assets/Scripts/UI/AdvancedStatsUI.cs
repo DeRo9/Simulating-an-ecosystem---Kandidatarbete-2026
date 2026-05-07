@@ -30,7 +30,7 @@ public class AdvancedStatsUI : MonoBehaviour
 
     [Header("Feeding")]
     public TextMeshProUGUI bearPlantMealsLabel;
-    public TextMeshProUGUI bearAnimalPreyLabel;
+    public TextMeshProUGUI bearCarcassLabel;
     public TextMeshProUGUI moosePlantMealsLabel;
     public TextMeshProUGUI wolfCarcassLabel;
 
@@ -85,7 +85,7 @@ public class AdvancedStatsUI : MonoBehaviour
         if (moosePredationLabel != null) moosePredationLabel.SetText("{0}", StatisticsTableManager.instance.MoosePredationCount);
 
         if (bearPlantMealsLabel != null) bearPlantMealsLabel.SetText("{0}", StatisticsTableManager.instance.BearPlantMealsCount);
-        if (bearAnimalPreyLabel != null) bearAnimalPreyLabel.SetText("{0}", StatisticsTableManager.instance.BearAnimalPreyCount);
+        if (bearCarcassLabel != null) bearCarcassLabel.SetText("{0}", StatisticsTableManager.instance.BearCarcassCount);
         if (moosePlantMealsLabel != null) moosePlantMealsLabel.SetText("{0}", StatisticsTableManager.instance.MoosePlantMealsCount);
         if (wolfCarcassLabel != null) wolfCarcassLabel.SetText("{0}", StatisticsTableManager.instance.WolfCarcassCount);
 

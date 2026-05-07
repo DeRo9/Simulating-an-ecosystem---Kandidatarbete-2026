@@ -25,9 +25,9 @@ NUMERIC_COLUMNS = [
 	"WolfPredation",
 	"MoosePredation",
 	"BearPlantMeals",
-	"BearAnimalPrey",
+	"BearCarcassCount",
 	"MoosePlantMeals",
-	"WolfCarcass",
+	"WolfCarcassCount",
 	"PacksFormed",
 	"PackHuntAttempts",
 	"PackHuntSuccess",
@@ -98,9 +98,9 @@ SPECIES_COLORS = {
 
 PALETTE = {
     "BearPlantMeals": "#FFD700",
-    "BearAnimalPrey": "#DC143C",
+    "BearCarcassCount": "#DC143C",
     "MoosePlantMeals": "#90EE90",
-    "WolfCarcass": "#8B0000",
+    "WolfCarcassCount": "#8B0000",
     "PacksFormed": "#D8B724",
     "PackHuntAttempts": "#2CB9E4",
     "PackHuntSuccess": "#1CD12B",
@@ -535,7 +535,7 @@ def plot_predation(data: pd.DataFrame, output_dir: Path) -> None:
 
 def plot_feeding(data: pd.DataFrame, output_dir: Path) -> None:
 	setup_plot_style()
-	cols = ["BearPlantMeals", "BearAnimalPrey", "MoosePlantMeals", "WolfCarcass"]
+	cols = ["BearPlantMeals", "BearCarcassCount", "MoosePlantMeals", "WolfCarcassCount"]
 	cols = [c for c in cols if c in data.columns]
 	if not cols: return
 
@@ -549,7 +549,7 @@ def plot_feeding(data: pd.DataFrame, output_dir: Path) -> None:
 		
 	display_names = {
 		"BearPlantMeals": "Bear (Plant)",
-		"BearAnimalPrey": "Bear (Carcass)",
+		"BearCarcass": "Bear (Carcass)",
 		"MoosePlantMeals": "Moose (Plant)",
 		"WolfCarcass": "Wolf (Carcass)"
 	}
@@ -574,6 +574,7 @@ def plot_feeding(data: pd.DataFrame, output_dir: Path) -> None:
 	enhance_bar_plot(ax, "Feeding Habits by Scenario", "Meal Count")
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_feeding.png", dpi=300)
+	plt.show()
 	plt.close()
 
 
