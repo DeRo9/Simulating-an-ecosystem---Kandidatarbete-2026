@@ -314,6 +314,8 @@ public class BearBehaviour : AnimalBehaviour
                 memory.RememberPrey(closestPrey.transform.position);
             }
 
+            StatisticsTableManager.instance.BearhuntAttemptsCount++;
+
             MooseBehaviour moosePrey = preyTarget.GetComponentInParent<MooseBehaviour>();
             if (moosePrey != null)
             {
