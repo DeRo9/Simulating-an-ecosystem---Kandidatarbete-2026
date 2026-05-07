@@ -167,6 +167,7 @@ MonoBehaviour:
   herbivoresFolder: {fileID: 1250104322}
   carnivoreFolder: {fileID: 1322560403}
   omnivoreFolder: {fileID: 1809091686}
+  deadFolder: {fileID: 0}
   berryBushFolder: {fileID: 1819389531}
   startMenu: {fileID: 677509318}
   mooseSetup: {fileID: 85269763}
@@ -187,6 +188,7 @@ MonoBehaviour:
   informationUI: {fileID: 0}
   simulationUI: {fileID: 1646297639}
   spawnRadius: 400
+  weatherManager: {fileID: 844803666}
   summerToggle: {fileID: 1050397844}
   winterToggle: {fileID: 1372752597}
   percipitationToggle: {fileID: 1342007192}
@@ -6225,7 +6227,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -313.8, y: -0.0000066757}
+  m_AnchoredPosition: {x: -259, y: 0.000012398}
   m_SizeDelta: {x: 458.3879, y: 110.8778}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &546735678
@@ -8945,6 +8947,12 @@ MonoBehaviour:
   currentWeather: 0
   raining: {fileID: 1710434307}
   snowing: {fileID: 695523125}
+  rainProbability: 0.03
+  snowProbability: 0.03
+  precipitationActive: 0
+  precipTimer: 0
+  precipTimerMin: 40
+  precipTimerMax: 60
 --- !u!1 &850344226
 GameObject:
   m_ObjectHideFlags: 0
@@ -13349,7 +13357,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b91e8ab925f053b4ea5a8f2e825c5d86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Seasons
-  currentSeason: 0
   weatherManager: {fileID: 844803666}
   terrain: {fileID: 44702050}
   grassLayer: {fileID: 8574412962073106934, guid: f7ce30ec9b280b34cacb1a1005349890, type: 2}
@@ -13984,7 +13991,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1342007191
 RectTransform:
   m_ObjectHideFlags: 0

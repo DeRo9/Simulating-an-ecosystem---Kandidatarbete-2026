@@ -1,3 +1,5 @@
+using NUnit.Framework;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class WeatherManager : MonoBehaviour
@@ -10,16 +12,75 @@ public class WeatherManager : MonoBehaviour
     }
 
     public Weather currentWeather;
-
     public GameObject raining;
-
     public GameObject snowing;
+
+
+    [Header("Probability precipitation")]
+    [UnityEngine.Range(0f, 1f)] public float rainProbability = 0.05f;
+    [UnityEngine.Range(0f, 1f)] public float snowProbability = 0.05f;
+    public bool precipitationActive = false;
+
+    // Precipitation duration settings
+    public float precipTimer = 0f;
+    public float precipTimerMin = 40f;
+    public float precipTimerMax = 60f;
+
 
 
     private void Start()
     {
         currentWeather = Weather.sunny;
         ApplyWeather();
+    }
+
+    private void Update()
+    {
+        if (!GameManager.GetSimulationStatus()) return;
+
+        if (SeasonManager.GetCurrentSeason() == SeasonManager.Season.summer)
+        {
+            if (currentWeather == Weather.sunny)
+            {
+                // Chance to start raining
+                if (Random.value < rainProbability * Time.deltaTime)
+                {
+                    precipTimer = Random.Range(precipTimerMin, precipTimerMax);
+                    ChangeWeather(Weather.rainy);
+                    precipitationActive = true;
+                }
+            }
+            else if (currentWeather == Weather.rainy)
+            {
+                precipTimer -= Time.deltaTime;
+                if (precipTimer <= 0f)
+                {
+                    ChangeWeather(Weather.sunny);
+                    precipitationActive = false;
+                }
+            }
+        } 
+        
+        else if (SeasonManager.GetCurrentSeason() == SeasonManager.Season.winter)
+        {
+            if(currentWeather == Weather.sunny)
+            {
+                if (Random.value < snowProbability * Time.deltaTime)
+                {
+                    precipTimer = Random.Range(precipTimerMin, precipTimerMax);
+                    ChangeWeather(Weather.snowy);
+                    precipitationActive = true;
+                }
+            } else if (currentWeather == Weather.snowy)
+            {
+                precipTimer -= Time.deltaTime;
+                if(precipTimer <= 0f)
+                {
+                    ChangeWeather(Weather.sunny);
+                    precipitationActive = false;
+                }
+            }
+        }
     }
 
     public void ChangeWeather(Weather newWeather)
