@@ -90,6 +90,88 @@ NUMERIC_COLUMNS = [
 	"MooseSuccessfulEscape",
 ]
 
+SPECIES_COLORS = {
+    "Bear": "#8B4513",  
+    "Wolf": "#2C3E50",
+    "Moose": "#556B2F"   
+}
+
+PALETTE = {
+    "BearPlantMeals": "#FFD700",
+    "BearAnimalPrey": "#DC143C",
+    "MoosePlantMeals": "#90EE90",
+    "WolfCarcass": "#8B0000",
+    "PacksFormed": "#D8B724",
+    "PackHuntAttempts": "#2CB9E4",
+    "PackHuntSuccess": "#1CD12B",
+	"BearAvgHunger": "#3DA01F",
+	"BearAvgThirst": "#1E949C",
+	"BearAvgStamina": "#FAD91F",
+	"WolfAvgHunger": "#3DA01F",
+	"WolfAvgThirst": "#1E949C",
+	"WolfAvgStamina": "#FAD91F",
+	"MooseAvgHunger": "#3DA01F",
+	"MooseAvgThirst": "#1E949C",
+	"MooseAvgStamina": "#FAD91F",
+	"BearHuntAttempts": "#1FAAFA", 
+	"BearHuntFailures": "#FA391F",
+	"BearSuccessfulHunts": "#3AE743",
+	"BearInterference": "#572EEE"
+}
+
+def get_bar_color(col_name: str) -> str:
+    """Logic to determine color: Species base color first, then Palette, then Grey."""
+    if col_name in PALETTE:
+        return PALETTE[col_name]
+    
+    for species, color in SPECIES_COLORS.items():
+        if col_name.startswith(species):
+            return color
+            
+    return "#cccccc" # Default fallback
+
+def setup_plot_style():
+    """Configure matplotlib for professional appearance."""
+    plt.style.use('seaborn-v0_8-darkgrid')
+    plt.rcParams.update({
+        'figure.facecolor': '#F8F9FA',
+        'axes.facecolor': '#FFFFFF',
+        'axes.grid': True,
+        'grid.color': '#E0E0E0',
+        'grid.alpha': 0.3,
+        'axes.spines.left': True,
+        'axes.spines.bottom': True,
+        'axes.spines.right': False,
+        'axes.spines.top': False,
+        'font.size': 11,
+        'axes.labelsize': 12,
+        'axes.titlesize': 14,
+        'xtick.labelsize': 10,
+        'ytick.labelsize': 10,
+        'legend.fontsize': 10,
+        'font.family': 'sans-serif',
+        'font.sans-serif': ['Arial', 'Helvetica'],
+    })
+
+def enhance_bar_plot(ax, title, ylabel, xlabel="Scenario", add_values=True):
+    """Apply consistent enhancements to bar plots."""
+    ax.set_title(title, fontsize=14, fontweight='bold', pad=20)
+    ax.set_ylabel(ylabel, fontsize=12, fontweight='bold')
+    ax.set_xlabel(xlabel, fontsize=12, fontweight='bold')
+    ax.grid(axis='y', alpha=0.3, linestyle='--')
+    ax.set_axisbelow(True)
+    
+    for spine in ax.spines.values():
+        spine.set_edgecolor('#CCCCCC')
+        spine.set_linewidth(0.8)
+    
+    if add_values:
+        for container in ax.containers:
+            if hasattr(container, 'patches') and len(container.patches) > 0:
+                ax.bar_label(container, fmt='%.1f', padding=3, fontsize=15)
+    
+    return ax
+
 
 def parse_args() -> argparse.Namespace:
 	parser = argparse.ArgumentParser(
@@ -210,256 +292,477 @@ def summarize(data: pd.DataFrame, output_dir: Path) -> None:
 
 
 def plot_population(data: pd.DataFrame, output_dir: Path) -> None:
+	setup_plot_style()
 	cols = ["BearFinalPopulation", "WolfFinalPopulation", "MooseFinalPopulation"]
 	cols = [c for c in cols if c in data.columns]
 	if not cols:
 		return
-
+ 
 	grouped = data.groupby("scenario")[cols]
 	means = grouped.mean()
 	stds = grouped.std().fillna(0)
-
-	ax = means.plot(kind="bar", yerr=stds, capsize=4, figsize=(10, 6))
-	ax.set_title("Final Population by Scenario")
-	ax.set_ylabel("Count")
-	ax.set_xlabel("Scenario")
-	ax.legend(title="Species")
-	ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha="center")
+ 
+	fig, ax = plt.subplots(figsize=(14, 8))
+	x = range(len(means.index))
+	width = 0.25
+	
+	species_list = ["Bear", "Wolf", "Moose"]
+		
+	for i, col in enumerate(cols):
+		species = col.replace("FinalPopulation", "")
+		color = SPECIES_COLORS.get(species, "#cccccc")
+		positions = [p + width*i for p in x]
+		
+		bars = ax.bar(positions, means[col], width, 
+			label=species, yerr=stds[col], capsize=5, 
+			color=color, alpha=0.85, edgecolor='black', linewidth=1.2)
+		
+		for pos in positions:
+			ax.text(pos, -1.5, species, 
+				ha='center', va='top', fontsize=10, fontweight='bold',
+				bbox=dict(boxstyle='round,pad=0.3', facecolor=color, alpha=0.3, edgecolor='none'))
+		
+	ax.margins(y=0.12)
+	ax.set_ylim(bottom=-3)
+	
+	ax.set_xticks([p + width for p in x])
+	ax.set_xticklabels(means.index, rotation=0, fontsize=11, fontweight='bold')
+	
+	enhance_bar_plot(ax, "Final Population by Scenario", "Population Count")
+	ax.legend(title="Species", loc='upper left', framealpha=0.95, fontsize=10)
+		
 	plt.tight_layout()
-	plt.savefig(output_dir / "plot_final_population.png", dpi=180)
+	plt.savefig(output_dir / "plot_final_population.png", dpi=300, bbox_inches='tight')
 	plt.close()
 
 
 def plot_deaths(data: pd.DataFrame, output_dir: Path) -> None:
+	setup_plot_style()
 	cols = ["BearDeaths", "WolfDeaths", "MooseDeaths"]
 	cols = [c for c in cols if c in data.columns]
-	if not cols:
-		return
+	if not cols: return
 
 	grouped = data.groupby("scenario")[cols]
 	means = grouped.mean()
 	stds = grouped.std().fillna(0)
 
-	ax = means.plot(kind="bar", yerr=stds, capsize=4, figsize=(10, 6), color=["#8c564b", "#1f77b4", "#2ca02c"])
-	ax.set_title("Deaths by Scenario")
-	ax.set_ylabel("Count")
-	ax.set_xlabel("Scenario")
-	ax.legend(title="Species")
-	ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha="center")
+	fig, ax = plt.subplots(figsize=(14, 8))
+	x = range(len(means.index))
+	width = 0.25
+
+	for i, col in enumerate(cols):
+		species = col.replace("Deaths", "")
+		color = get_bar_color(col)
+		positions = [p + width*i for p in x]
+		
+		ax.bar(positions, means[col], width, 
+			label=species, yerr=stds[col], capsize=5, 
+			color=color, alpha=0.85, edgecolor='black', linewidth=1.2)
+		
+		for pos in positions:
+			ax.text(pos, -1.0, species, 
+					ha='center', va='top', fontsize=10, fontweight='bold',
+					bbox=dict(boxstyle='round,pad=0.3', facecolor=color, alpha=0.2, edgecolor='none'))
+		
+	ax.margins(y=0.15)
+	ax.set_ylim(bottom=-2)
+		
+	ax.set_xticks([p + width for p in x])
+	ax.set_xticklabels(means.index, rotation=0, fontsize=11, fontweight='bold')
+		
+	enhance_bar_plot(ax, "Total Deaths by Scenario", "Death Count")
+	ax.legend(title="Species", loc='upper left', framealpha=0.95)
+			
 	plt.tight_layout()
-	plt.savefig(output_dir / "plot_deaths.png", dpi=180)
+	plt.savefig(output_dir / "plot_deaths.png", dpi=300, bbox_inches='tight')
 	plt.close()
 
 
 def plot_lifespan(data: pd.DataFrame, output_dir: Path) -> None:
-	cols = ["BearAvgLifespan", "WolfAvgLifespan", "MooseAvgLifespan"]
-	cols = [c for c in cols if c in data.columns]
-	if not cols:
-		return
+		setup_plot_style()
+		cols = ["BearAvgLifespan", "WolfAvgLifespan", "MooseAvgLifespan"]
+		cols = [c for c in cols if c in data.columns]
+		if not cols: return
 
-	grouped = data.groupby("scenario")[cols]
-	means = grouped.mean()
-	stds = grouped.std().fillna(0)
+		grouped = data.groupby("scenario")[cols]
+		means = grouped.mean()
+		stds = grouped.std().fillna(0)
 
-	ax = means.plot(kind="bar", yerr=stds, capsize=4, figsize=(10, 6))
-	ax.set_title("Average Lifespan by Scenario")
-	ax.set_ylabel("Age Units")
-	ax.set_xlabel("Scenario")
-	ax.legend(title="Species")
-	plt.tight_layout()
-	plt.savefig(output_dir / "plot_avg_lifespan.png", dpi=180)
-	plt.close()
+		fig, ax = plt.subplots(figsize=(14, 8))
+		x = range(len(means.index))
+		width = 0.25
+		
+		for i, col in enumerate(cols):
+			species = col.replace("Deaths", "")
+			color = get_bar_color(col)
+			positions = [p + width*i for p in x]
+			
+			ax.bar(positions, means[col], width, 
+				label=species, yerr=stds[col], capsize=5, 
+				color=color, alpha=0.85, edgecolor='black', linewidth=1.2)
+			
+			for pos in positions:
+				ax.text(pos, -1.0, species, 
+						ha='center', va='top', fontsize=10, fontweight='bold',
+						bbox=dict(boxstyle='round,pad=0.3', facecolor=color, alpha=0.2, edgecolor='none'))
+			
+		ax.margins(y=0.15)
+		ax.set_ylim(bottom=-2)
+		ax.set_xticks([p + width for p in x])
+		ax.set_xticklabels(means.index, rotation=0, fontsize=11, fontweight='bold')
+		
+		enhance_bar_plot(ax, "Average Lifespan by Scenario", "Age Units")
+		ax.legend(title="Species", loc='upper left')
+		plt.tight_layout()
+		plt.savefig(output_dir / "plot_avg_lifespan.png", dpi=300, bbox_inches='tight')
+		plt.close()
 
 
 def plot_births(data: pd.DataFrame, output_dir: Path) -> None:
+	setup_plot_style()
 	cols = ["BearBirths", "WolfBirths", "MooseBirths"]
 	cols = [c for c in cols if c in data.columns]
-	if not cols:
-		return
+	if not cols: return
 
 	grouped = data.groupby("scenario")[cols]
 	means = grouped.mean()
 	stds = grouped.std().fillna(0)
 
-	ax = means.plot(kind="bar", yerr=stds, capsize=4, figsize=(10, 6))
-	ax.set_title("Births by Scenario")
-	ax.set_ylabel("Count")
-	ax.set_xlabel("Scenario")
-	ax.legend(title="Species")
-	ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha="center")
+	fig, ax = plt.subplots(figsize=(14, 8))
+	x = range(len(means.index))
+	width = 0.25
+		
+	for i, col in enumerate(cols):
+		species = col.replace("Births", "")
+		color = get_bar_color(col)
+		positions = [p + width*i for p in x]
+		
+		ax.bar(positions, means[col], width, 
+			label=species, yerr=stds[col], capsize=5, 
+			color=color, alpha=0.85, edgecolor='black', linewidth=1.2)
+			
+		for pos in positions:
+			ax.text(pos, -1.0, species, 
+					ha='center', va='top', fontsize=10, fontweight='bold',
+					bbox=dict(boxstyle='round,pad=0.3', facecolor=color, alpha=0.2, edgecolor='none'))
+			
+	ax.margins(y=0.15)
+	ax.set_ylim(bottom=-2)
+	ax.set_xticks([p + width for p in x])
+	ax.set_xticklabels(means.index, rotation=0, fontsize=11, fontweight='bold')
+		
+	enhance_bar_plot(ax, "Total Births by Scenario", "Birth Count")
+	ax.legend(title="Species", loc='upper left')
 	plt.tight_layout()
-	plt.savefig(output_dir / "plot_births.png", dpi=180)
+	plt.savefig(output_dir / "plot_births.png", dpi=300, bbox_inches='tight')
 	plt.close()
 
 
 def plot_starvation(data: pd.DataFrame, output_dir: Path) -> None:
+	setup_plot_style()
 	cols = ["BearStarvation", "WolfStarvation", "MooseStarvation"]
 	cols = [c for c in cols if c in data.columns]
-	if not cols:
-		return
+	if not cols: return
 
 	grouped = data.groupby("scenario")[cols]
 	means = grouped.mean()
 	stds = grouped.std().fillna(0)
 
-	ax = means.plot(kind="bar", yerr=stds, capsize=4, figsize=(10, 6))
-	ax.set_title("Deaths by Starvation by Scenario")
-	ax.set_ylabel("Count")
-	ax.set_xlabel("Scenario")
-	ax.legend(title="Species")
-	ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha="center")
+	fig, ax = plt.subplots(figsize=(14, 8))
+	x = range(len(means.index))
+	width = 0.25
+		
+	for i, col in enumerate(cols):
+		species = col.replace("Starvation", "")
+		color = get_bar_color(col)
+		positions = [p + width*i for p in x]	
+		ax.bar(positions, means[col], width, 
+			label=species, yerr=stds[col], capsize=5, 
+			color=color, alpha=0.85, edgecolor='black', linewidth=1.2)	
+		for pos in positions:
+			ax.text(pos, -0.5, species, 
+					ha='center', va='top', fontsize=10, fontweight='bold',
+					bbox=dict(boxstyle='round,pad=0.3', facecolor=color, alpha=0.2, edgecolor='none'))
+			
+	ax.margins(y=0.15)
+	ax.set_ylim(bottom=-1)
+	ax.set_xticks([p + width for p in x])
+	ax.set_xticklabels(means.index, rotation=0, fontsize=11, fontweight='bold')
+	enhance_bar_plot(ax, "Deaths by Starvation", "Starvation Count")
 	plt.tight_layout()
-	plt.savefig(output_dir / "plot_starvation.png", dpi=180)
+	plt.savefig(output_dir / "plot_starvation.png", dpi=300, bbox_inches='tight')
 	plt.close()
 
 
 def plot_predation(data: pd.DataFrame, output_dir: Path) -> None:
-	cols = ["BearPredation", "WolfPredation", "MoosePredation"]
-	cols = [c for c in cols if c in data.columns]
-	if not cols:
-		return
+		setup_plot_style()
+		cols = ["BearPredation", "WolfPredation", "MoosePredation"]
+		cols = [c for c in cols if c in data.columns]
+		if not cols: return
 
-	grouped = data.groupby("scenario")[cols]
-	means = grouped.mean()
-	stds = grouped.std().fillna(0)
+		grouped = data.groupby("scenario")[cols]
+		means = grouped.mean()
+		stds = grouped.std().fillna(0)
 
-	ax = means.plot(kind="bar", yerr=stds, capsize=4, figsize=(10, 6))
-	ax.set_title("Deaths by Predation by Scenario")
-	ax.set_ylabel("Count")
-	ax.set_xlabel("Scenario")
-	ax.legend(title="Species")
-	ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha="center")
-	plt.tight_layout()
-	plt.savefig(output_dir / "plot_predation.png", dpi=180)
-	plt.close()
+		fig, ax = plt.subplots(figsize=(14, 8))
+		x = range(len(means.index))
+		width = 0.25
+		
+		for i, col in enumerate(cols):
+			species = col.replace("Predation", "")
+			color = get_bar_color(col)
+			positions = [p + width*i for p in x]
+			
+			ax.bar(positions, means[col], width, 
+				label=species, yerr=stds[col], capsize=5, 
+				color=color, alpha=0.85, edgecolor='black', linewidth=1.2)
+			
+			for pos in positions:
+				ax.text(pos, -0.5, species, 
+						ha='center', va='top', fontsize=10, fontweight='bold',
+						bbox=dict(boxstyle='round,pad=0.3', facecolor=color, alpha=0.2, edgecolor='none'))
+			
+		ax.margins(y=0.15)
+		ax.set_ylim(bottom=-1)
+		ax.set_xticks([p + width for p in x])
+		ax.set_xticklabels(means.index, rotation=0, fontsize=11, fontweight='bold')
+		
+		enhance_bar_plot(ax, "Deaths by Predation", "Count")
+		plt.tight_layout()
+		plt.savefig(output_dir / "plot_predation.png", dpi=300, bbox_inches='tight')
+		plt.close()
 
 
 def plot_feeding(data: pd.DataFrame, output_dir: Path) -> None:
+	setup_plot_style()
 	cols = ["BearPlantMeals", "BearAnimalPrey", "MoosePlantMeals", "WolfCarcass"]
 	cols = [c for c in cols if c in data.columns]
-	if not cols:
-		return
+	if not cols: return
 
 	grouped = data.groupby("scenario")[cols]
 	means = grouped.mean()
 	stds = grouped.std().fillna(0)
 
-	ax = means.plot(kind="bar", yerr=stds, capsize=4, figsize=(10, 6))
-	ax.set_title("Feeding by Scenario")
-	ax.set_ylabel("Count")
-	ax.set_xlabel("Scenario")
-	ax.legend(title="Food source")
-	ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha="center")
+	fig, ax = plt.subplots(figsize=(15, 8))
+	x = range(len(means.index))
+	width = 0.20 
+		
+	display_names = {
+		"BearPlantMeals": "Bear (Plant)",
+		"BearAnimalPrey": "Bear (Carcass)",
+		"MoosePlantMeals": "Moose (Plant)",
+		"WolfCarcass": "Wolf (Carcass)"
+	}
+
+	for i, col in enumerate(cols):
+		color = get_bar_color(col)
+		positions = [p + width*i for p in x]	
+		ax.bar(positions, means[col], width, label=col, yerr=stds[col], 
+			capsize=4, color=color, alpha=0.85, edgecolor='black')
+	
+		label = display_names.get(col, col)
+		for pos in positions:
+			ax.text(pos, -2.0, label, ha='center', va='top', fontsize=8, 
+					fontweight='bold', bbox=dict(boxstyle='round,pad=0.2', 
+					facecolor=color, alpha=0.2, edgecolor='none'))
+			
+	ax.margins(y=0.15)
+	ax.set_ylim(bottom=-5)
+	ax.set_xticks([p + width*1.5 for p in x])
+	ax.set_xticklabels(means.index, fontweight='bold')
+		
+	enhance_bar_plot(ax, "Feeding Habits by Scenario", "Meal Count")
 	plt.tight_layout()
-	plt.savefig(output_dir / "plot_feeding.png", dpi=180)
+	plt.savefig(output_dir / "plot_feeding.png", dpi=300)
 	plt.close()
 
 
 def plot_pack_behavior(data: pd.DataFrame, output_dir: Path) -> None:
+	setup_plot_style()
 	cols = ["PacksFormed", "PackHuntAttempts", "PackHuntSuccess"]
 	cols = [c for c in cols if c in data.columns]
-	if not cols:
-		return
+	if not cols: return
 
 	grouped = data.groupby("scenario")[cols]
 	means = grouped.mean()
 	stds = grouped.std().fillna(0)
 
-	ax = means.plot(kind="bar", yerr=stds, capsize=4, figsize=(10, 6))
-	ax.set_title("Pack Behavior by Scenario")
-	ax.set_ylabel("Count")
-	ax.set_xlabel("Scenario")
-	ax.legend(title="Metric")
-	ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha="center")
+	fig, ax = plt.subplots(figsize=(14, 8))
+	x = range(len(means.index))
+	width = 0.25
+	short_labels = ["Packs", "Attempts", "Success"]
+		
+	for i, col in enumerate(cols):
+		color = get_bar_color(col)
+		positions = [p + width*i for p in x]
+		
+		ax.bar(positions, means[col], width, label=col, yerr=stds[col], 
+			capsize=5, color=color, alpha=0.85, edgecolor='black')
+		
+		for pos in positions:
+			ax.text(pos, -0.5, short_labels[i], ha='center', va='top', fontsize=10, 
+					fontweight='bold', bbox=dict(boxstyle='round,pad=0.3', 
+					facecolor=color, alpha=0.2, edgecolor='none'))
+			
+	ax.margins(y=0.15)
+	ax.set_ylim(bottom=-1)
+	ax.set_xticks([p + width for p in x])
+	ax.set_xticklabels(means.index, fontweight='bold')
+		
+	enhance_bar_plot(ax, "Wolf Pack Behavior", "Count")
 	plt.tight_layout()
-	plt.savefig(output_dir / "plot_pack_behavior.png", dpi=180)
+	plt.savefig(output_dir / "plot_pack_behavior.png", dpi=300)
+
 	plt.close()
 
-
 def plot_avg_needs(data: pd.DataFrame, output_dir: Path) -> None:
+	setup_plot_style()
 	cols = [
 		"BearAvgHunger", "BearAvgThirst", "BearAvgStamina",
 		"WolfAvgHunger", "WolfAvgThirst", "WolfAvgStamina",
 		"MooseAvgHunger", "MooseAvgThirst", "MooseAvgStamina",
 	]
 	cols = [c for c in cols if c in data.columns]
-	if not cols:
-		return
+	if not cols: return
 
 	grouped = data.groupby("scenario")[cols]
 	means = grouped.mean()
 	stds = grouped.std().fillna(0)
 
-	ax = means.plot(kind="bar", yerr=stds, capsize=4, figsize=(14, 6))
-	ax.set_title("Average Needs at End of Simulation by Scenario (%)")
-	ax.set_ylabel("Value (%)")
-	ax.set_xlabel("Scenario")
-	ax.legend(title="Metric", bbox_to_anchor=(1.01, 1), loc="upper left")
-	ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha="center")
+	fig, ax = plt.subplots(figsize=(18, 9))
+	x = range(len(means.index))
+	width = 0.09
+		
+	for i, col in enumerate(cols):
+		species_init = col[0] 
+		need = col.replace("Avg", "")[4:]
+		short_label = f"{species_init}-{need}"
+		
+		color = get_bar_color(col)
+		positions = [p + width*i for p in x]
+		
+		ax.bar(positions, means[col], width, yerr=stds[col], color=color, alpha=0.8, edgecolor='black')
+			
+		for pos in positions:
+			ax.text(pos, -2, short_label, ha='center', va='top', fontsize=7, rotation=45,
+					bbox=dict(boxstyle='round,pad=0.1', facecolor=color, alpha=0.1, edgecolor='none'))
+			
+	ax.set_xticks([p + width*4 for p in x])
+	ax.set_xticklabels(means.index, fontweight='bold')
+	ax.set_ylim(bottom=-5)
+		
+	enhance_bar_plot(ax, "Average Needs at Simulation End", "Value (%)")
 	plt.tight_layout()
-	plt.savefig(output_dir / "plot_avg_needs.png", dpi=180)
+	plt.savefig(output_dir / "plot_avg_needs.png", dpi=300)
 	plt.close()
 
+#We kindoff already have this graph plotted beforehand (Most likely unecessary)
 def plot_wolf_hunt(data: pd.DataFrame, output_dir: Path) -> None:
+	setup_plot_style()
 	cols = ["WolfHuntAttempts", "WolfHuntFailures", "WolfSuccessfulHunts"]
 	cols = [c for c in cols if c in data.columns]
-	if not cols:
-		return
+	if not cols: return
 
 	grouped = data.groupby("scenario")[cols]
 	means = grouped.mean()
 	stds = grouped.std().fillna(0)
 
-	ax = means.plot(kind="bar", yerr=stds, capsize=4, figsize=(10, 6))
-	ax.set_title("Wolf Hunt Statistics by Scenario")
-	ax.set_ylabel("Count")
-	ax.set_xlabel("Scenario")
-	ax.legend(title="Metric")
-	ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha="center")
+	fig, ax = plt.subplots(figsize=(14, 8))
+	x = range(len(means.index))
+	width = 0.25
+	labels = ["Attempts", "Failures", "Success"]
+		
+	for i, col in enumerate(cols):
+		colors = [SPECIES_COLORS["Wolf"], "#DC143C", "#20B2AA"]
+		positions = [p + width*i for p in x]
+			
+		ax.bar(positions, means[col], width, label=labels[i], yerr=stds[col], 
+			capsize=5, color=colors[i], alpha=0.85, edgecolor='black')
+			
+		for pos in positions:
+			ax.text(pos, -1.0, labels[i], ha='center', va='top', fontsize=10, 
+					fontweight='bold', bbox=dict(boxstyle='round,pad=0.3', 
+					facecolor=colors[i], alpha=0.2, edgecolor='none'))
+			
+	ax.margins(y=0.15)
+	ax.set_ylim(bottom=-2)
+	ax.set_xticks([p + width for p in x])
+	ax.set_xticklabels(means.index, fontweight='bold')
+		
+	enhance_bar_plot(ax, "Wolf Hunt Statistics", "Count")
 	plt.tight_layout()
-	plt.savefig(output_dir / "plot_wolf_hunt.png", dpi=180)
+	plt.savefig(output_dir / "plot_wolf_hunt.png", dpi=300)
 	plt.close()
 
 
 def plot_bear_hunt(data: pd.DataFrame, output_dir: Path) -> None:
+	setup_plot_style()
 	cols = ["BearHuntAttempts", "BearHuntFailures", "BearSuccessfulHunts", "BearInterference"]
 	cols = [c for c in cols if c in data.columns]
-	if not cols:
-		return
+	if not cols: return
 
 	grouped = data.groupby("scenario")[cols]
 	means = grouped.mean()
 	stds = grouped.std().fillna(0)
 
-	ax = means.plot(kind="bar", yerr=stds, capsize=4, figsize=(10, 6))
-	ax.set_title("Bear Hunt Statistics by Scenario")
-	ax.set_ylabel("Count")
-	ax.set_xlabel("Scenario")
-	ax.legend(title="Metric")
-	ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha="center")
+	fig, ax = plt.subplots(figsize=(15, 8))
+	x = range(len(means.index))
+	width = 0.20
+	labels = ["Attempts", "Failures", "Success", "Interference"]
+		
+	for i, col in enumerate(cols):
+		color = get_bar_color(col)
+		positions = [p + width*i for p in x]
+		
+		ax.bar(positions, means[col], width, label=labels[i], yerr=stds[col], 
+			capsize=5, color=color, alpha=0.85, edgecolor='black')
+		
+		for pos in positions:
+			ax.text(pos, -1.0, labels[i], ha='center', va='top', fontsize=9, 
+					fontweight='bold', bbox=dict(boxstyle='round,pad=0.3', 
+					facecolor=color, alpha=0.2, edgecolor='none'))
+		
+	ax.margins(y=0.15)
+	ax.set_ylim(bottom=-2)
+	ax.set_xticks([p + width*1.5 for p in x])
+	ax.set_xticklabels(means.index, fontweight='bold')
+		
+	enhance_bar_plot(ax, "Bear Hunt Statistics", "Count")
 	plt.tight_layout()
-	plt.savefig(output_dir / "plot_bear_hunt.png", dpi=180)
+	plt.savefig(output_dir / "plot_bear_hunt.png", dpi=300)
 	plt.close()
 
-
 def plot_moose_escape(data: pd.DataFrame, output_dir: Path) -> None:
+	setup_plot_style()
 	cols = ["MooseSuccessfulEscape"]
 	cols = [c for c in cols if c in data.columns]
-	if not cols:
-		return
+	if not cols: return
 
 	grouped = data.groupby("scenario")[cols]
 	means = grouped.mean()
 	stds = grouped.std().fillna(0)
 
-	ax = means.plot(kind="bar", yerr=stds, capsize=4, figsize=(10, 6), color=["#2ca02c"])
-	ax.set_title("Moose Successful Escapes by Scenario")
-	ax.set_ylabel("Count")
-	ax.set_xlabel("Scenario")
-	ax.legend(title="Metric")
-	ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha="center")
+	fig, ax = plt.subplots(figsize=(10, 8))
+	x = range(len(means.index))
+	width = 0.4
+		
+	color = SPECIES_COLORS["Moose"]
+	ax.bar(x, means[cols[0]], width, yerr=stds[cols[0]], 
+		capsize=5, color=color, alpha=0.85, edgecolor='black')
+	
+	for pos in x:
+		ax.text(pos, -1.0, "Moose", ha='center', va='top', fontsize=10, 
+				fontweight='bold', bbox=dict(boxstyle='round,pad=0.3', 
+				facecolor=color, alpha=0.2, edgecolor='none'))
+
+	ax.set_xticks(x)
+	ax.set_xticklabels(means.index, fontweight='bold')
+	ax.set_ylim(bottom=-2)
+		
+	enhance_bar_plot(ax, "Moose Successful Escapes", "Escape Count")
 	plt.tight_layout()
-	plt.savefig(output_dir / "plot_moose_escape.png", dpi=180)
+	plt.savefig(output_dir / "plot_moose_escape.png", dpi=300)
+	plt.show()
 	plt.close()
 
 STATE_COLORS = {
@@ -557,7 +860,6 @@ def plot_state_distribution_pie(data: pd.DataFrame, output_dir: Path) -> None:
         
         safe_scenario = scenario.replace("/", "_").replace(" ", "_")
         plt.savefig(output_dir / f"plot_state_distribution_{safe_scenario}.png", dpi=180)
-        plt.show()
         plt.close()
 
 def main() -> None:
