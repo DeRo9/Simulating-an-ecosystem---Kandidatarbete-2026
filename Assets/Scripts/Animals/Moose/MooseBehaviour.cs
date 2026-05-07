@@ -27,6 +27,7 @@ public class MooseBehaviour : AnimalBehaviour
     private List<WolfBehaviour> wolfAttackers = new List<WolfBehaviour>();
     private List<BearBehaviour> bearAttackers = new List<BearBehaviour>();
     private bool packHuntAttemptCounted = false;
+    private bool wasBeingHunted = false;
 
     protected override void Start()
     {
@@ -366,8 +367,6 @@ public class MooseBehaviour : AnimalBehaviour
     {
         if(enemy == predator)
         {
-            StatisticsTableManager.instance.MooseSuccessfulEscapeCount++;
-
             enemy = null;
             agent.speed = animal.speed;
             if (CurrentState == State.Fleeing)
@@ -383,6 +382,7 @@ public class MooseBehaviour : AnimalBehaviour
 
         if (!wolfAttackers.Contains(wolf))
         {
+            wasBeingHunted = true;
             wolfAttackers.Add(wolf);
 
             if (!packHuntAttemptCounted)
@@ -401,6 +401,12 @@ public class MooseBehaviour : AnimalBehaviour
     {
         if (wolf == null) return;
         wolfAttackers.Remove(wolf);
+
+        if (wolfAttackers.Count == 0 && bearAttackers.Count == 0 && wasBeingHunted)
+        {
+            StatisticsTableManager.instance.MooseSuccessfulEscapeCount++;
+            wasBeingHunted = false;
+        }
     }
 
     public void RegisterBearAttacker(BearBehaviour bear)
@@ -408,13 +414,22 @@ public class MooseBehaviour : AnimalBehaviour
         if (bear == null) return;
 
         if (!bearAttackers.Contains(bear))
+        {
+            wasBeingHunted = true;
             bearAttackers.Add(bear);
+        }
     }
 
     public void UnregisterBearAttacker(BearBehaviour bear)
     {
         if (bear == null) return;
         bearAttackers.Remove(bear);
+
+        if (wolfAttackers.Count == 0 && bearAttackers.Count == 0 && wasBeingHunted)
+        {
+            StatisticsTableManager.instance.MooseSuccessfulEscapeCount++;
+            wasBeingHunted = false;
+        }
     }
 
     public override void OnDeath(bool killedByPredator = false)
@@ -439,6 +454,7 @@ public class MooseBehaviour : AnimalBehaviour
 
         wolfAttackers.Clear();
         packHuntAttemptCounted = false;
+        wasBeingHunted = false;
 
         if (wolfKill)
         {
