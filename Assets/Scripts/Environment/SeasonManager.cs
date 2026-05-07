@@ -10,7 +10,7 @@ public class SeasonManager : MonoBehaviour
         winter
     }
 
-    public Season currentSeason;
+    public static Season currentSeason;
     public WeatherManager weatherManager;
 
     private bool percipitation;
@@ -95,11 +95,16 @@ public class SeasonManager : MonoBehaviour
     {
         if (currentSeason == Season.winter)
         {
-            terrain.terrainData.terrainLayers = new TerrainLayer[] { snowLayer };
+            terrain.terrainData.terrainLayers = new TerrainLayer[] { snowLayer, sandLayer };
         }
         else
         {
             terrain.terrainData.terrainLayers = new TerrainLayer[] { grassLayer, sandLayer };
         }
+    }
+
+    public static Season GetCurrentSeason()
+    {
+        return currentSeason;
     }
 }

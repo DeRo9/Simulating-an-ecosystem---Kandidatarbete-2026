@@ -8947,11 +8947,12 @@ MonoBehaviour:
   currentWeather: 0
   raining: {fileID: 1710434307}
   snowing: {fileID: 695523125}
-  rainProbability: 0.02
+  rainProbability: 0.03
+  snowProbability: 0.03
   precipitationActive: 0
-  rainTimer: 0
-  rainTimerMin: 40
-  rainTimerMax: 60
+  precipTimer: 0
+  precipTimerMin: 40
+  precipTimerMax: 60
 --- !u!1 &850344226
 GameObject:
   m_ObjectHideFlags: 0
@@ -13356,7 +13357,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b91e8ab925f053b4ea5a8f2e825c5d86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Seasons
-  currentSeason: 0
   weatherManager: {fileID: 844803666}
   terrain: {fileID: 44702050}
   grassLayer: {fileID: 8574412962073106934, guid: f7ce30ec9b280b34cacb1a1005349890, type: 2}

@@ -12,20 +12,19 @@ public class WeatherManager : MonoBehaviour
     }
 
     public Weather currentWeather;
-
     public GameObject raining;
-
     public GameObject snowing;
 
 
     [Header("Probability precipitation")]
     [UnityEngine.Range(0f, 1f)] public float rainProbability = 0.05f;
+    [UnityEngine.Range(0f, 1f)] public float snowProbability = 0.05f;
     public bool precipitationActive = false;
 
-    // Rain duration settings
-    public float rainTimer = 0f;
-    public float rainTimerMin = 40f;
-    public float rainTimerMax = 60f;
+    // Precipitation duration settings
+    public float precipTimer = 0f;
+    public float precipTimerMin = 40f;
+    public float precipTimerMax = 60f;
 
 
 
@@ -39,21 +38,47 @@ public class WeatherManager : MonoBehaviour
     {
         if (!GameManager.GetSimulationStatus()) return;
 
-        if (currentWeather == Weather.sunny)
+        if (SeasonManager.GetCurrentSeason() == SeasonManager.Season.summer)
         {
-            // Chance to start raining
-            if (Random.value < rainProbability * Time.deltaTime) {
-                rainTimer = Random.Range(rainTimerMin, rainTimerMax);
-                ChangeWeather(Weather.rainy);
-                precipitationActive = true;
-            }
-        } else if (currentWeather == Weather.rainy)
-        {
-            rainTimer -= Time.deltaTime;
-            if (rainTimer <= 0f)
+            if (currentWeather == Weather.sunny)
             {
-                ChangeWeather(Weather.sunny);
-                precipitationActive = false;
+                // Chance to start raining
+                if (Random.value < rainProbability * Time.deltaTime)
+                {
+                    precipTimer = Random.Range(precipTimerMin, precipTimerMax);
+                    ChangeWeather(Weather.rainy);
+                    precipitationActive = true;
+                }
+            }
+            else if (currentWeather == Weather.rainy)
+            {
+                precipTimer -= Time.deltaTime;
+                if (precipTimer <= 0f)
+                {
+                    ChangeWeather(Weather.sunny);
+                    precipitationActive = false;
+                }
+            }
+        } 
+        
+        else if (SeasonManager.GetCurrentSeason() == SeasonManager.Season.winter)
+        {
+            if(currentWeather == Weather.sunny)
+            {
+                if (Random.value < snowProbability * Time.deltaTime)
+                {
+                    precipTimer = Random.Range(precipTimerMin, precipTimerMax);
+                    ChangeWeather(Weather.snowy);
+                    precipitationActive = true;
+                }
+            } else if (currentWeather == Weather.snowy)
+            {
+                precipTimer -= Time.deltaTime;
+                if(precipTimer <= 0f)
+                {
+                    ChangeWeather(Weather.sunny);
+                    precipitationActive = false;
+                }
             }
         }
     }
