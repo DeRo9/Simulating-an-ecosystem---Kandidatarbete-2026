@@ -121,6 +121,8 @@ PALETTE = {
 	"BearInterference": "#572EEE"
 }
 
+SCENARIO_ORDER = ["No Bears", "Average Bears", "Many Bears"]
+
 def get_bar_color(col_name: str) -> str:
     """Logic to determine color: Species base color first, then Palette, then Grey."""
     if col_name in PALETTE:
@@ -227,50 +229,54 @@ def infer_scenario_from_name(filename: str) -> str:
 	for sep in ("-", " "):
 		lower = lower.replace(sep, "_")
 
-	if (
-		"few_bear" in lower
-		or "few_bears" in lower
-		or "low_bear" in lower
-		or "fa_bjorn" in lower
-		or "few" in lower
-	):
-		return "few_bear"
-	if "no_bear" in lower or "without_bear" in lower or "no" in lower:
-		return "without_bear"
-	if "with_bear" in lower or "many_bear" in lower or "many" in lower:
-		return "with_bear"
-	return "all"
+	if "no" in lower:
+		return "No Bears"
+
+	if "average" in lower:
+		return "Average Bears"
+
+	if "many" in lower:
+		return "Many Bears"
 
 
 def load_runs(files: Iterable[Path], infer_scenario: bool) -> pd.DataFrame:
-	rows = []
-	for idx, path in enumerate(files, start=1):
-		df = pd.read_csv(path)
-		if df.empty:
-			continue
+    rows = []
 
-		row = df.iloc[0].copy()
-		row["run_id"] = idx
-		row["source_file"] = path.name
+    for idx, path in enumerate(files, start=1):
+        df = pd.read_csv(path)
 
-		if infer_scenario:
-			row["scenario"] = infer_scenario_from_name(path.name)
-		elif "scenario" not in row:
-			row["scenario"] = "all"
+        if df.empty:
+            continue
 
-		rows.append(row)
+        row = df.iloc[0].copy()
+        row["run_id"] = idx
+        row["source_file"] = path.name
 
-	if not rows:
-		raise ValueError("CSV files were found but contained no usable rows.")
+        if infer_scenario:
+            row["scenario"] = infer_scenario_from_name(path.name)
+        elif "scenario" not in row:
+            row["scenario"] = "all"
 
-	data = pd.DataFrame(rows)
+        rows.append(row)
 
-	# Force known metrics to numeric where available
-	for col in NUMERIC_COLUMNS:
-		if col in data.columns:
-			data[col] = pd.to_numeric(data[col], errors="coerce")
+    if not rows:
+        raise ValueError("CSV files were found but contained no usable rows.")
 
-	return data
+    data = pd.DataFrame(rows)
+
+    data["scenario"] = pd.Categorical(
+        data["scenario"],
+        categories=SCENARIO_ORDER,
+        ordered=True
+    )
+
+    data = data.sort_values("scenario")
+
+    for col in NUMERIC_COLUMNS:
+        if col in data.columns:
+            data[col] = pd.to_numeric(data[col], errors="coerce")
+
+    return data
 
 
 def compute_ci95(grouped) -> pd.DataFrame:
@@ -339,6 +345,159 @@ def summarize(data: pd.DataFrame, output_dir: Path) -> None:
 
 	data.to_csv(output_dir / "all_runs_combined.csv", index=False)
 
+def parse_population_history(history_str: str) -> list[int]:
+	"""Parse semicolon-separated population history from CSV."""
+	if pd.isna(history_str) or not history_str:
+		return []
+	try:
+		return [int(x) for x in str(history_str).split(";")]
+	except:
+		return []
+ 
+ 
+def plot_species_population(
+    data: pd.DataFrame,
+    output_dir: Path,
+    species_name: str,
+    history_col: str,
+    color: str,
+	) -> None:
+		"""
+		Creates ONE figure for ONE species with 3 subplots:
+		- No Bears
+		- Average Bears
+		- Many Bears
+		"""
+
+		setup_plot_style()
+
+		scenarios = [s for s in SCENARIO_ORDER if s in data["scenario"].unique()]
+
+		if not scenarios:
+			return
+
+		fig, axes = plt.subplots(1, len(scenarios), figsize=(18, 6), sharey=True)
+
+		if len(scenarios) == 1:
+			axes = [axes]
+
+		fig.suptitle(
+			f"{species_name} Population Over Time",
+			fontsize=18,
+			fontweight="bold",
+			y=1.02
+		)
+
+		for ax, scenario in zip(axes, scenarios):
+
+			scenario_data = data[data["scenario"] == scenario]
+
+			if history_col not in scenario_data.columns:
+				ax.set_title(f"{scenario}\n(No Data)")
+				continue
+
+			histories = [
+				parse_population_history(h)
+				for h in scenario_data[history_col]
+			]
+
+			histories = [h for h in histories if len(h) > 0]
+
+			if not histories:
+				ax.set_title(f"{scenario}\n(No Data)")
+				continue
+
+			max_len = max(len(h) for h in histories)
+
+			padded = []
+			for h in histories:
+				if len(h) < max_len:
+					h = h + [h[-1]] * (max_len - len(h))
+				padded.append(h)
+
+			histories_array = np.array(padded)
+
+			mean_pop = histories_array.mean(axis=0)
+			std_pop = histories_array.std(axis=0)
+
+			time_steps = np.arange(len(mean_pop))
+
+			ax.plot(
+				time_steps,
+				mean_pop,
+				color=color,
+				linewidth=3,
+			)
+
+			ax.fill_between(
+				time_steps,
+				mean_pop - std_pop,
+				mean_pop + std_pop,
+				color=color,
+				alpha=0.2,
+			)
+
+			ax.set_title(
+				scenario,
+				fontsize=14,
+				fontweight="bold"
+			)
+
+			ax.set_xlabel(
+				"Time Step (5s intervals)",
+				fontsize=11,
+				fontweight="bold"
+			)
+
+			ax.grid(True, alpha=0.3)
+
+		axes[0].set_ylabel(
+			"Population Count",
+			fontsize=11,
+			fontweight="bold"
+		)
+
+		plt.tight_layout()
+
+		filename = f"plot_population_{species_name.lower()}.png"
+
+		plt.savefig(
+			output_dir / filename,
+			dpi=300,
+			bbox_inches="tight"
+		)
+
+		plt.show()
+		plt.close()
+
+def plot_population_moose(data: pd.DataFrame, output_dir: Path) -> None:
+    plot_species_population(
+        data,
+        output_dir,
+        species_name="Moose",
+        history_col="MoosePopulationHistory",
+        color=SPECIES_COLORS["Moose"],
+    )
+
+
+def plot_population_wolf(data: pd.DataFrame, output_dir: Path) -> None:
+    plot_species_population(
+        data,
+        output_dir,
+        species_name="Wolf",
+        history_col="WolfPopulationHistory",
+        color=SPECIES_COLORS["Wolf"],
+    )
+
+
+def plot_population_bear(data: pd.DataFrame, output_dir: Path) -> None:
+    plot_species_population(
+        data,
+        output_dir,
+        species_name="Bear",
+        history_col="BearPopulationHistory",
+        color=SPECIES_COLORS["Bear"],
+    )
 
 def plot_population(data: pd.DataFrame, output_dir: Path) -> None:
 	setup_plot_style()
@@ -917,6 +1076,9 @@ def main() -> None:
 	args.output.mkdir(parents=True, exist_ok=True)
 	clear_old_plot_images(args.output)
 	summarize(data, args.output)
+	plot_population_moose(data, args.output)
+	plot_population_wolf(data, args.output)
+	plot_population_bear(data, args.output)
 	plot_population(data, args.output)
 	plot_births(data, args.output)
 	plot_deaths(data, args.output)

@@ -308,7 +308,8 @@ public class GameManager : MonoBehaviour
             "WolfHuntingTime,WolfFleeingTime,WolfDefendTime," +
             "WolfHuntAttempts,WolfHuntFailures,WolfSuccessfulHunts," +
             "BearInterference,BearHuntAttempts,BearHuntFailures,BearSuccessfulHunts," +
-            "MooseSuccessfulEscape";
+            "MooseSuccessfulEscape," +
+            "BearPopulationHistory,WolfPopulationHistory,MoosePopulationHistory";
 
         // Final population
         int bearPop = omnivoreFolder != null ? omnivoreFolder.childCount : 0;
@@ -367,7 +368,10 @@ public class GameManager : MonoBehaviour
             $"{GetStateTime(SimulationResults.wolfStateAverages.stateAverages, AnimalBehaviour.State.Defend).ToString("F2", inv)}," +
             $"{sm.WolfhuntAttemptsCount},{sm.WolfhuntFailuresCount},{sm.WolfSuccessfulHuntsCount}," +
             $"{sm.BearInterferenceCount},{sm.BearhuntAttemptsCount},{sm.BearhuntFailuresCount},{sm.BearSuccessfulHuntsCount}," +
-            $"{sm.MooseSuccessfulEscapeCount}";
+            $"{sm.MooseSuccessfulEscapeCount}," + 
+            $"\"{SerializePopulationHistory(SimulationResults.bearsHistory)}\"," +
+            $"\"{SerializePopulationHistory(SimulationResults.wolvesHistory)}\"," +
+            $"\"{SerializePopulationHistory(SimulationResults.mooseHistory)}\"";
 
         // Create output directory if it doesn't exist
         string outputDir = Path.Combine(Application.persistentDataPath, "SimulationData");
@@ -545,5 +549,10 @@ public class GameManager : MonoBehaviour
     public void UpdateAmountText(TextMeshProUGUI amountText, string animalName, float sliderValue)
     {
         amountText.text = $"Amount of {animalName}: {Mathf.RoundToInt(sliderValue)}";
+    }
+
+    private string SerializePopulationHistory(List<int> history)
+    {
+        return string.Join(";", history);
     }
 }
