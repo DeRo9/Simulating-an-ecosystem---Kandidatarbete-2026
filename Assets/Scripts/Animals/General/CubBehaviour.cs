@@ -166,7 +166,7 @@ public class CubBehaviour : MonoBehaviour
             cubMating.enabled = true;
         }
 
-        Debug.Log(animalData.species + " cub has grown up!");
+        //Debug.Log(animalData.species + " cub has grown up!");
         Destroy(this);
     }
 
