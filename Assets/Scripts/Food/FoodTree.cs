@@ -16,11 +16,11 @@ public class FoodTree : MonoBehaviour, IsEdible
     private Collider col;
 
 
-    void Start()
+   /* void Start()
     {
         rend = GetComponentInChildren<Renderer>();
         col = GetComponent<Collider>();
-    }
+    }*/
 
     void Update()
     {
@@ -31,7 +31,9 @@ public class FoodTree : MonoBehaviour, IsEdible
             if (cooldownTimer <= 0f)
             {
                 //if (rend != null) rend.enabled = true; testing
-                if (col != null) col.enabled = true;
+                //if (col != null) col.enabled = true;
+                //Debug.Log("Tree " + gameObject.name + " has regrown and is edible again!");
+
             }
         }
     }
@@ -41,9 +43,9 @@ public class FoodTree : MonoBehaviour, IsEdible
             return 0f;
         } 
         cooldownTimer = regrowCooldown;
-
+        //Debug.Log("Tree " + gameObject.name + " was eaten. Starting cooldown of " + regrowCooldown + "s");
         //if (rend != null) rend.enabled = false; here for testing
-        if(col != null) col.enabled = false;
+        //if(col != null) col.enabled = false;
         return nutritionValue;
     }
 
