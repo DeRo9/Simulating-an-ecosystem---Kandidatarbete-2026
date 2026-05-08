@@ -5,7 +5,9 @@ from pathlib import Path
 from typing import Iterable
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
+from scipy import stats
 
 
 NUMERIC_COLUMNS = [
@@ -168,7 +170,14 @@ def enhance_bar_plot(ax, title, ylabel, xlabel="Scenario", add_values=True):
     if add_values:
         for container in ax.containers:
             if hasattr(container, 'patches') and len(container.patches) > 0:
-                ax.bar_label(container, fmt='%.1f', padding=3, fontsize=15)
+                for patch in container.patches:
+                    height = patch.get_height()
+                    ax.text(
+                        patch.get_x() + patch.get_width() / 2,
+                        height,
+                        f'{height:.1f}',
+                        ha='center', va='bottom', fontsize=15
+                    )
     
     return ax
 
@@ -264,6 +273,46 @@ def load_runs(files: Iterable[Path], infer_scenario: bool) -> pd.DataFrame:
 	return data
 
 
+def compute_ci95(grouped) -> pd.DataFrame:
+	"""Compute 95% confidence interval: 1.96 * std / sqrt(n)"""
+	std = grouped.std().fillna(0)
+	n = grouped.count()
+	return (1.96 * std / np.sqrt(n.clip(lower=1))).fillna(0)
+
+
+def asymmetric_yerr(means: pd.Series, ci: pd.Series):
+	"""Returns [lower, upper] yerr arrays with lower clamped at 0 (no negative bars)."""
+	lower = np.minimum(ci.values, means.values)
+	upper = ci.values
+	return [lower, upper]
+
+
+def run_significance_tests(data: pd.DataFrame, output_dir: Path) -> None:
+	"""Kruskal-Wallis H-test for each metric across scenarios. Saves p-values to CSV."""
+	metric_cols = [c for c in NUMERIC_COLUMNS if c in data.columns]
+	scenarios = data["scenario"].dropna().unique()
+
+	if len(scenarios) < 2:
+		print("Need at least 2 scenarios for significance testing.")
+		return
+
+	results = []
+	for col in metric_cols:
+		groups = [data[data["scenario"] == s][col].dropna().values for s in scenarios]
+		groups = [g for g in groups if len(g) > 0]
+		if len(groups) < 2:
+			continue
+		try:
+			h_stat, p_value = stats.kruskal(*groups)
+			results.append({"metric": col, "H_statistic": round(h_stat, 4), "p_value": round(p_value, 6), "significant (p<0.05)": p_value < 0.05})
+		except Exception:
+			pass
+
+	results_df = pd.DataFrame(results).sort_values("p_value")
+	results_df.to_csv(output_dir / "significance_tests.csv", index=False)
+	print(f"Significance tests saved: {len(results_df)} metrics tested.")
+
+
 def clear_old_plot_images(output_dir: Path) -> None:
 	"""Remove previously generated plot images so results from old runs do not linger."""
 	for image_path in output_dir.glob("plot_*.png"):
@@ -300,7 +349,7 @@ def plot_population(data: pd.DataFrame, output_dir: Path) -> None:
  
 	grouped = data.groupby("scenario")[cols]
 	means = grouped.mean()
-	stds = grouped.std().fillna(0)
+	cis = compute_ci95(grouped)
  
 	fig, ax = plt.subplots(figsize=(14, 8))
 	x = range(len(means.index))
@@ -314,7 +363,7 @@ def plot_population(data: pd.DataFrame, output_dir: Path) -> None:
 		positions = [p + width*i for p in x]
 		
 		bars = ax.bar(positions, means[col], width, 
-			label=species, yerr=stds[col], capsize=5, 
+			label=species, yerr=asymmetric_yerr(means[col], cis[col]), capsize=5, 
 			color=color, alpha=0.85, edgecolor='black', linewidth=1.2)
 		
 		for pos in positions:
@@ -344,7 +393,7 @@ def plot_deaths(data: pd.DataFrame, output_dir: Path) -> None:
 
 	grouped = data.groupby("scenario")[cols]
 	means = grouped.mean()
-	stds = grouped.std().fillna(0)
+	cis = compute_ci95(grouped)
 
 	fig, ax = plt.subplots(figsize=(14, 8))
 	x = range(len(means.index))
@@ -356,7 +405,7 @@ def plot_deaths(data: pd.DataFrame, output_dir: Path) -> None:
 		positions = [p + width*i for p in x]
 		
 		ax.bar(positions, means[col], width, 
-			label=species, yerr=stds[col], capsize=5, 
+			label=species, yerr=asymmetric_yerr(means[col], cis[col]), capsize=5, 
 			color=color, alpha=0.85, edgecolor='black', linewidth=1.2)
 		
 		for pos in positions:
@@ -386,7 +435,7 @@ def plot_lifespan(data: pd.DataFrame, output_dir: Path) -> None:
 
 		grouped = data.groupby("scenario")[cols]
 		means = grouped.mean()
-		stds = grouped.std().fillna(0)
+		cis = compute_ci95(grouped)
 
 		fig, ax = plt.subplots(figsize=(14, 8))
 		x = range(len(means.index))
@@ -398,7 +447,7 @@ def plot_lifespan(data: pd.DataFrame, output_dir: Path) -> None:
 			positions = [p + width*i for p in x]
 			
 			ax.bar(positions, means[col], width, 
-				label=species, yerr=stds[col], capsize=5, 
+				label=species, yerr=asymmetric_yerr(means[col], cis[col]), capsize=5, 
 				color=color, alpha=0.85, edgecolor='black', linewidth=1.2)
 			
 			for pos in positions:
@@ -426,7 +475,7 @@ def plot_births(data: pd.DataFrame, output_dir: Path) -> None:
 
 	grouped = data.groupby("scenario")[cols]
 	means = grouped.mean()
-	stds = grouped.std().fillna(0)
+	cis = compute_ci95(grouped)
 
 	fig, ax = plt.subplots(figsize=(14, 8))
 	x = range(len(means.index))
@@ -438,7 +487,7 @@ def plot_births(data: pd.DataFrame, output_dir: Path) -> None:
 		positions = [p + width*i for p in x]
 		
 		ax.bar(positions, means[col], width, 
-			label=species, yerr=stds[col], capsize=5, 
+			label=species, yerr=asymmetric_yerr(means[col], cis[col]), capsize=5, 
 			color=color, alpha=0.85, edgecolor='black', linewidth=1.2)
 			
 		for pos in positions:
@@ -466,7 +515,7 @@ def plot_starvation(data: pd.DataFrame, output_dir: Path) -> None:
 
 	grouped = data.groupby("scenario")[cols]
 	means = grouped.mean()
-	stds = grouped.std().fillna(0)
+	cis = compute_ci95(grouped)
 
 	fig, ax = plt.subplots(figsize=(14, 8))
 	x = range(len(means.index))
@@ -477,7 +526,7 @@ def plot_starvation(data: pd.DataFrame, output_dir: Path) -> None:
 		color = get_bar_color(col)
 		positions = [p + width*i for p in x]	
 		ax.bar(positions, means[col], width, 
-			label=species, yerr=stds[col], capsize=5, 
+			label=species, yerr=asymmetric_yerr(means[col], cis[col]), capsize=5, 
 			color=color, alpha=0.85, edgecolor='black', linewidth=1.2)	
 		for pos in positions:
 			ax.text(pos, -0.5, species, 
@@ -502,7 +551,7 @@ def plot_predation(data: pd.DataFrame, output_dir: Path) -> None:
 
 		grouped = data.groupby("scenario")[cols]
 		means = grouped.mean()
-		stds = grouped.std().fillna(0)
+		cis = compute_ci95(grouped)
 
 		fig, ax = plt.subplots(figsize=(14, 8))
 		x = range(len(means.index))
@@ -514,7 +563,7 @@ def plot_predation(data: pd.DataFrame, output_dir: Path) -> None:
 			positions = [p + width*i for p in x]
 			
 			ax.bar(positions, means[col], width, 
-				label=species, yerr=stds[col], capsize=5, 
+				label=species, yerr=asymmetric_yerr(means[col], cis[col]), capsize=5, 
 				color=color, alpha=0.85, edgecolor='black', linewidth=1.2)
 			
 			for pos in positions:
@@ -541,7 +590,7 @@ def plot_feeding(data: pd.DataFrame, output_dir: Path) -> None:
 
 	grouped = data.groupby("scenario")[cols]
 	means = grouped.mean()
-	stds = grouped.std().fillna(0)
+	cis = compute_ci95(grouped)
 
 	fig, ax = plt.subplots(figsize=(15, 8))
 	x = range(len(means.index))
@@ -549,7 +598,7 @@ def plot_feeding(data: pd.DataFrame, output_dir: Path) -> None:
 		
 	display_names = {
 		"BearPlantMeals": "Bear (Plant)",
-		"BearCarcass": "Bear (Carcass)",
+		"BearAnimalPrey": "Bear (Carcass)",
 		"MoosePlantMeals": "Moose (Plant)",
 		"WolfCarcass": "Wolf (Carcass)"
 	}
@@ -557,7 +606,7 @@ def plot_feeding(data: pd.DataFrame, output_dir: Path) -> None:
 	for i, col in enumerate(cols):
 		color = get_bar_color(col)
 		positions = [p + width*i for p in x]	
-		ax.bar(positions, means[col], width, label=col, yerr=stds[col], 
+		ax.bar(positions, means[col], width, label=col, yerr=asymmetric_yerr(means[col], cis[col]), 
 			capsize=4, color=color, alpha=0.85, edgecolor='black')
 	
 		label = display_names.get(col, col)
@@ -574,7 +623,6 @@ def plot_feeding(data: pd.DataFrame, output_dir: Path) -> None:
 	enhance_bar_plot(ax, "Feeding Habits by Scenario", "Meal Count")
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_feeding.png", dpi=300)
-	plt.show()
 	plt.close()
 
 
@@ -586,7 +634,7 @@ def plot_pack_behavior(data: pd.DataFrame, output_dir: Path) -> None:
 
 	grouped = data.groupby("scenario")[cols]
 	means = grouped.mean()
-	stds = grouped.std().fillna(0)
+	cis = compute_ci95(grouped)
 
 	fig, ax = plt.subplots(figsize=(14, 8))
 	x = range(len(means.index))
@@ -597,7 +645,7 @@ def plot_pack_behavior(data: pd.DataFrame, output_dir: Path) -> None:
 		color = get_bar_color(col)
 		positions = [p + width*i for p in x]
 		
-		ax.bar(positions, means[col], width, label=col, yerr=stds[col], 
+		ax.bar(positions, means[col], width, label=col, yerr=asymmetric_yerr(means[col], cis[col]), 
 			capsize=5, color=color, alpha=0.85, edgecolor='black')
 		
 		for pos in positions:
@@ -628,7 +676,7 @@ def plot_avg_needs(data: pd.DataFrame, output_dir: Path) -> None:
 
 	grouped = data.groupby("scenario")[cols]
 	means = grouped.mean()
-	stds = grouped.std().fillna(0)
+	cis = compute_ci95(grouped)
 
 	fig, ax = plt.subplots(figsize=(18, 9))
 	x = range(len(means.index))
@@ -642,7 +690,7 @@ def plot_avg_needs(data: pd.DataFrame, output_dir: Path) -> None:
 		color = get_bar_color(col)
 		positions = [p + width*i for p in x]
 		
-		ax.bar(positions, means[col], width, yerr=stds[col], color=color, alpha=0.8, edgecolor='black')
+		ax.bar(positions, means[col], width, yerr=asymmetric_yerr(means[col], cis[col]), color=color, alpha=0.8, edgecolor='black')
 			
 		for pos in positions:
 			ax.text(pos, -2, short_label, ha='center', va='top', fontsize=7, rotation=45,
@@ -666,7 +714,7 @@ def plot_wolf_hunt(data: pd.DataFrame, output_dir: Path) -> None:
 
 	grouped = data.groupby("scenario")[cols]
 	means = grouped.mean()
-	stds = grouped.std().fillna(0)
+	cis = compute_ci95(grouped)
 
 	fig, ax = plt.subplots(figsize=(14, 8))
 	x = range(len(means.index))
@@ -677,7 +725,7 @@ def plot_wolf_hunt(data: pd.DataFrame, output_dir: Path) -> None:
 		colors = [SPECIES_COLORS["Wolf"], "#DC143C", "#20B2AA"]
 		positions = [p + width*i for p in x]
 			
-		ax.bar(positions, means[col], width, label=labels[i], yerr=stds[col], 
+		ax.bar(positions, means[col], width, label=labels[i], yerr=asymmetric_yerr(means[col], cis[col]), 
 			capsize=5, color=colors[i], alpha=0.85, edgecolor='black')
 			
 		for pos in positions:
@@ -704,7 +752,7 @@ def plot_bear_hunt(data: pd.DataFrame, output_dir: Path) -> None:
 
 	grouped = data.groupby("scenario")[cols]
 	means = grouped.mean()
-	stds = grouped.std().fillna(0)
+	cis = compute_ci95(grouped)
 
 	fig, ax = plt.subplots(figsize=(15, 8))
 	x = range(len(means.index))
@@ -715,7 +763,7 @@ def plot_bear_hunt(data: pd.DataFrame, output_dir: Path) -> None:
 		color = get_bar_color(col)
 		positions = [p + width*i for p in x]
 		
-		ax.bar(positions, means[col], width, label=labels[i], yerr=stds[col], 
+		ax.bar(positions, means[col], width, label=labels[i], yerr=asymmetric_yerr(means[col], cis[col]), 
 			capsize=5, color=color, alpha=0.85, edgecolor='black')
 		
 		for pos in positions:
@@ -741,14 +789,14 @@ def plot_moose_escape(data: pd.DataFrame, output_dir: Path) -> None:
 
 	grouped = data.groupby("scenario")[cols]
 	means = grouped.mean()
-	stds = grouped.std().fillna(0)
+	cis = compute_ci95(grouped)
 
 	fig, ax = plt.subplots(figsize=(10, 8))
 	x = range(len(means.index))
 	width = 0.4
 		
 	color = SPECIES_COLORS["Moose"]
-	ax.bar(x, means[cols[0]], width, yerr=stds[cols[0]], 
+	ax.bar(x, means[cols[0]], width, yerr=cis[cols[0]], 
 		capsize=5, color=color, alpha=0.85, edgecolor='black')
 	
 	for pos in x:
@@ -882,6 +930,7 @@ def main() -> None:
 	plot_bear_hunt(data, args.output)
 	plot_moose_escape(data, args.output)
 	plot_state_distribution_pie(data, args.output)
+	run_significance_tests(data, args.output)
 	print(f"Saved summary + plots to: {args.output.resolve()}")
 
 
