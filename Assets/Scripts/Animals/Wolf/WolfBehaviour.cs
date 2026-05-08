@@ -534,6 +534,12 @@ public class WolfBehaviour : AnimalBehaviour
                 moose.UnregisterWolfAttacker(this);
                 moose.OnNoLongerHunted(gameObject);
             }
+
+            BearBehaviour bear = preyTarget.GetComponentInParent<BearBehaviour>();
+            if (bear != null)
+            {
+                bear.UnregisterWolfAttacker(this);
+            }
         }
 
         preyTarget = null;
@@ -791,6 +797,7 @@ public class WolfBehaviour : AnimalBehaviour
     {
         if (enemy == null)
         {
+            preyTarget = null;
             ChangeState(State.Wander);
             return;
         }

@@ -508,7 +508,6 @@ public class BearBehaviour : AnimalBehaviour
     public override void OnDeath(bool killedByPredator = false)
     {
         wolfAttackers.RemoveAll(w => w == null || w.Equals(null));
-        bool wolfKill = wolfAttackers.Count > 0;
 
         foreach(WolfBehaviour wolf in wolfAttackers.ToList())
         {
@@ -520,10 +519,6 @@ public class BearBehaviour : AnimalBehaviour
 
         wolfAttackers.Clear();
 
-        if (wolfKill)
-        {
-            StatisticsTableManager.instance.WolfSuccessfulHuntsCount++;
-        }
         base.OnDeath(killedByPredator);
     }
     protected override void UpdateSearchFood()
