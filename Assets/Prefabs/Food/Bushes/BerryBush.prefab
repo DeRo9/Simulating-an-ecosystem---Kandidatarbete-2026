@@ -382,7 +382,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ReplenishBerries
   berryBunchPrefab: {fileID: 1470054320206136807, guid: f496d96e3328157448797c39461b5500, type: 3}
-  respawnDelay: 10
+  respawnDelay: 40
 --- !u!1001 &5236140309772746412
 PrefabInstance:
   m_ObjectHideFlags: 0

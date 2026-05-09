@@ -541,6 +541,7 @@ def plot_population(data: pd.DataFrame, output_dir: Path) -> None:
 		
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_final_population.png", dpi=300, bbox_inches='tight')
+	plt.show()
 	plt.close()
 
 
@@ -583,6 +584,7 @@ def plot_deaths(data: pd.DataFrame, output_dir: Path) -> None:
 			
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_deaths.png", dpi=300, bbox_inches='tight')
+	plt.show()
 	plt.close()
 
 
@@ -623,6 +625,7 @@ def plot_lifespan(data: pd.DataFrame, output_dir: Path) -> None:
 		ax.legend(title="Species", loc='upper left')
 		plt.tight_layout()
 		plt.savefig(output_dir / "plot_avg_lifespan.png", dpi=300, bbox_inches='tight')
+		plt.show()
 		plt.close()
 
 
@@ -663,6 +666,7 @@ def plot_births(data: pd.DataFrame, output_dir: Path) -> None:
 	ax.legend(title="Species", loc='upper left')
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_births.png", dpi=300, bbox_inches='tight')
+	plt.show()
 	plt.close()
 
 
@@ -699,6 +703,7 @@ def plot_starvation(data: pd.DataFrame, output_dir: Path) -> None:
 	enhance_bar_plot(ax, "Deaths by Starvation", "Starvation Count")
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_starvation.png", dpi=300, bbox_inches='tight')
+	plt.show()
 	plt.close()
 
 
@@ -738,6 +743,7 @@ def plot_predation(data: pd.DataFrame, output_dir: Path) -> None:
 		enhance_bar_plot(ax, "Deaths by Predation", "Count")
 		plt.tight_layout()
 		plt.savefig(output_dir / "plot_predation.png", dpi=300, bbox_inches='tight')
+		plt.show()
 		plt.close()
 
 
@@ -782,6 +788,7 @@ def plot_feeding(data: pd.DataFrame, output_dir: Path) -> None:
 	enhance_bar_plot(ax, "Feeding Habits by Scenario", "Meal Count")
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_feeding.png", dpi=300)
+	plt.show()
 	plt.close()
 
 
@@ -820,7 +827,7 @@ def plot_pack_behavior(data: pd.DataFrame, output_dir: Path) -> None:
 	enhance_bar_plot(ax, "Wolf Pack Behavior", "Count")
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_pack_behavior.png", dpi=300)
-
+	plt.show()
 	plt.close()
 
 def plot_avg_needs(data: pd.DataFrame, output_dir: Path) -> None:
@@ -862,12 +869,13 @@ def plot_avg_needs(data: pd.DataFrame, output_dir: Path) -> None:
 	enhance_bar_plot(ax, "Average Needs at Simulation End", "Value (%)")
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_avg_needs.png", dpi=300)
+	plt.show()
 	plt.close()
 
 #We kindoff already have this graph plotted beforehand (Most likely unecessary)
 def plot_wolf_hunt(data: pd.DataFrame, output_dir: Path) -> None:
 	setup_plot_style()
-	cols = ["WolfHuntAttempts", "WolfHuntFailures", "WolfSuccessfulHunts"]
+	cols = ["WolfHuntFailures", "WolfSuccessfulHunts"]
 	cols = [c for c in cols if c in data.columns]
 	if not cols: return
 
@@ -878,10 +886,10 @@ def plot_wolf_hunt(data: pd.DataFrame, output_dir: Path) -> None:
 	fig, ax = plt.subplots(figsize=(14, 8))
 	x = range(len(means.index))
 	width = 0.25
-	labels = ["Attempts", "Failures", "Success"]
+	labels = ["Failures", "Success"]
 		
 	for i, col in enumerate(cols):
-		colors = [SPECIES_COLORS["Wolf"], "#DC143C", "#20B2AA"]
+		colors = ["#DC143C", "#20B2AA"]
 		positions = [p + width*i for p in x]
 			
 		ax.bar(positions, means[col], width, label=labels[i], yerr=asymmetric_yerr(means[col], cis[col]), 
@@ -900,12 +908,13 @@ def plot_wolf_hunt(data: pd.DataFrame, output_dir: Path) -> None:
 	enhance_bar_plot(ax, "Wolf Hunt Statistics", "Count")
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_wolf_hunt.png", dpi=300)
+	plt.show()
 	plt.close()
 
 
 def plot_bear_hunt(data: pd.DataFrame, output_dir: Path) -> None:
 	setup_plot_style()
-	cols = ["BearHuntAttempts", "BearHuntFailures", "BearSuccessfulHunts", "BearInterference"]
+	cols = ["BearHuntFailures", "BearSuccessfulHunts", "BearInterference"]
 	cols = [c for c in cols if c in data.columns]
 	if not cols: return
 
@@ -916,7 +925,7 @@ def plot_bear_hunt(data: pd.DataFrame, output_dir: Path) -> None:
 	fig, ax = plt.subplots(figsize=(15, 8))
 	x = range(len(means.index))
 	width = 0.20
-	labels = ["Attempts", "Failures", "Success", "Interference"]
+	labels = ["Failures", "Success", "Interference"]
 		
 	for i, col in enumerate(cols):
 		color = get_bar_color(col)
@@ -938,6 +947,7 @@ def plot_bear_hunt(data: pd.DataFrame, output_dir: Path) -> None:
 	enhance_bar_plot(ax, "Bear Hunt Statistics", "Count")
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_bear_hunt.png", dpi=300)
+	plt.show()
 	plt.close()
 
 def plot_moose_escape(data: pd.DataFrame, output_dir: Path) -> None:
@@ -970,6 +980,7 @@ def plot_moose_escape(data: pd.DataFrame, output_dir: Path) -> None:
 	enhance_bar_plot(ax, "Moose Successful Escapes", "Escape Count")
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_moose_escape.png", dpi=300)
+	plt.show()
 	plt.close()
 
 STATE_COLORS = {
@@ -988,86 +999,84 @@ STATE_COLORS = {
 }
 
 def plot_state_distribution_pie(data: pd.DataFrame, output_dir: Path) -> None:
-    """Plot state distribution with shared legend and hidden small labels to prevent overlap."""
-    
-    scenarios = data["scenario"].unique()
-    species_info = [
-        ("Moose", [col for col in data.columns if col.startswith("Moose") and col.endswith("Time")]),
-        ("Bear", [col for col in data.columns if col.startswith("Bear") and col.endswith("Time")]),
-        ("Wolf", [col for col in data.columns if col.startswith("Wolf") and col.endswith("Time")]),
-    ]
-    
-    for scenario in scenarios:
-        scenario_data = data[data["scenario"] == scenario]
-        
-        fig, axes = plt.subplots(1, 3, figsize=(18, 7))
-        fig.suptitle(f"State Distribution by Species - Scenario: {scenario}", fontsize=14, fontweight="bold")
-        
-        global_handles = []
-        global_labels = []
+	"""Plot state distribution with shared legend and hidden small labels to prevent overlap."""
+		
+	scenarios = data["scenario"].unique()
+	species_info = [
+		("Moose", [col for col in data.columns if col.startswith("Moose") and col.endswith("Time")]),
+		("Bear", [col for col in data.columns if col.startswith("Bear") and col.endswith("Time")]),
+		("Wolf", [col for col in data.columns if col.startswith("Wolf") and col.endswith("Time")]),
+	]
+		
+	for scenario in scenarios:
+		scenario_data = data[data["scenario"] == scenario]
+		
+		fig, axes = plt.subplots(1, 3, figsize=(18, 7))
+		fig.suptitle(f"State Distribution by Species - Scenario: {scenario}", fontsize=14, fontweight="bold")
+		
+		global_handles = []
+		global_labels = []
+		for idx, (species, state_cols) in enumerate(species_info):
+			if not state_cols:
+				axes[idx].text(0.5, 0.5, f"No {species} data", ha="center", va="center")
+				continue
+			
+			state_values = scenario_data[state_cols].mean()
+			total = state_values.sum()
+			if total == 0:
+				continue
 
-        for idx, (species, state_cols) in enumerate(species_info):
-            if not state_cols:
-                axes[idx].text(0.5, 0.5, f"No {species} data", ha="center", va="center")
-                continue
-            
-            state_values = scenario_data[state_cols].mean()
-            total = state_values.sum()
-            if total == 0:
-                continue
+			state_pcts = (state_values / total * 100)
+			state_names = [col.replace(species, "").replace("Time", "") for col in state_cols]
+			
+			plot_data = []
+			for name, val in zip(state_names, state_pcts):
+				if val > 0.1: 
+					display_label = name if val >= 1.0 else "" 
+					plot_data.append((name, display_label, val))
 
-            state_pcts = (state_values / total * 100)
-            state_names = [col.replace(species, "").replace("Time", "") for col in state_cols]
-            
-            plot_data = []
-            for name, val in zip(state_names, state_pcts):
-                if val > 0.1: 
-                    display_label = name if val >= 1.0 else "" 
-                    plot_data.append((name, display_label, val))
+			if not plot_data:
+				axes[idx].text(0.5, 0.5, f"No significant {species} data", ha="center", va="center")
+				continue
+					
+			original_names, display_labels, values = zip(*plot_data)
+			colors = [STATE_COLORS.get(name, "#cccccc") for name in original_names]
+					
+			wedges, texts, autotexts = axes[idx].pie(
+				values,
+				labels=display_labels,
+				autopct=lambda p: f"{p:.1f}%" if p >= 4 else "",
+				startangle=90,
+				colors=colors,
+				pctdistance=0.75,
+				labeldistance=1.1
+			)
 
-            if not plot_data:
-                axes[idx].text(0.5, 0.5, f"No significant {species} data", ha="center", va="center")
-                continue
-                
-            original_names, display_labels, values = zip(*plot_data)
-            colors = [STATE_COLORS.get(name, "#cccccc") for name in original_names]
-                
-            wedges, texts, autotexts = axes[idx].pie(
-                values,
-                labels=display_labels,
-                autopct=lambda p: f"{p:.1f}%" if p >= 4 else "",
-                startangle=90,
-                colors=colors,
-                pctdistance=0.75,
-                labeldistance=1.1
-            )
-
-            axes[idx].set_title(f"{species}")
-
-            if len(original_names) > len(global_labels):
-                global_handles = wedges
-                global_labels = original_names
-
-            for autotext in autotexts:
-                autotext.set_fontsize(8)
-                autotext.set_fontweight("bold")
-        
-        if global_handles:
-            fig.legend(
-                global_handles, 
-                global_labels,
-                title="States",
-                loc="lower center",
-                bbox_to_anchor=(0.5, 0.02),
-                ncol=min(len(global_labels), 8),
-                fontsize=9
-            )
-                
-        plt.tight_layout(rect=[0, 0.1, 1, 0.95])
-        
-        safe_scenario = scenario.replace("/", "_").replace(" ", "_")
-        plt.savefig(output_dir / f"plot_state_distribution_{safe_scenario}.png", dpi=180)
-        plt.close()
+			axes[idx].set_title(f"{species}")
+			if len(original_names) > len(global_labels):
+				global_handles = wedges
+				global_labels = original_names
+			for autotext in autotexts:
+				autotext.set_fontsize(8)
+				autotext.set_fontweight("bold")
+			
+		if global_handles:
+			fig.legend(
+				global_handles, 
+				global_labels,
+					title="States",
+					loc="lower center",
+					bbox_to_anchor=(0.5, 0.02),
+					ncol=min(len(global_labels), 8),
+					fontsize=9
+			)
+						
+	plt.tight_layout(rect=[0, 0.1, 1, 0.95])
+				
+	safe_scenario = scenario.replace("/", "_").replace(" ", "_")
+	plt.savefig(output_dir / f"plot_state_distribution_{safe_scenario}.png", dpi=180)
+	plt.show()
+	plt.close()
 
 def main() -> None:
 	args = parse_args()
