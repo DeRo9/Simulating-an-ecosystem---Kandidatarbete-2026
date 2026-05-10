@@ -470,7 +470,6 @@ def plot_species_population(
 			bbox_inches="tight"
 		)
 
-		plt.show()
 		plt.close()
 
 def plot_population_moose(data: pd.DataFrame, output_dir: Path) -> None:
@@ -544,7 +543,6 @@ def plot_population(data: pd.DataFrame, output_dir: Path) -> None:
 		
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_final_population.png", dpi=300, bbox_inches='tight')
-	plt.show()
 	plt.close()
 
 
@@ -587,7 +585,6 @@ def plot_deaths(data: pd.DataFrame, output_dir: Path) -> None:
 			
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_deaths.png", dpi=300, bbox_inches='tight')
-	plt.show()
 	plt.close()
 
 
@@ -628,7 +625,6 @@ def plot_lifespan(data: pd.DataFrame, output_dir: Path) -> None:
 		ax.legend(title="Species", loc='upper left')
 		plt.tight_layout()
 		plt.savefig(output_dir / "plot_avg_lifespan.png", dpi=300, bbox_inches='tight')
-		plt.show()
 		plt.close()
 
 
@@ -669,7 +665,6 @@ def plot_births(data: pd.DataFrame, output_dir: Path) -> None:
 	ax.legend(title="Species", loc='upper left')
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_births.png", dpi=300, bbox_inches='tight')
-	plt.show()
 	plt.close()
 
 
@@ -706,7 +701,6 @@ def plot_starvation(data: pd.DataFrame, output_dir: Path) -> None:
 	enhance_bar_plot(ax, "Deaths by Starvation", "Starvation Count")
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_starvation.png", dpi=300, bbox_inches='tight')
-	plt.show()
 	plt.close()
 
 
@@ -746,7 +740,6 @@ def plot_predation(data: pd.DataFrame, output_dir: Path) -> None:
 		enhance_bar_plot(ax, "Deaths by Predation", "Count")
 		plt.tight_layout()
 		plt.savefig(output_dir / "plot_predation.png", dpi=300, bbox_inches='tight')
-		plt.show()
 		plt.close()
 
 
@@ -791,7 +784,6 @@ def plot_feeding(data: pd.DataFrame, output_dir: Path) -> None:
 	enhance_bar_plot(ax, "Feeding Habits by Scenario", "Meal Count")
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_feeding.png", dpi=300)
-	plt.show()
 	plt.close()
 
 
@@ -830,7 +822,6 @@ def plot_pack_behavior(data: pd.DataFrame, output_dir: Path) -> None:
 	enhance_bar_plot(ax, "Wolf Pack Behavior", "Count")
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_pack_behavior.png", dpi=300)
-	plt.show()
 	plt.close()
 
 def plot_avg_needs(data: pd.DataFrame, output_dir: Path) -> None:
@@ -872,7 +863,6 @@ def plot_avg_needs(data: pd.DataFrame, output_dir: Path) -> None:
 	enhance_bar_plot(ax, "Average Needs at Simulation End", "Value (%)")
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_avg_needs.png", dpi=300)
-	plt.show()
 	plt.close()
 
 #We kindoff already have this graph plotted beforehand (Most likely unecessary)
@@ -911,7 +901,6 @@ def plot_wolf_hunt(data: pd.DataFrame, output_dir: Path) -> None:
 	enhance_bar_plot(ax, "Wolf Hunt Statistics", "Count")
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_wolf_hunt.png", dpi=300)
-	plt.show()
 	plt.close()
 
 
@@ -950,7 +939,6 @@ def plot_bear_hunt(data: pd.DataFrame, output_dir: Path) -> None:
 	enhance_bar_plot(ax, "Bear Hunt Statistics", "Count")
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_bear_hunt.png", dpi=300)
-	plt.show()
 	plt.close()
 
 def plot_moose_escape(data: pd.DataFrame, output_dir: Path) -> None:
@@ -983,103 +971,183 @@ def plot_moose_escape(data: pd.DataFrame, output_dir: Path) -> None:
 	enhance_bar_plot(ax, "Moose Successful Escapes", "Escape Count")
 	plt.tight_layout()
 	plt.savefig(output_dir / "plot_moose_escape.png", dpi=300)
-	plt.show()
 	plt.close()
 
 STATE_COLORS = {
-	"SearchFood": "#FFD700",  
-    "SearchWater": "#4169E1",  
-    "SearchMate": "#FF69B4",  
-    "Eat": "#228B22",        
-    "Drink": "#1E90FF",      
-    "Hunt": "#8B0000",     
-    "Defend": "#DC143C",     
-    "Fleeing": "#FF4500",   
-    "Idle": "#808080",     
-    "Wander": "#87CEEB",  
-    "Hibernate": "#4B0082",   
-    "Mating": "#FF1493",     
+    "SearchFood": "#4CAF50",      # Bright green
+    "Eat": "#2E7D32",             # Forest green
+    
+    "SearchWater": "#29B6F6",     # Bright blue
+    "Drink": "#1565C0",           # Deep blue
+    
+    "SearchMate": "#EC407A",      # Vibrant pink
+    "Mating": "#7B1FA2",          # Rich purple
+    
+    "Hunting": "#F44336",         # Strong red
+    "Defend": "#FF6E40",          # Coral red-orange
+    "Fleeing": "#FFA726",         # Warm orange
+    
+    "Idle": "#757575",            # Gray
+    "Wander": "#4DB6AC",          # Muted teal
+    "Hibernate": "#512DA8"        # Deep purple
 }
 
-def plot_state_distribution_pie(data: pd.DataFrame, output_dir: Path) -> None:
-	"""Plot state distribution with shared legend and hidden small labels to prevent overlap."""
-		
-	scenarios = data["scenario"].unique()
-	species_info = [
-		("Moose", [col for col in data.columns if col.startswith("Moose") and col.endswith("Time")]),
-		("Bear", [col for col in data.columns if col.startswith("Bear") and col.endswith("Time")]),
-		("Wolf", [col for col in data.columns if col.startswith("Wolf") and col.endswith("Time")]),
-	]
-		
-	for scenario in scenarios:
+def plot_species_state_distribution(
+	data: pd.DataFrame,
+	output_dir: Path,
+	species_name: str,
+) -> None:
+	"""
+	Creates ONE figure for ONE species with 3 subplots (one per scenario):
+	- No Bears
+	- Average Bears
+	- Many Bears
+	Shows state distribution as pie charts across scenarios.
+	"""
+	setup_plot_style()
+ 
+	scenarios = [s for s in SCENARIO_ORDER if s in data["scenario"].unique()]
+ 
+	if not scenarios:
+		return
+ 
+	# Get state columns for this species
+	state_cols = [col for col in data.columns if col.startswith(species_name) and col.endswith("Time")]
+	if not state_cols:
+		return
+ 
+	fig, axes = plt.subplots(1, len(scenarios), figsize=(18, 6))
+ 
+	if len(scenarios) == 1:
+		axes = [axes]
+ 
+	fig.suptitle(
+		f"{species_name} State Distribution Over Scenarios",
+		fontsize=18,
+		fontweight="bold",
+		y=1.02
+	)
+ 
+	# Collect all state names for reference
+	all_state_names = [col.replace(species_name, "").replace("Time", "") for col in state_cols]
+	
+	# Track which states actually appear in plots (for accurate legend)
+	plotted_states = {}
+ 
+	for ax, scenario in zip(axes, scenarios):
+ 
 		scenario_data = data[data["scenario"] == scenario]
+ 
+		if len(scenario_data) == 0:
+			ax.set_title(f"{scenario}\n(No Data)")
+			ax.axis('off')
+			continue
+ 
+		# Calculate mean state times for this scenario
+		state_values = scenario_data[state_cols].mean()
+		total = state_values.sum()
+ 
+		if total == 0:
+			ax.set_title(f"{scenario}\n(No Data)")
+			ax.axis('off')
+			continue
+ 
+		# Convert to percentages
+		state_pcts = (state_values / total * 100)
 		
-		fig, axes = plt.subplots(1, 3, figsize=(18, 7))
-		fig.suptitle(f"State Distribution by Species - Scenario: {scenario}", fontsize=14, fontweight="bold")
+		# Filter out very small values for cleaner pie chart
+		plot_data = []
+		for name, pct in zip(all_state_names, state_pcts):
+			if pct > 0.5:  # Only include states > 0.5%
+				display_label = name if pct >= 3.0 else ""  # Only show label if >= 3%
+				plot_data.append((name, display_label, pct))
+ 
+		if not plot_data:
+			ax.set_title(f"{scenario}\n(No Data)")
+			ax.axis('off')
+			continue
+ 
+		original_names, display_labels, values = zip(*plot_data)
+		colors = [STATE_COLORS.get(name, "#cccccc") for name in original_names]
+ 
+		# Track plotted states with their colors
+		for name, color in zip(original_names, colors):
+			if name not in plotted_states:
+				plotted_states[name] = color
+ 
+		wedges, texts, autotexts = ax.pie(
+			values,
+			labels=display_labels,
+			autopct=lambda p: f"{p:.1f}%" if p >= 4 else "",
+			startangle=90,
+			colors=colors,
+			pctdistance=0.75,
+			labeldistance=1.1,
+			textprops={'fontsize': 10, 'weight': 'bold'}
+		)
+ 
+		ax.set_title(
+			scenario,
+			fontsize=14,
+			fontweight="bold",
+			pad=15
+		)
+ 
+		for autotext in autotexts:
+			autotext.set_fontsize(9)
+			autotext.set_fontweight("bold")
+			autotext.set_color("white")
+ 
+	# Add shared legend at the bottom with only plotted states and correct colors
+	if plotted_states:
+		from matplotlib.patches import Patch
 		
-		global_handles = []
-		global_labels = []
-		for idx, (species, state_cols) in enumerate(species_info):
-			if not state_cols:
-				axes[idx].text(0.5, 0.5, f"No {species} data", ha="center", va="center")
-				continue
-			
-			state_values = scenario_data[state_cols].mean()
-			total = state_values.sum()
-			if total == 0:
-				continue
-
-			state_pcts = (state_values / total * 100)
-			state_names = [col.replace(species, "").replace("Time", "") for col in state_cols]
-			
-			plot_data = []
-			for name, val in zip(state_names, state_pcts):
-				if val > 0.1: 
-					display_label = name if val >= 1.0 else "" 
-					plot_data.append((name, display_label, val))
-
-			if not plot_data:
-				axes[idx].text(0.5, 0.5, f"No significant {species} data", ha="center", va="center")
-				continue
-					
-			original_names, display_labels, values = zip(*plot_data)
-			colors = [STATE_COLORS.get(name, "#cccccc") for name in original_names]
-					
-			wedges, texts, autotexts = axes[idx].pie(
-				values,
-				labels=display_labels,
-				autopct=lambda p: f"{p:.1f}%" if p >= 4 else "",
-				startangle=90,
-				colors=colors,
-				pctdistance=0.75,
-				labeldistance=1.1
-			)
-
-			axes[idx].set_title(f"{species}")
-			if len(original_names) > len(global_labels):
-				global_handles = wedges
-				global_labels = original_names
-			for autotext in autotexts:
-				autotext.set_fontsize(8)
-				autotext.set_fontweight("bold")
-			
-		if global_handles:
-			fig.legend(
-				global_handles, 
-				global_labels,
-					title="States",
-					loc="lower center",
-					bbox_to_anchor=(0.5, 0.02),
-					ncol=min(len(global_labels), 8),
-					fontsize=9
-			)
-						
-	plt.tight_layout(rect=[0, 0.1, 1, 0.95])
-				
-	safe_scenario = scenario.replace("/", "_").replace(" ", "_")
-	plt.savefig(output_dir / f"plot_state_distribution_{safe_scenario}.png", dpi=180)
+		# Sort plotted states in the same order as all_state_names for consistency
+		legend_names = [s for s in all_state_names if s in plotted_states]
+		legend_colors = [plotted_states[s] for s in legend_names]
+		
+		# Create legend patches with correct colors
+		legend_patches = [Patch(facecolor=color, edgecolor='black', linewidth=0.5) 
+		                   for color in legend_colors]
+		
+		fig.legend(
+			legend_patches,
+			legend_names,
+			title="States",
+			loc="lower center",
+			bbox_to_anchor=(0.5, -0.05),
+			ncol=min(len(legend_names), 8),
+			fontsize=10,
+			framealpha=0.95
+		)
+ 
+	plt.tight_layout(rect=[0, 0.08, 1, 0.96])
+ 
+	filename = f"plot_state_distribution_{species_name.lower()}.png"
+	plt.savefig(
+		output_dir / filename,
+		dpi=300,
+		bbox_inches="tight"
+	)
+ 
 	plt.show()
 	plt.close()
+ 
+
+def plot_state_distribution_moose(data: pd.DataFrame, output_dir: Path) -> None:
+	"""Plot Moose state distribution across scenarios."""
+	plot_species_state_distribution(data, output_dir, species_name="Moose")
+ 
+ 
+def plot_state_distribution_bear(data: pd.DataFrame, output_dir: Path) -> None:
+	"""Plot Bear state distribution across scenarios."""
+	plot_species_state_distribution(data, output_dir, species_name="Bear")
+ 
+ 
+def plot_state_distribution_wolf(data: pd.DataFrame, output_dir: Path) -> None:
+	"""Plot Wolf state distribution across scenarios."""
+	plot_species_state_distribution(data, output_dir, species_name="Wolf")
+
 
 def main() -> None:
 	args = parse_args()
@@ -1103,7 +1171,9 @@ def main() -> None:
 	plot_wolf_hunt(data, args.output)
 	plot_bear_hunt(data, args.output)
 	plot_moose_escape(data, args.output)
-	plot_state_distribution_pie(data, args.output)
+	plot_state_distribution_moose(data, args.output)
+	plot_state_distribution_bear(data, args.output)
+	plot_state_distribution_wolf(data, args.output)
 	run_significance_tests(data, args.output)
 	print(f"Saved summary + plots to: {args.output.resolve()}")
 
