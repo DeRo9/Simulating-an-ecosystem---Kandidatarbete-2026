@@ -158,30 +158,33 @@ def setup_plot_style():
     })
 
 def enhance_bar_plot(ax, title, ylabel, xlabel="Scenario", add_values=True):
-    """Apply consistent enhancements to bar plots."""
-    ax.set_title(title, fontsize=14, fontweight='bold', pad=20)
-    ax.set_ylabel(ylabel, fontsize=12, fontweight='bold')
-    ax.set_xlabel(xlabel, fontsize=12, fontweight='bold')
-    ax.grid(axis='y', alpha=0.3, linestyle='--')
-    ax.set_axisbelow(True)
-    
-    for spine in ax.spines.values():
-        spine.set_edgecolor('#CCCCCC')
-        spine.set_linewidth(0.8)
-    
-    if add_values:
-        for container in ax.containers:
-            if hasattr(container, 'patches') and len(container.patches) > 0:
-                for patch in container.patches:
-                    height = patch.get_height()
-                    ax.text(
-                        patch.get_x() + patch.get_width() / 2,
-                        height,
-                        f'{height:.1f}',
-                        ha='center', va='bottom', fontsize=15
-                    )
-    
-    return ax
+	"""Apply consistent enhancements to bar plots."""
+	ax.set_title(title, fontsize=14, fontweight='bold', pad=20)
+	ax.set_ylabel(ylabel, fontsize=12, fontweight='bold')
+	ax.set_xlabel(xlabel, fontsize=12, fontweight='bold')
+	ax.grid(axis='y', alpha=0.3, linestyle='--')
+	ax.set_axisbelow(True)
+		
+	for spine in ax.spines.values():
+		spine.set_edgecolor('#CCCCCC')
+		spine.set_linewidth(0.8)
+		
+	if add_values:
+		for container in ax.containers:
+			if hasattr(container, 'patches') and len(container.patches) > 0:
+				for patch in container.patches:
+					height = patch.get_height()
+					ax.text(
+						patch.get_x() + patch.get_width() / 2,
+						height * 0.5,  # Middle of bar
+						f'{height:.1f}',
+						ha='center', va='center', fontsize=11,
+						fontweight='bold', color='white',
+						bbox=dict(boxstyle='round,pad=0.3', 
+							facecolor='black', alpha=0.3, edgecolor='none')
+					)
+		
+	return ax
 
 
 def parse_args() -> argparse.Namespace:
