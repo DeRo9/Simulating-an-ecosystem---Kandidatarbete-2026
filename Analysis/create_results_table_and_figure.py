@@ -24,9 +24,6 @@ excel_df.rename(columns={
     'significant (p<0,05)': 'Significant'
 }, inplace=True)
 
-# ============================================================
-# 1. CREATE MAIN TABLE (TOP 15 SIGNIFICANT METRICS)
-# ============================================================
 
 # Sort by p-value
 sig_df_sorted = excel_df.sort_values("p-value")
@@ -65,9 +62,7 @@ print(f"\n✓ Main table saved: {output_dir / 'results_main_table.csv'}")
 print("\nMain Table (Top 15 Significant Metrics):")
 print(main_table.to_string())
 
-# ============================================================
-# 2. CREATE SIGNIFICANCE FIGURE
-# ============================================================
+
 
 fig, ax = plt.subplots(figsize=(14, 10))
 
@@ -114,10 +109,6 @@ plt.tight_layout()
 plt.savefig(output_dir / "significance_figure.png", dpi=300, bbox_inches="tight")
 print(f"\n✓ Significance figure saved: {output_dir / 'significance_figure.png'}")
 
-# ============================================================
-# 3. CREATE FULL TABLE (APPENDIX)
-# ============================================================
-
 appendix_table = sig_df_sorted.copy()
 appendix_table["p-value (formatted)"] = appendix_table["p-value"].apply(
     lambda x: f"{x:.2e}" if pd.notna(x) else "N/A"
@@ -134,9 +125,6 @@ appendix_output.to_csv(output_dir / "results_appendix_full_table.csv", index=Fal
 
 print(f"✓ Full appendix table saved: {output_dir / 'results_appendix_full_table.csv'}")
 
-# ============================================================
-# 4. SUMMARY STATISTICS
-# ============================================================
 
 n_total = len(sig_df_sorted)
 n_significant = (sig_df_sorted["p-value"] < 0.05).sum()
