@@ -469,7 +469,7 @@ def plot_species_population(
 			dpi=300,
 			bbox_inches="tight"
 		)
-
+		plt.show()
 		plt.close()
 
 def plot_population_moose(data: pd.DataFrame, output_dir: Path) -> None:

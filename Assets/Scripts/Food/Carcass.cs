@@ -8,6 +8,8 @@ public class Carcass : MonoBehaviour, IsEdible
     public int remainingFeeds;
     public float expireTime = 30f;
 
+    public float expireTimeWinter = 60f;
+
     [SerializeField] private Species[] allowedConsumers = { Species.wolf, Species.bear };
 
 
@@ -21,6 +23,14 @@ public class Carcass : MonoBehaviour, IsEdible
         if (SeasonManager.Instance.IsSummer)
         {
             expireTime -= Time.deltaTime;
+            if (expireTime <= 0f)
+            {
+                Destroy(gameObject);
+            }
+        }
+        else if (SeasonManager.Instance.IsWinter)
+        {
+            expireTimeWinter -= Time.deltaTime;
             if (expireTime <= 0f)
             {
                 Destroy(gameObject);
