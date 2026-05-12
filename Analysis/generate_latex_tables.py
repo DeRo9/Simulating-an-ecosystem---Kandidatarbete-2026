@@ -35,7 +35,7 @@ def format_row(row):
 
 def build_standard_table(df, caption, label):
     latex = (
-        "\\begin{table}[h!]\n"
+        "\\begin{table}[htbp]\n"
         "\\centering\n"
         f"\\caption{{{caption}}}\n"
         f"\\label{{{label}}}\n"
