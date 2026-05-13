@@ -115,7 +115,7 @@ public class FreeCamera : MonoBehaviour
 
     private void Update()
 {
-    HandleAnimalClick();
+   // HandleAnimalClick();
 
     if (resetCameraAction.WasPressedThisFrame())
         ResetCamera();
@@ -273,7 +273,7 @@ public class FreeCamera : MonoBehaviour
         }
     }*/
 
-    private void HandleAnimalClick()
+  /*  private void HandleAnimalClick()
 {
     if (!lmbAction.WasPressedThisFrame()) return;
 
@@ -292,7 +292,7 @@ public class FreeCamera : MonoBehaviour
             selectedAnimal = null;
         }
     }
-}
+}*/
 
 
 
@@ -340,6 +340,11 @@ private void FollowAnimal()
 {
     StopFollowing();
     transform.position = new Vector3(transform.position.x, 20, transform.position.z);
+}
+
+public void SetSelectedAnimal(Transform t)
+{
+    selectedAnimal = t;
 }
 
 }

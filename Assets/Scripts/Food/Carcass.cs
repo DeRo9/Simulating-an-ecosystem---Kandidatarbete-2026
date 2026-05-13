@@ -1,21 +1,19 @@
 using UnityEngine;
 
-public class Carcass : MonoBehaviour
+public class Carcass : MonoBehaviour, IsEdible
 {
     public Species species;
     public int maxFeeds = 10;
     public float nutritionPerFeed = 100f;
-
     public int remainingFeeds;
-
     public float expireTime = 30f;
 
-    private Collider carcassCollider;
+    [SerializeField] private Species[] allowedConsumers = { Species.wolf, Species.bear };
+
 
     void Awake()
     {
         remainingFeeds = maxFeeds;
-        carcassCollider = GetComponent<Collider>();
     }
 
     void Update()
@@ -30,21 +28,12 @@ public class Carcass : MonoBehaviour
         }
     }
 
-    public void Initialize(Species species, int maxFeeds, float nutritionPerFeed)
-    {
-        this.species = species;
-        this.maxFeeds = maxFeeds;
-        this.nutritionPerFeed = nutritionPerFeed;
-        this.remainingFeeds = maxFeeds;
-    }
-
-    public float ConsumeOneFeed()
+    public float Consume()
     {
         if (remainingFeeds <= 0)
             return 0f;
 
         remainingFeeds--;
-
         float nutrition = nutritionPerFeed;
 
         if (remainingFeeds <= 0)
@@ -53,6 +42,18 @@ public class Carcass : MonoBehaviour
         }
 
         return nutrition;
+    }
+
+    public bool CanBeEatenBy(Species species)
+    {
+        return System.Array.Exists(allowedConsumers, element => element == species);
+    }
+
+    public void Initialize(Species species, int maxFeeds, float nutritionPerFeed)
+    {
+        this.species = species;
+        this.maxFeeds = maxFeeds;
+        this.nutritionPerFeed = nutritionPerFeed;
     }
 
     public bool IsEmpty => remainingFeeds <= 0;

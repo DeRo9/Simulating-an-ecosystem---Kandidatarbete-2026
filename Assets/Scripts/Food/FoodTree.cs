@@ -1,27 +1,57 @@
 using UnityEngine;
 
-public class FoodTree : MonoBehaviour
+public class FoodTree : MonoBehaviour, IsEdible
 {
     [SerializeField]
-    private float nutritionValue = 100f; // The amount of nutrition this food provides
+    public float nutritionValue = 100f;
+    [SerializeField]
+    private Species[] allowedSpecies = {Species.moose};
+    private MushroomSpawner spawner;
 
-    void OnTriggerEnter(Collider other)
+    [SerializeField]
+    private float regrowCooldown = 60f;
+
+    private float cooldownTimer = 0f;
+    private Renderer rend;
+    private Collider col;
+
+    void Update()
     {
-        bool canEatFood = other.CompareTag("Moose");
-
-        if (canEatFood && !(other is SphereCollider))
+        if (cooldownTimer > 0f)
         {
-            AnimalNeeds needs = other.GetComponentInParent<AnimalNeeds>();
+            cooldownTimer -= Time.deltaTime;
 
-            if (needs != null && needs.isHungry)
+            if (cooldownTimer <= 0f)
             {
-                needs.Eat(nutritionValue);
+                //if (rend != null) rend.enabled = true;
+                //if (col != null) col.enabled = true;
+                //Debug.Log("Tree " + gameObject.name + " has regrown and is edible again!");
 
-                if (StatisticsTableManager.instance != null)
-                    StatisticsTableManager.instance.MoosePlantMealsCount++;
             }
-            
         }
     }
+    public float Consume()
+    {
+        if (cooldownTimer > 0f){
+            return 0f;
+        } 
+        cooldownTimer = regrowCooldown;
+        //Debug.Log("Tree " + gameObject.name + " was eaten. Starting cooldown of " + regrowCooldown + "s");
+        //if (rend != null) rend.enabled = false; here for testing
+        //if(col != null) col.enabled = false;
+        return nutritionValue;
+    }
 
+    public bool CanBeEatenBy(Species species)
+    {
+        if (cooldownTimer > 0f ) return false;
+        foreach (Species allowed in allowedSpecies)
+        {
+            if (allowed == species)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

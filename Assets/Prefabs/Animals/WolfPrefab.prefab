@@ -953,6 +953,7 @@ GameObject:
   - component: {fileID: 4620774494346928479}
   - component: {fileID: 8127107587192447712}
   - component: {fileID: 4510168710266619781}
+  - component: {fileID: 1575169611474954200}
   m_Layer: 6
   m_Name: WolfPrefab
   m_TagString: Wolf
@@ -1023,21 +1024,18 @@ MonoBehaviour:
   IsMale: 0
   sightRange: 20
   hearingRange: 50
-  minSpeed: 0
-  maxSpeed: 0
-  minSight: 0
-  maxSight: 0
-  minHearing: 0
-  maxHearing: 0
+  baseSpeed: 0
+  baseStrength: 0
+  baseHealth: 0
+  baseSight: 0
+  baseHearing: 0
   hearingCollider: {fileID: 4620774494346928479}
-  minStrength: 0
-  maxStrength: 0
-  minHealth: 0
-  maxHealth: 0
   speed: 1.8
   runningSpeed: 2.7
   size: 2
   strength: 11
+  health: 0
+  staminaDecreaseRate: 0
   needs: {fileID: 1081293250822596563}
   pack: {fileID: 0}
   isLeader: 0
@@ -1088,19 +1086,22 @@ MonoBehaviour:
   minTimeWaiting: 2
   maxTimeWaiting: 5
   waitTime: 0
+  waterTarget: {fileID: 0}
   isDead: 0
   isPregnant: 0
   waterLayer:
     serializedVersion: 2
     m_Bits: 16
+  memoryDecisionCooldown: 0
   foodTarget: {fileID: 0}
   enemy: {fileID: 0}
-  mating: {fileID: 0}
   huntCooldownTimer: 0
+  nonLeaderNeedsEvalInterval: 3
   PreyLayer:
     serializedVersion: 2
     m_Bits: 256
   preyTarget: {fileID: 0}
+  breakFormation: 0
 --- !u!114 &1081293250822596563
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1124,7 +1125,7 @@ MonoBehaviour:
   hungerDecreaseRate: 0.8
   thirstDecreaseRate: 1
   staminaDecreaseRate: 5
-  staminaIncreaseRate: 1
+  staminaIncreaseRate: 1.5
   hibernationMultiplier: 1
 --- !u!114 &3984187836223728344
 MonoBehaviour:
@@ -1229,8 +1230,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.3, y: 0.4, z: 0.7}
-  m_Center: {x: -0.0000073239207, y: 0.5, z: 0.030000001}
+  m_Size: {x: 0.28042603, y: 0.39999998, z: 0.7}
+  m_Center: {x: 0.000015258789, y: 0.5, z: 0.030000001}
 --- !u!135 &4620774494346928479
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1287,6 +1288,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalMemory
   chunkSize: 50
+--- !u!114 &1575169611474954200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4266865027632842223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69e74389407865b49be919e9dc612053, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalAvoidance
+  avoidanceRange: 25
+  checkInterval: 0.1
 --- !u!1 &4293556539160456709
 GameObject:
   m_ObjectHideFlags: 0

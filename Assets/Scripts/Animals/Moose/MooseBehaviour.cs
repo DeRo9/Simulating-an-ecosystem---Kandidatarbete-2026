@@ -10,35 +10,46 @@ public class MooseBehaviour : AnimalBehaviour
 
     AnimalFOV fov;
     AnimalHearing hearing;
+
+    Moose moose;
     float foodSearchingCooldown;
 
-    float memoryDecisionCooldown = 0f;
-
     private float needsEvalCooldown = 0f;
+
+    [Header("Avoidance")]
+    float avoidanceCheckCooldown = 0f;
+    float avoidanceCheckInterval = 2f;
+    float avoidanceRange = 25f;
 
     [Header("Layers")]
     [SerializeField] LayerMask foodLayer;
 
     private List<WolfBehaviour> wolfAttackers = new List<WolfBehaviour>();
     private List<BearBehaviour> bearAttackers = new List<BearBehaviour>();
+    private bool packHuntAttemptCounted = false;
+    private bool wasBeingHunted = false;
 
     protected override void Start()
     {
         base.Start();
         fov = GetComponent<AnimalFOV>();
         hearing = GetComponent<AnimalHearing>();
+        moose = GetComponent<Moose>();
     }
 
     protected override void Update()
     {
+        base.Update();
+
+        if (isDead)
+            return;
+
         if (!agent.isOnNavMesh)
             return;
         
-        base.Update();
-
-        if (isDead) return;
-
         if (CheckForThreats()) return;
+
+        
         // Update animation based on movement
         anim.SetBool("isWalking", agent.velocity.magnitude > 0.1f && agent.velocity.magnitude < animal.runningSpeed * 0.95f); // "isWalking" Ã¤r en bool i animator
         anim.SetBool("isRunning", agent.velocity.magnitude > animal.runningSpeed * 0.95f); // "isRunning" Ã¤r en bool i animator
@@ -65,11 +76,11 @@ public class MooseBehaviour : AnimalBehaviour
 
     private bool CheckForThreats()
     {
+        if (isDead) return false;
         if (hearing == null || !hearing.HeardSomething) return false;
 
         Animal heard = hearing.HeardAnimal;
         if (heard == null) return false;
-
         if (heard.species != Species.bear && heard.species != Species.wolf) return false;
 
         memory.RememberDanger(heard.transform.position);
@@ -78,7 +89,8 @@ public class MooseBehaviour : AnimalBehaviour
         if (wolf != null && wolf.CurrentTarget == gameObject)
         {
             enemy = heard.gameObject;
-            ChangeState(State.Fleeing);
+            if (CurrentState != State.Defend || CurrentState != State.Fleeing)
+                ChangeState(State.Fleeing);
             return true;
         }
 
@@ -86,7 +98,8 @@ public class MooseBehaviour : AnimalBehaviour
         if (bear != null && bear.CurrentTarget == gameObject)
         {
             enemy = heard.gameObject;
-            ChangeState(State.Fleeing);
+            if (CurrentState != State.Defend || CurrentState != State.Fleeing)
+                ChangeState(State.Fleeing);
             return true;
         }
         return false;
@@ -98,26 +111,23 @@ public class MooseBehaviour : AnimalBehaviour
         bool thirsty = IsThirsty();
 
         if (thirsty && (!hungry || needs.howThirstyInPercent < needs.howHungryInPercent))
-        {
-            if (FindWater())
-                ChangeState(State.Drink);
-            else
-                ChangeState(State.SearchWater);
+        {       
+            ChangeState(State.SearchWater);
             return;
         }
 
         if (hungry)
         {
-            if (FindFood())
-                ChangeState(State.Eat);
-            else
-                ChangeState(State.SearchFood);
+            ChangeState(State.SearchFood);
             return;
         }
 
         if (mating != null && CanMate())
         {
-            ChangeState(State.SearchMate);
+            if (CurrentState != State.SearchMate && CurrentState != State.Mating)
+            {
+                ChangeState(State.SearchMate);
+            }
             return;
         }
 
@@ -128,9 +138,18 @@ public class MooseBehaviour : AnimalBehaviour
     }
     protected override void UpdateSearchFood()
     {
-        if (FindFood())
+        if (foodTarget == null) 
         {
-            ChangeState(State.Eat);
+            FindFood();
+        }
+
+        if (foodTarget != null)
+        {
+            if (hasArrived())
+            {
+                ChangeState(State.Eat);
+                return;
+            }
             return;
         }
 
@@ -155,21 +174,24 @@ public class MooseBehaviour : AnimalBehaviour
                 }
                 else
                 {
-                    agent.SetDestination(GetRandomPoints());
-
-                    if (UnityEngine.Random.value < 0.2f) // 20% chance for exploration instead of memory
-                    {
-                        ChangeState(State.Wander);
-                        return;
-                    }     
+                    agent.SetDestination(GetRandomPoints());     
                 }
             }
+        }
+        else if (hasArrived())
+        {
+            memoryDecisionCooldown = 0f;
         }
     }
 
     private Collider[] hits = new Collider[10];
     bool FindFood()
     {
+        if (foodTarget != null)
+        {
+            return true;
+        }
+
         if(foodSearchingCooldown > 0f)
         {
             foodSearchingCooldown -= Time.deltaTime;
@@ -188,7 +210,10 @@ public class MooseBehaviour : AnimalBehaviour
             Collider hit = hits[i];
 
             if (hit == null) continue;
-            if (!hit.CompareTag("Plant")) continue;
+            
+            IsEdible edible = hit.GetComponent<IsEdible>();
+            if (edible == null || !edible.CanBeEatenBy(animal.species))
+                continue;
             if (!fov.IsInFOV(hit.transform)) continue;
             
             memory.RememberFood(hit.transform.position);
@@ -204,11 +229,57 @@ public class MooseBehaviour : AnimalBehaviour
         if(closestFood != null)
         {
             foodTarget = closestFood;
+            if (agent != null && agent.isOnNavMesh)
+            {
+                agent.isStopped = false;
+                agent.SetDestination(closestFood.transform.position);
+            }
             return true;
         }
 
         foodTarget = null;
         return false;
+    }
+
+    protected override void UpdateEat()
+    {
+        if (foodTarget == null)
+        {
+            ChangeState(State.SearchFood);
+            return;
+        }
+
+        agent.isStopped = true;
+        eatingTimer += Time.deltaTime;
+
+        if (eatingTimer >= eatingDuration)
+        {
+            if (needs.isHungry)
+            {
+                IsEdible edible = foodTarget.GetComponent<IsEdible>();
+                
+                if (edible != null && edible.CanBeEatenBy(animal.species))
+                {
+                    float nutrition = edible.Consume();
+                    needs.Eat(nutrition);
+                    StatisticsTableManager.instance.MoosePlantMealsCount++;
+
+                }
+            }
+
+            agent.isStopped = false;
+            foodTarget = null;
+            eatingTimer = 0f;
+            
+            if (needs.isHungry)
+            {
+                ChangeState(State.SearchFood);
+            }
+            else
+            {
+                ChangeState(State.Wander);
+            }
+        }
     }
 
     public void OnBeingHunted(GameObject predator)
@@ -219,6 +290,8 @@ public class MooseBehaviour : AnimalBehaviour
 
     public override void InflictDamage(float damage)
     {
+        if (isDead) return;
+
         base.InflictDamage(damage);
 
         if (animal.age < animal.grownUpAge) return; // Calves should not attack back
@@ -286,7 +359,7 @@ public class MooseBehaviour : AnimalBehaviour
         WolfBehaviour wolf = enemy.GetComponentInParent<WolfBehaviour>();
         if (wolf != null && !wolf.isDead)
         {
-            wolf?.InflictDamage(animal.attackDamage);
+            wolf?.InflictDamage(moose.CalculateAttackDamage());
         }
     }
 
@@ -294,8 +367,6 @@ public class MooseBehaviour : AnimalBehaviour
     {
         if(enemy == predator)
         {
-            StatisticsTableManager.instance.MooseSuccessfulEscapeCount++;
-
             enemy = null;
             agent.speed = animal.speed;
             if (CurrentState == State.Fleeing)
@@ -310,13 +381,32 @@ public class MooseBehaviour : AnimalBehaviour
         if (wolf == null) return;
 
         if (!wolfAttackers.Contains(wolf))
+        {
+            wasBeingHunted = true;
             wolfAttackers.Add(wolf);
+
+            if (!packHuntAttemptCounted)
+            {
+                Wolf wolfComp = wolf.GetComponent<Wolf>();
+                if (wolfComp != null && wolfComp.pack != null && wolfComp.pack.countCurrentPackSize() > 1)
+                {
+                    StatisticsTableManager.instance.PackHuntAttemptsCount++;
+                    packHuntAttemptCounted = true;
+                }
+            }
+        }
     }
 
     public void UnregisterWolfAttacker(WolfBehaviour wolf)
     {
         if (wolf == null) return;
         wolfAttackers.Remove(wolf);
+
+        if (wolfAttackers.Count == 0 && bearAttackers.Count == 0 && wasBeingHunted)
+        {
+            StatisticsTableManager.instance.MooseSuccessfulEscapeCount++;
+            wasBeingHunted = false;
+        }
     }
 
     public void RegisterBearAttacker(BearBehaviour bear)
@@ -324,19 +414,32 @@ public class MooseBehaviour : AnimalBehaviour
         if (bear == null) return;
 
         if (!bearAttackers.Contains(bear))
+        {
+            wasBeingHunted = true;
             bearAttackers.Add(bear);
+        }
     }
 
     public void UnregisterBearAttacker(BearBehaviour bear)
     {
         if (bear == null) return;
         bearAttackers.Remove(bear);
+
+        if (wolfAttackers.Count == 0 && bearAttackers.Count == 0 && wasBeingHunted)
+        {
+            StatisticsTableManager.instance.MooseSuccessfulEscapeCount++;
+            wasBeingHunted = false;
+        }
     }
 
     public override void OnDeath(bool killedByPredator = false)
     {
+        wolfAttackers.RemoveAll(w => w == null);
+        bearAttackers.RemoveAll(b => b == null);
+
         bool wolfKill = wolfAttackers.Count > 0;
         bool packKill = wolfAttackers.Exists(w => {
+            if (w == null) return false;
             Wolf wolfComp = w?.GetComponent<Wolf>();
             return wolfComp != null && wolfComp.pack != null && wolfComp.pack.countCurrentPackSize() > 1;
         });
@@ -350,6 +453,8 @@ public class MooseBehaviour : AnimalBehaviour
         }
 
         wolfAttackers.Clear();
+        packHuntAttemptCounted = false;
+        wasBeingHunted = false;
 
         if (wolfKill)
         {
@@ -374,6 +479,7 @@ public class MooseBehaviour : AnimalBehaviour
         base.OnDeath(killedByPredator: wolfKill || bearKill);
     }
 
+   
     public float GetAge() { return animal.age; }
     public float GetGrownUpAge() { return animal.grownUpAge; }
 }

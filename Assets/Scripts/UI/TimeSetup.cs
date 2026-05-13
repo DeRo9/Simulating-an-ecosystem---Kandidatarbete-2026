@@ -10,7 +10,7 @@ public class TimeSetup : MonoBehaviour
 
 
     private int minAmount = 0;
-    private int maxAmount = 600;
+    private int maxAmount = 1200;
     public int amount { get; private set; } = 0;
 
     private void Start()

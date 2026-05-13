@@ -10,7 +10,7 @@ public class AnimalSetupPanel : MonoBehaviour
 
 
     private int minAmount = 0;
-    private int maxAmount = 50;
+    private int maxAmount = 200;
     public int amount { get; private set; } = 0;
 
     private void Start()

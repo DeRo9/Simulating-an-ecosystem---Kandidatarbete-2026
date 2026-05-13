@@ -23,6 +23,6 @@ public class GameOverUI : MonoBehaviour
     public void RestartSimulation()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene("TerrainSmall");
+        SceneManager.LoadScene("TerrainMedium");
     }
 }

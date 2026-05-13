@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 
 
 public class GameManager : MonoBehaviour
@@ -13,10 +14,14 @@ public class GameManager : MonoBehaviour
     [Header("Camera")]
     public FreeCamera cameraMovement;
 
+    public static GameManager Instance {get; private set;}
+
     [Header("Folders")]
     public Transform herbivoresFolder;
     public Transform carnivoreFolder;
     public Transform omnivoreFolder;
+
+    public Transform deadFolder;
     public Transform berryBushFolder;
 
     [Header("UI")]
@@ -69,7 +74,8 @@ public class GameManager : MonoBehaviour
     public float spawnRadius = 1000f;
 
     [Header("Weather")]
-    
+    public WeatherManager weatherManager;
+
     [Header("Season")]
     public Toggle summerToggle;
     public Toggle winterToggle;
@@ -84,7 +90,15 @@ public class GameManager : MonoBehaviour
     private Coroutine recordingCoroutine;
     private bool spawnPointsInitialized = false;
 
-
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance  = this;
+    }
     private void Start()
     {
         timesetup.SetAmount(60);
@@ -154,6 +168,9 @@ public class GameManager : MonoBehaviour
     {
         if(StatisticsTableManager.instance != null) StatisticsTableManager.instance.ResetStats();
 
+        SimulationResults.accumulatedStateTimes.Clear();
+        SimulationResults.totalAnimalsProcessed.Clear();
+
         if (useFixedSeed)
         {
             UnityEngine.Random.InitState(simulationSeed);
@@ -215,19 +232,7 @@ public class GameManager : MonoBehaviour
             
                 animal.age = (float)System.Math.Round(UnityEngine.Random.Range(0f, animal.startingMaxAge), 2);               
 
-                // Randomize stats from species ranges
-                animal.speed = UnityEngine.Random.Range(animal.minSpeed, animal.maxSpeed);
-                animal.runningSpeed = animal.maxSpeed * 1.75f; // Running is significantly faster than walking
-                animal.sightRange = UnityEngine.Random.Range(animal.minSight, animal.maxSight);
-                animal.hearingRange = UnityEngine.Random.Range(animal.minHearing, animal.maxHearing);
-
-                float randomizedHealth = animal.CalculateHealth(animal.minHealth, animal.maxHealth);
-                animal.needs.maxHealth = randomizedHealth;
-                animal.needs.healthLevel = randomizedHealth;
-
-
-                animal.strength = UnityEngine.Random.Range(animal.minStrength, animal.maxStrength);
-
+                animal.InitializeAttributes();
                 animal.CalculateAttackDamage();
             }
 
@@ -274,6 +279,144 @@ public class GameManager : MonoBehaviour
         return transform.position;
     }
 
+    void ExportSimulationData()
+    {
+        if (StatisticsTableManager.instance == null) return;
+
+        var sm = StatisticsTableManager.instance;
+        
+        // Build CSV header and data row
+        string header = "BearFinalPopulation,WolfFinalPopulation,MooseFinalPopulation," +
+            "BearBirths,WolfBirths,MooseBirths," +
+            "BearDeaths,WolfDeaths,MooseDeaths," +
+            "BearStarvation,WolfStarvation,MooseStarvation," +
+            "BearPredation,WolfPredation,MoosePredation," +
+            "BearPlantMeals,BearCarcassCount,MoosePlantMeals,WolfCarcassCount," +
+            "PacksFormed,PackHuntAttempts,PackHuntSuccess," +
+            "BearAvgHunger,BearAvgThirst,BearAvgStamina," +
+            "WolfAvgHunger,WolfAvgThirst,WolfAvgStamina," +
+            "MooseAvgHunger,MooseAvgThirst,MooseAvgStamina," +
+            "BearAvgLifespan,WolfAvgLifespan,MooseAvgLifespan," +
+            "MooseIdleTime,MooseWanderTime,MooseSearchFoodTime,MooseSearchWaterTime," +
+            "MooseSearchMateTime,MooseEatTime,MooseDrinkTime,MooseMatingTime," +
+            "MooseFleeingTime,MooseDefendTime," +
+            "BearIdleTime,BearWanderTime,BearSearchFoodTime,BearSearchWaterTime," +
+            "BearSearchMateTime,BearEatTime,BearDrinkTime,BearMatingTime," +
+            "BearHuntingTime,BearFleeingTime,BearDefendTime,BearHibernateTime," +
+            "WolfIdleTime,WolfWanderTime,WolfSearchFoodTime,WolfSearchWaterTime," +
+            "WolfSearchMateTime,WolfEatTime,WolfDrinkTime,WolfMatingTime," +
+            "WolfHuntingTime,WolfFleeingTime,WolfDefendTime," +
+            "WolfHuntAttempts,WolfHuntFailures,WolfSuccessfulHunts," +
+            "BearInterference,BearHuntAttempts,BearHuntFailures,BearSuccessfulHunts," +
+            "MooseSuccessfulEscape," +
+            "BearPopulationHistory,WolfPopulationHistory,MoosePopulationHistory";
+
+        // Final population
+        int bearPop = omnivoreFolder != null ? omnivoreFolder.childCount : 0;
+        int wolfPop = carnivoreFolder != null ? carnivoreFolder.childCount : 0;
+        int moosePop = herbivoresFolder != null ? herbivoresFolder.childCount : 0;
+
+        // Pack hunt success rate
+        float packHuntSuccessRate = sm.PackHuntAttemptsCount > 0 
+            ? (sm.PackHuntSuccessCount / (float)sm.PackHuntAttemptsCount) * 100f 
+            : 0f;
+
+        System.Globalization.CultureInfo inv = System.Globalization.CultureInfo.InvariantCulture;
+        string data = $"{bearPop},{wolfPop},{moosePop}," +
+            $"{sm.BearBirthCount},{sm.WolfBirthCount},{sm.MooseBirthCount}," +
+            $"{sm.BearDeathCount},{sm.WolfDeathCount},{sm.MooseDeathCount}," +
+            $"{sm.BearStarvationCount},{sm.WolfStarvationCount},{sm.MooseStarvationCount}," +
+            $"{sm.BearPredationCount},{sm.WolfPredationCount},{sm.MoosePredationCount}," +
+            $"{sm.BearPlantMealsCount},{sm.BearCarcassCount},{sm.MoosePlantMealsCount},{sm.WolfCarcassCount}," +
+            $"{sm.PacksFormedCount},{sm.PackHuntAttemptsCount},{sm.PackHuntSuccessCount}," +
+            $"{SimulationResults.bearAvgHunger.ToString("F2", inv)},{SimulationResults.bearAvgThirst.ToString("F2", inv)},{SimulationResults.bearAvgStamina.ToString("F2", inv)}," +
+            $"{SimulationResults.wolfAvgHunger.ToString("F2", inv)},{SimulationResults.wolfAvgThirst.ToString("F2", inv)},{SimulationResults.wolfAvgStamina.ToString("F2", inv)}," +
+            $"{SimulationResults.mooseAvgHunger.ToString("F2", inv)},{SimulationResults.mooseAvgThirst.ToString("F2", inv)},{SimulationResults.mooseAvgStamina.ToString("F2", inv)}," +
+            $"{CalculateAvgLifespan(Species.bear).ToString("F2", inv)},{CalculateAvgLifespan(Species.wolf).ToString("F2", inv)},{CalculateAvgLifespan(Species.moose).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.mooseStateAverages.stateAverages, AnimalBehaviour.State.Idle).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.mooseStateAverages.stateAverages, AnimalBehaviour.State.Wander).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.mooseStateAverages.stateAverages, AnimalBehaviour.State.SearchFood).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.mooseStateAverages.stateAverages, AnimalBehaviour.State.SearchWater).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.mooseStateAverages.stateAverages, AnimalBehaviour.State.SearchMate).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.mooseStateAverages.stateAverages, AnimalBehaviour.State.Eat).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.mooseStateAverages.stateAverages, AnimalBehaviour.State.Drink).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.mooseStateAverages.stateAverages, AnimalBehaviour.State.Mating).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.mooseStateAverages.stateAverages, AnimalBehaviour.State.Fleeing).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.mooseStateAverages.stateAverages, AnimalBehaviour.State.Defend).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.bearStateAverages.stateAverages, AnimalBehaviour.State.Idle).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.bearStateAverages.stateAverages, AnimalBehaviour.State.Wander).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.bearStateAverages.stateAverages, AnimalBehaviour.State.SearchFood).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.bearStateAverages.stateAverages, AnimalBehaviour.State.SearchWater).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.bearStateAverages.stateAverages, AnimalBehaviour.State.SearchMate).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.bearStateAverages.stateAverages, AnimalBehaviour.State.Eat).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.bearStateAverages.stateAverages, AnimalBehaviour.State.Drink).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.bearStateAverages.stateAverages, AnimalBehaviour.State.Mating).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.bearStateAverages.stateAverages, AnimalBehaviour.State.Hunt).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.bearStateAverages.stateAverages, AnimalBehaviour.State.Fleeing).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.bearStateAverages.stateAverages, AnimalBehaviour.State.Defend).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.bearStateAverages.stateAverages, AnimalBehaviour.State.Hibernate).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.wolfStateAverages.stateAverages, AnimalBehaviour.State.Idle).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.wolfStateAverages.stateAverages, AnimalBehaviour.State.Wander).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.wolfStateAverages.stateAverages, AnimalBehaviour.State.SearchFood).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.wolfStateAverages.stateAverages, AnimalBehaviour.State.SearchWater).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.wolfStateAverages.stateAverages, AnimalBehaviour.State.SearchMate).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.wolfStateAverages.stateAverages, AnimalBehaviour.State.Eat).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.wolfStateAverages.stateAverages, AnimalBehaviour.State.Drink).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.wolfStateAverages.stateAverages, AnimalBehaviour.State.Mating).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.wolfStateAverages.stateAverages, AnimalBehaviour.State.Hunt).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.wolfStateAverages.stateAverages, AnimalBehaviour.State.Fleeing).ToString("F2", inv)}," +
+            $"{GetStateTime(SimulationResults.wolfStateAverages.stateAverages, AnimalBehaviour.State.Defend).ToString("F2", inv)}," +
+            $"{sm.WolfhuntAttemptsCount},{sm.WolfhuntFailuresCount},{sm.WolfSuccessfulHuntsCount}," +
+            $"{sm.BearInterferenceCount},{sm.BearhuntAttemptsCount},{sm.BearhuntFailuresCount},{sm.BearSuccessfulHuntsCount}," +
+            $"{sm.MooseSuccessfulEscapeCount}," + 
+            $"\"{SerializePopulationHistory(SimulationResults.bearsHistory)}\"," +
+            $"\"{SerializePopulationHistory(SimulationResults.wolvesHistory)}\"," +
+            $"\"{SerializePopulationHistory(SimulationResults.mooseHistory)}\"";
+
+        // Create output directory if it doesn't exist
+        string outputDir = Path.Combine(Application.persistentDataPath, "SimulationData");
+        Directory.CreateDirectory(outputDir);
+
+        // Generate filename with timestamp
+        string timestamp = System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+        string filePath = Path.Combine(outputDir, $"simulation_{timestamp}.csv");
+
+        // Write to file
+        using (StreamWriter writer = new StreamWriter(filePath))
+        {
+            writer.WriteLine(header);
+            writer.WriteLine(data);
+        }
+
+        Debug.Log($"Simulation data exported to: {filePath}");
+    }
+
+    private float GetStateTime(Dictionary<AnimalBehaviour.State, float> stateDict, AnimalBehaviour.State state)
+    {
+        if (stateDict == null) return 0f;
+        return stateDict.ContainsKey(state) ? stateDict[state] : 0f;
+    }
+
+    float CalculateAvgLifespan(Species species)
+    {
+        var sm = StatisticsTableManager.instance;
+        if (sm == null) return 0f;
+
+        return species switch
+        {
+            Species.bear => (sm.BearDeathCount + sm.BearSurvivorCount) > 0
+                ? (sm.BearTotalAgeAtDeath + sm.BearSurvivorTotalAge) / (sm.BearDeathCount + sm.BearSurvivorCount)
+                : 0f,
+            Species.wolf => (sm.WolfDeathCount + sm.WolfSurvivorCount) > 0
+                ? (sm.WolfTotalAgeAtDeath + sm.WolfSurvivorTotalAge) / (sm.WolfDeathCount + sm.WolfSurvivorCount)
+                : 0f,
+            Species.moose => (sm.MooseDeathCount + sm.MooseSurvivorCount) > 0
+                ? (sm.MooseTotalAgeAtDeath + sm.MooseSurvivorTotalAge) / (sm.MooseDeathCount + sm.MooseSurvivorCount)
+                : 0f,
+            _ => 0f
+        };
+    }
+
     void EndSimulation ()
     {
         simulationRunning = false;
@@ -285,9 +428,9 @@ public class GameManager : MonoBehaviour
             recordingCoroutine = null;
         }
 
-        SimulationResultsCalculator.CalculateStateAverages(herbivoresFolder,SimulationResults.mooseStateAverages);
-        SimulationResultsCalculator.CalculateStateAverages(carnivoreFolder,SimulationResults.wolfStateAverages);
-        SimulationResultsCalculator.CalculateStateAverages(omnivoreFolder,SimulationResults.bearStateAverages);
+        SimulationResultsCalculator.CalculateStateAverages(herbivoresFolder,SimulationResults.mooseStateAverages, Species.moose);
+        SimulationResultsCalculator.CalculateStateAverages(carnivoreFolder,SimulationResults.wolfStateAverages, Species.wolf);
+        SimulationResultsCalculator.CalculateStateAverages(omnivoreFolder,SimulationResults.bearStateAverages, Species.bear);
 
         SimulationResultsCalculator.CalculateNeedsAverages(omnivoreFolder, out SimulationResults.bearAvgHunger, out SimulationResults.bearAvgThirst, out SimulationResults.bearAvgStamina);
         SimulationResultsCalculator.CalculateNeedsAverages(carnivoreFolder, out SimulationResults.wolfAvgHunger, out SimulationResults.wolfAvgThirst, out SimulationResults.wolfAvgStamina);
@@ -309,6 +452,15 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0f;
 
         SimulationResults.simulationLength = simulationTime;
+
+        if (StatisticsTableManager.instance != null)
+        {
+            RecordSurvivorAges(omnivoreFolder, Species.bear);
+            RecordSurvivorAges(carnivoreFolder, Species.wolf);
+            RecordSurvivorAges(herbivoresFolder, Species.moose);
+        }
+
+        ExportSimulationData();
 
         SceneManager.LoadScene("SimOver");
     }
@@ -342,6 +494,19 @@ public class GameManager : MonoBehaviour
         float sum = 0f;
         foreach (float v in list) sum += v;
         return Mathf.Round(sum / list.Count);
+    }
+
+    void RecordSurvivorAges(Transform folder, Species species)
+    {
+        var sm = StatisticsTableManager.instance;
+        foreach (Transform child in folder)
+        {
+            Animal a = child.GetComponent<Animal>();
+            if (a == null) continue;
+            if (species == Species.bear)  { sm.BearSurvivorTotalAge += a.age; sm.BearSurvivorCount++; }
+            else if (species == Species.wolf)  { sm.WolfSurvivorTotalAge += a.age; sm.WolfSurvivorCount++; }
+            else if (species == Species.moose) { sm.MooseSurvivorTotalAge += a.age; sm.MooseSurvivorCount++; }
+        }
     }
 
     private IEnumerator RecordPopulationCoroutine()
@@ -384,5 +549,10 @@ public class GameManager : MonoBehaviour
     public void UpdateAmountText(TextMeshProUGUI amountText, string animalName, float sliderValue)
     {
         amountText.text = $"Amount of {animalName}: {Mathf.RoundToInt(sliderValue)}";
+    }
+
+    private string SerializePopulationHistory(List<int> history)
+    {
+        return string.Join(";", history);
     }
 }

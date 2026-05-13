@@ -10,7 +10,7 @@ public class FoodSetupPanel : MonoBehaviour
 
     
     private int minAmount = 0;
-    private int maxAmount = 100;
+    private int maxAmount = 200;
     public int amount { get; private set; } = 0;
 
     private void Start()

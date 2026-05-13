@@ -504,6 +504,7 @@ GameObject:
   - component: {fileID: 5694396359575962331}
   - component: {fileID: 5458290157786460551}
   - component: {fileID: 6593121410220482843}
+  - component: {fileID: -2045235722131005672}
   m_Layer: 8
   m_Name: MoosePrefab
   m_TagString: Moose
@@ -602,21 +603,18 @@ MonoBehaviour:
   IsMale: 0
   sightRange: 20
   hearingRange: 20
-  minSpeed: 0
-  maxSpeed: 0
-  minSight: 0
-  maxSight: 0
-  minHearing: 0
-  maxHearing: 0
+  baseSpeed: 0
+  baseStrength: 0
+  baseHealth: 0
+  baseSight: 0
+  baseHearing: 0
   hearingCollider: {fileID: 5694396359575962331}
-  minStrength: 0
-  maxStrength: 0
-  minHealth: 0
-  maxHealth: 0
   speed: 1.8
   runningSpeed: 2.7
   size: 1
   strength: 0
+  health: 0
+  staminaDecreaseRate: 0
   needs: {fileID: -2986275176863535938}
 --- !u!114 &4656165741010984386
 MonoBehaviour:
@@ -636,14 +634,15 @@ MonoBehaviour:
   minTimeWaiting: 2
   maxTimeWaiting: 5
   waitTime: 0
+  waterTarget: {fileID: 0}
   isDead: 0
   isPregnant: 0
   waterLayer:
     serializedVersion: 2
     m_Bits: 16
+  memoryDecisionCooldown: 0
   foodTarget: {fileID: 0}
   enemy: {fileID: 0}
-  mating: {fileID: 0}
   foodLayer:
     serializedVersion: 2
     m_Bits: 1024
@@ -667,10 +666,10 @@ MonoBehaviour:
   thirstLevel: 100
   healthLevel: 100
   staminaLevel: 100
-  hungerDecreaseRate: 0.8
-  thirstDecreaseRate: 1
-  staminaDecreaseRate: 1
-  staminaIncreaseRate: 1.5
+  hungerDecreaseRate: 0.6
+  thirstDecreaseRate: 0.5
+  staminaDecreaseRate: 0.8
+  staminaIncreaseRate: 2
   hibernationMultiplier: 1
 --- !u!114 &2652676559356234131
 MonoBehaviour:
@@ -820,6 +819,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalMemory
   chunkSize: 50
+--- !u!114 &-2045235722131005672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2670038152025143281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69e74389407865b49be919e9dc612053, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalAvoidance
+  avoidanceRange: 25
+  checkInterval: 0.1
 --- !u!1 &2992573502856677246
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,7 +5,7 @@ public class AnimalInteractor : MonoBehaviour
 {
     [Header("UI Panel")]
     public InformationUI informationUI;
-
+    public FreeCamera freeCamera;
 
     void Update()
     {
@@ -22,11 +22,17 @@ public class AnimalInteractor : MonoBehaviour
                     if (animal != null)
                     {
                         informationUI.ShowInfo(animal); // Show UI Panel with Moose information
+
+                        if (freeCamera != null)
+                        {
+                            freeCamera.SetSelectedAnimal(animal.transform);
+                        }
                     }
                 }
                 else
                 {
                     informationUI.ClearInfo(); // Clear UI Panel if clicked object is not a Moose
+                    if(freeCamera != null ) freeCamera.SetSelectedAnimal(null);
                 }
 
             }

@@ -1,0 +1,16 @@
+Metric,H-statistic,p-value (formatted),Significance,No bear mean,Average bear mean,many bear mean
+BearFinalPopulation,25.9389,2.00e-06,***,0.0,13.6,36.6
+BearBirths,25.8517,2.00e-06,***,0.0,9.3,40.0
+BearDeaths,26.8146,2.00e-06,***,0.0,7.8,30.7
+BearStarvation,26.8146,2.00e-06,***,0.0,7.8,30.7
+BearCarcassCount,26.0163,2.00e-06,***,0.0,84.7,144.5
+BearPlantMeals,26.7898,2.00e-06,***,0.0,62.9,227.0
+BearAvgHunger,26.3131,2.00e-06,***,0.0,64.2,59.3
+BearHuntAttempts,26.0103,2.00e-06,***,0.0,299.4,558.1
+BearSuccessfulHunts,26.5307,2.00e-06,***,0.0,81.6,141.1
+WolfFleeingTime,25.2789,3.00e-06,***,0.0,2.591,11.999
+BearHuntingTime,25.2789,3.00e-06,***,0.0,77.096,43.73
+BearAvgThirst,25.7423,3.00e-06,***,0.0,64.1,59.7
+BearSearchFoodTime,25.0458,4.00e-06,***,0.0,100.08,150.367
+BearHuntFailures,24.712,4.00e-06,***,0.0,212.2,400.4
+BearAvgStamina,24.119,6.00e-06,***,0.0,66.0,75.2

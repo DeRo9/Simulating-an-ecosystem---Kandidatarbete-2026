@@ -37,6 +37,8 @@ public class Mating : MonoBehaviour
     private float pendingBabySight;
     private float pendingBabyHearing;
 
+    private bool hasSpawnedCurrentBaby = false;
+
     [Header("Failed Mating")]
     public float matingRejectionCooldown = 30f;
     private System.Collections.Generic.List<GameObject> rejectedMates = new System.Collections.Generic.List<GameObject>();
@@ -52,12 +54,17 @@ public class Mating : MonoBehaviour
         pregnancyTimer = 0f;
         behaviour.SetPregnant(false);
         gestationDuration = GetGestationDurationForSpecies(animal.species);
+
+        cooldownTimer = matingCooldown;
     }
 
 
     private void Update()
     {
         if (animal == null || needs == null)
+            return;
+
+        if (behaviour != null && behaviour.isDead)
             return;
 
         UpdatePregnancy();
@@ -173,6 +180,10 @@ public class Mating : MonoBehaviour
             RejectMate(partner);
             return;
         }
+
+        // Guard against multiple males mating with the same female in the same frame
+        if (cooldownTimer > 0f || partnerMating.cooldownTimer > 0f)
+            return;
         
         if (partnerAnimal.age < partnerAnimal.grownUpAge)
         {
@@ -226,17 +237,21 @@ public class Mating : MonoBehaviour
 
         if (animal.IsMale || behaviour.isPregnant)
             return false;
+        if (cooldownTimer > 0f)
+            return false;
+        if (animal.age < animal.grownUpAge)
+        return false;
 
-        behaviour.isPregnant = true;
+        behaviour.SetPregnant(true);
+        cooldownTimer = matingCooldown;
         pregnancyTimer = gestationDuration;
+
+        hasSpawnedCurrentBaby = false;
 
         pendingBabySize = (animal.size + fatherAnimal.size) / 2f;
         pendingBabySpeed = (animal.speed + fatherAnimal.speed) / 2f;
         pendingBabySight = (animal.sightRange + fatherAnimal.sightRange) / 2f;
         pendingBabyHearing = (animal.hearingRange + fatherAnimal.hearingRange) / 2f;
-
-        if (behaviour != null)
-            behaviour.SetPregnant(true);
 
         return true;
     }
@@ -256,14 +271,16 @@ public class Mating : MonoBehaviour
             needs.maxStamina
         );
 
-        if (pregnancyTimer <= 0f)
+        if (pregnancyTimer <= 0f && behaviour.isPregnant && !hasSpawnedCurrentBaby)  // Extra safety check
         {
+            hasSpawnedCurrentBaby = true;
             SpawnPregnancyBaby();
+        
             behaviour.SetPregnant(false);
-            pregnancyTimer = 0f;
+            pregnancyTimer = -2f;
+            
             cooldownTimer = matingCooldown;
             return;
-
         }
     }
 
@@ -274,15 +291,27 @@ public class Mating : MonoBehaviour
 
         Vector3 spawnPosition = transform.position + transform.forward;
         GameObject baby = Instantiate(animalPrefab, spawnPosition, Quaternion.identity, transform.parent);
+
+
         Animal babyAnimal = baby.GetComponent<Animal>();
         if (babyAnimal == null)
+        {
+            Destroy(baby);
             return;
+        }
 
         babyAnimal.age = 0f;
         babyAnimal.size = pendingBabySize;
         babyAnimal.speed = pendingBabySpeed;
         babyAnimal.sightRange = pendingBabySight;
         babyAnimal.hearingRange = pendingBabyHearing;
+
+        Mating babyMating = baby.GetComponent<Mating>();
+        if(babyMating != null)
+        {
+            babyMating.pregnancyTimer = 0f;
+            babyMating.cooldownTimer = babyMating.matingCooldown;
+        }
 
         AnimalBehaviour babyBehaviour = baby.GetComponent<AnimalBehaviour>();
         if (babyBehaviour != null)
@@ -297,6 +326,8 @@ public class Mating : MonoBehaviour
             else if (animal.species == Species.wolf) StatisticsTableManager.instance.WolfBirthCount++;
             else if (animal.species == Species.moose) StatisticsTableManager.instance.MooseBirthCount++;
         }
+
+        SetupCub(baby);
     }
 
     private void SpawnBabyNow(Animal partnerAnimal)
@@ -323,6 +354,7 @@ public class Mating : MonoBehaviour
             else if (animal.species == Species.wolf) StatisticsTableManager.instance.WolfBirthCount++;
             else if (animal.species == Species.moose) StatisticsTableManager.instance.MooseBirthCount++;
         }
+        SetupCub(baby);
     }
 
     private void ApplyReproductionCosts(AnimalNeeds targetNeeds)
@@ -335,6 +367,35 @@ public class Mating : MonoBehaviour
             targetNeeds.maxStamina
         );
     }
+
+    private void SetupCub(GameObject baby)
+{
+    AnimalBehaviour adultBehaviour = baby.GetComponent<AnimalBehaviour>();
+    if (adultBehaviour != null)
+        adultBehaviour.enabled = false;
+
+    AnimalBehaviour motherBehaviour = animal.IsMale
+        ? null
+        : GetComponent<AnimalBehaviour>();
+
+    CubBehaviour cub = null;
+    switch (animal.species)
+    {
+        case Species.bear:
+            cub = baby.AddComponent<BearCubBehaviour>();
+            break;
+        case Species.wolf:
+            cub = baby.AddComponent<WolfCubBehaviour>();
+            break;
+        case Species.moose:
+            cub = baby.AddComponent<MooseCalfBehaviour>();
+            break;
+    }
+
+    if (cub != null && motherBehaviour != null)
+        cub.mother = motherBehaviour;
+}
+
 
 
 }
