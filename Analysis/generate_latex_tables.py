@@ -79,8 +79,6 @@ def build_longtable(df):
     latex += "\\end{longtable}"
     return latex
 
-
-# Existing 15-most-significant table (kept for compatibility)
 latex_main_15 = build_standard_table(
     main_table,
     "Kruskal-Wallis H-test results for the 15 most significant metrics. "
